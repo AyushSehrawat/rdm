@@ -151,7 +151,7 @@
 		{/if}
 	</div>
 	{#if userCode}
-		<p class="mt-2">
+		<p class="mt-2 w-full text-center">
 			Your user code is: {userCode} (Copied to clipboard!). Go to
 			<a
 				class="underline decoration-blue-600 font-semibold"
