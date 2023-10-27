@@ -5,6 +5,7 @@
 	import { setMode, mode } from 'mode-watcher';
 	import { Sun } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
+	import { page, navigating } from '$app/stores';
 </script>
 
 <header
@@ -21,9 +22,24 @@
 		</a>
 		<div class="flex items-center gap-8">
 			<nav class="hidden lg:flex items-center gap-4">
-				<a href="/app" class="hover:text-gray-900 dark:hover:text-gray-100">Home</a>
-				<a href="/app/torrents" class="hover:text-gray-900 dark:hover:text-gray-100">Torrents</a>
-				<a href="/app/downloads" class="hover:text-gray-900 dark:hover:text-gray-100">Downloads</a>
+				<a
+					class:underline={$page.url.pathname === '/app'}
+					href="/app"
+					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+					>Home</a
+				>
+				<a
+					class:underline={$page.url.pathname === '/app/torrents'}
+					href="/app/torrents"
+					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+					>Torrents</a
+				>
+				<a
+					class:underline={$page.url.pathname === '/app/downloads'}
+					href="/app/downloads"
+					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+					>Downloads</a
+				>
 			</nav>
 			<div class="flex items-center gap-4">
 				<Logout />
@@ -50,8 +66,35 @@
 		</div>
 	</div>
 	<nav class="flex lg:hidden items-center gap-4 pt-8 px-4">
-		<a href="/app" class="hover:text-gray-900 dark:hover:text-gray-100">Home</a>
-		<a href="/app/torrents" class="hover:text-gray-900 dark:hover:text-gray-100">Torrents</a>
-		<a href="/app/downloads" class="hover:text-gray-900 dark:hover:text-gray-100">Downloads</a>
+		<a
+			class:underline={$page.url.pathname === '/app'}
+			href="/app"
+			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+			>Home</a
+		>
+		<a
+			class:underline={$page.url.pathname === '/app/torrents'}
+			href="/app/torrents"
+			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+			>Torrents</a
+		>
+		<a
+			class:underline={$page.url.pathname === '/app/downloads'}
+			href="/app/downloads"
+			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+			>Downloads</a
+		>
 	</nav>
+
+	{#if $navigating}
+		<div class="pt-4 w-full flex items-center justify-center text-center">
+			{#if $navigating.to?.url.pathname === '/app/torrents'}
+				<p class="text-sm font-semibold">Loading Torrents...</p>
+			{:else if $navigating.to?.url.pathname === '/app/downloads'}
+				<p class="text-sm font-semibold">Loading Downloads...</p>
+			{:else}
+				<p class="text-sm font-semibold">Loading...</p>
+			{/if}
+		</div>
+	{/if}
 </header>
