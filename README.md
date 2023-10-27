@@ -1,17 +1,30 @@
-# create-svelte
+# Real Debrid Manager
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Manage your Real Debrid downloads and torrents with ease.
 
-## Creating a project
+Aim of this project is to provide a simple interface to manage and search through your Real Debrid downloads and torrents.
 
-If you're seeing this, you've probably already done this step. Congrats!
+<figure>
+    <img src="./assets/rd01.jpeg" alt="App Screenshot">
+    <figcaption>Dashboard Screenshot (This could be outdated)</figcaption>
+</figure>
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Features
 
-# create a new project in my-app
-npm create svelte@latest my-app
+- View all your downloads and torrents
+- Search through your downloads and torrents (the app loads all the user torrents and downloads and then filters them locally)
+- Copy, delete, stream and get info on your downloads and torrents (Some of these features are not yet implemented)
+- Add torrents through magnet links, hashes and imdb ids (Not yet implemented)
+- Look for dead download links and refresh them (Not yet implemented)
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+```
+PUBLIC_BASE_URI="https://api.real-debrid.com/rest/1.0"
+PUBLIC_BASE_AUTH_URI="https://api.real-debrid.com"
+PUBLIC_CLIENT_ID="X245A4XAIBGVM"
 ```
 
 ## Developing
@@ -24,15 +37,3 @@ npm run dev
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
 ```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

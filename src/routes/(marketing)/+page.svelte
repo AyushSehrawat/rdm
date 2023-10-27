@@ -169,7 +169,7 @@
 				class="flex flex-col items-center justify-center gap-4 text-gray-600 dark:text-gray-400 text-sm"
 			>
 				<img alt="avatar" class="rounded-full h-24 w-24" src={data.avatar} />
-				<p class="text-lg font-semibold text-white">{data.username}</p>
+				<p class="text-lg font-semibold text-black dark:text-white">{data.username}</p>
 				<p>{data.email}</p>
 				<p>Premium expires on {formatDate(data.expiration)}</p>
 				<p>{data.points} points</p>
