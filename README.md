@@ -13,7 +13,8 @@ Aim of this project is to provide a simple interface to manage and search throug
 
 - View all your downloads and torrents
 - Search through your downloads and torrents (the app loads all the user torrents and downloads and then filters them locally)
-- Copy, delete, stream and get info on your downloads and torrents (Some of these features are not yet implemented)
+- Copy download links, delete, stream and get info on your downloads and torrents (Some of these features are not yet implemented)
+- Integrate download manager to bulk download files (Not yet implemented)
 - Add torrents through magnet links, hashes and imdb ids (Not yet implemented)
 - Look for dead download links and refresh them (Not yet implemented)
 
