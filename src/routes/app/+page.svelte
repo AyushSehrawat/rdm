@@ -79,7 +79,7 @@
 					<Table.Head>Filename</Table.Head>
 					<Table.Head class="w-[100px]">Size</Table.Head>
 					<Table.Head class="">Generated</Table.Head>
-					<Table.Head class="text-right" />
+					<Table.Head class="w-8" />
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
@@ -90,11 +90,7 @@
 						<Table.Cell class="">{formatDate(download.generated)}</Table.Cell>
 						<Table.Cell class="text-right flex justify-end">
 							<DropdownMenu.Root>
-								<DropdownMenu.Trigger
-									asChild
-									let:builder
-									class="hover:bg-gray-200 dark:hover:bg-gray-800 p-2 rounded-md transition-colors duration-300 ease-in-out"
-								>
+								<DropdownMenu.Trigger asChild let:builder>
 									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
 										<span class="sr-only">Open menu</span>
 										<DotsHorizontal class="w-4 h-4" />
@@ -164,11 +160,7 @@
 						<Table.Cell class="">{formatDate(torrent.added)}</Table.Cell>
 						<Table.Cell class="text-right flex justify-end">
 							<DropdownMenu.Root>
-								<DropdownMenu.Trigger
-									asChild
-									let:builder
-									class="hover:bg-gray-200 dark:hover:bg-gray-800 p-2 rounded-md transition-colors duration-300 ease-in-out"
-								>
+								<DropdownMenu.Trigger asChild let:builder>
 									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
 										<span class="sr-only">Open menu</span>
 										<DotsHorizontal class="w-4 h-4" />
