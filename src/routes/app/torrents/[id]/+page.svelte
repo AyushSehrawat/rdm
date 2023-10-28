@@ -1,0 +1,153 @@
+<script lang="ts">
+	import { invalidate } from '$app/navigation';
+	import TableActions from './table-actions.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as Card from '$lib/components/ui/card';
+	import * as Table from '$lib/components/ui/table';
+	import { RotateCw, Loader2, Trash, PlusCircle, Copy, ClipboardCheck } from 'lucide-svelte';
+
+	export let data;
+
+	$: getTorrentInfo = data.streamed.getTorrentInfo;
+
+	function convertBytes(byteSize: number) {
+		if (byteSize < 1024) {
+			return byteSize + ' bytes';
+		} else if (byteSize < 1024 * 1024) {
+			return (byteSize / 1024).toFixed(2) + ' KB';
+		} else if (byteSize < 1024 * 1024 * 1024) {
+			return (byteSize / (1024 * 1024)).toFixed(2) + ' MB';
+		} else {
+			return (byteSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+		}
+	}
+
+	function formatDate(inputDate: string) {
+		const options = { year: 'numeric', month: 'short', day: 'numeric' };
+		// @ts-ignore
+		return new Date(inputDate).toLocaleDateString('en-US', options);
+	}
+
+	function capitalizeFirstLetter(string: string) {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+
+	function removeFirstChar(str: string) {
+		return str.slice(1);
+	}
+
+	let totalSelectedFiles = 0;
+
+	function incrementSelectedFiles() {
+		totalSelectedFiles++;
+		return '';
+	}
+
+	function filterSelected(lst: any[]) {
+		return lst.filter((item) => item.selected === 1);
+	}
+
+	let isIDCopied = false;
+	let isMagnetCopied = false;
+</script>
+
+<div class="flex flex-col p-8 md:px-24 lg:px-32 gap-4 w-full">
+	<h2 class="text-xl font-semibold">Torrent info for {data.props.id}</h2>
+
+	{#await getTorrentInfo}
+		<div class="flex w-full items-center justify-center">
+			<Loader2 class="w-8 h-8 animate-spin" />
+		</div>
+	{:then torrentInfo}
+		<div class="flex flex-col w-full">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="text-start break-words">{torrentInfo.filename}</Card.Title>
+					<Card.Description class="flex flex-col md:flex-row items-center gap-2">
+						<p>Added on {formatDate(torrentInfo.added)}</p>
+						<span class="font-bold text-2xl hidden md:block">&middot;</span>
+						<p>{convertBytes(torrentInfo.bytes)}</p>
+						<span class="font-bold text-2xl hidden md:block">&middot;</span>
+						<p>{capitalizeFirstLetter(torrentInfo.status)}</p>
+					</Card.Description>
+				</Card.Header>
+				<Card.Content class="flex flex-col gap-4">
+					<div class="flex flex-col md:flex-row w-full md:max-w-max gap-4">
+						<Button
+							on:click={() => {
+								navigator.clipboard.writeText(data.props.id);
+								isIDCopied = true;
+								setTimeout(() => {
+									isIDCopied = false;
+								}, 3000);
+							}}
+						>
+							{#if isIDCopied}
+								<ClipboardCheck class="mr-2 h-4 w-4" />
+								Copied!
+							{:else}
+								<Copy class="mr-2 h-4 w-4" />
+								Copy ID
+							{/if}
+						</Button>
+						<Button
+							on:click={() => {
+								navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentInfo.hash}`);
+								isMagnetCopied = true;
+								setTimeout(() => {
+									isMagnetCopied = false;
+								}, 3000);
+							}}
+						>
+							{#if isMagnetCopied}
+								<ClipboardCheck class="mr-2 h-4 w-4" />
+								Copied!
+							{:else}
+								<Copy class="mr-2 h-4 w-4" />
+								Copy magnet link
+							{/if}
+						</Button>
+						<Button>
+							<Trash class="mr-2 h-4 w-4" />
+							Delete
+						</Button>
+						<Button>
+							<PlusCircle class="mr-2 h-4 w-4" />
+							Reinsert
+						</Button>
+					</div>
+					<p class="break-words"><span class="font-semibold">Hash: </span>{torrentInfo.hash}</p>
+					<div class="flex flex-col w-full">
+						<p class="font-semibold">Files</p>
+						<Table.Root>
+							<Table.Caption>{totalSelectedFiles} files selected</Table.Caption>
+							<Table.Header>
+								<Table.Row>
+									<Table.Head class="w-[100px]">ID</Table.Head>
+									<Table.Head>Path</Table.Head>
+									<Table.Head class="text-right">Size</Table.Head>
+									<Table.Head class="w-[100px] text-right" />
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{#each filterSelected(torrentInfo.files) as torrentFile, i}
+									<Table.Row>
+										<Table.Cell class="font-medium">{torrentFile.id}</Table.Cell>
+										<Table.Cell>{removeFirstChar(torrentFile.path)}</Table.Cell>
+										<Table.Cell class="text-right">{convertBytes(torrentFile.bytes)}</Table.Cell>
+										<Table.Cell class="text-right">
+											<TableActions link={torrentInfo.links[i]} />
+										</Table.Cell>
+									</Table.Row>
+									{incrementSelectedFiles()}
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					</div>
+				</Card.Content>
+			</Card.Root>
+		</div>
+	{:catch error}
+		<p class="text-red-500">{error.message}</p>
+	{/await}
+</div>

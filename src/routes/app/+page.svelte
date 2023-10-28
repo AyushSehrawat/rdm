@@ -3,9 +3,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { MoreVertical, RotateCw } from 'lucide-svelte';
-	import { RotateCcw } from 'lucide-svelte';
-	import { Loader2 } from 'lucide-svelte';
+	import { RotateCw, Loader2 } from 'lucide-svelte';
+	import { DotsHorizontal } from 'radix-icons-svelte';
+	import { goto } from '$app/navigation';
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
@@ -55,7 +55,7 @@
 	}
 </script>
 
-<div class="p-8 md:px-24 lg:px-32 text-gray-600 dark:text-gray-400 flex flex-col">
+<div class="p-8 md:px-24 lg:px-32 flex flex-col">
 	<div class="flex items-center justify-between mt-8">
 		<h3 class="font-semibold">Recent Downloads</h3>
 		<Button disabled={downloadRefresh} on:click={refreshRecentDownloads}>
@@ -79,7 +79,7 @@
 					<Table.Head>Filename</Table.Head>
 					<Table.Head class="w-[100px]">Size</Table.Head>
 					<Table.Head class="">Generated</Table.Head>
-					<Table.Head class="w-8" />
+					<Table.Head class="text-right" />
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
@@ -91,9 +91,14 @@
 						<Table.Cell class="text-right flex justify-end">
 							<DropdownMenu.Root>
 								<DropdownMenu.Trigger
+									asChild
+									let:builder
 									class="hover:bg-gray-200 dark:hover:bg-gray-800 p-2 rounded-md transition-colors duration-300 ease-in-out"
 								>
-									<MoreVertical class="w-6 h-6" />
+									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
+										<span class="sr-only">Open menu</span>
+										<DotsHorizontal class="w-4 h-4" />
+									</Button>
 								</DropdownMenu.Trigger>
 								<DropdownMenu.Content>
 									<DropdownMenu.Group>
@@ -104,7 +109,11 @@
 												navigator.clipboard.writeText(download.download);
 											}}>Copy</DropdownMenu.Item
 										>
-										<DropdownMenu.Item>Details</DropdownMenu.Item>
+										<DropdownMenu.Item
+											on:click={() => {
+												goto(`/app/downloads/${download.id}`);
+											}}>Details</DropdownMenu.Item
+										>
 									</DropdownMenu.Group>
 								</DropdownMenu.Content>
 							</DropdownMenu.Root>
@@ -156,9 +165,14 @@
 						<Table.Cell class="text-right flex justify-end">
 							<DropdownMenu.Root>
 								<DropdownMenu.Trigger
+									asChild
+									let:builder
 									class="hover:bg-gray-200 dark:hover:bg-gray-800 p-2 rounded-md transition-colors duration-300 ease-in-out"
 								>
-									<MoreVertical class="w-6 h-6" />
+									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
+										<span class="sr-only">Open menu</span>
+										<DotsHorizontal class="w-4 h-4" />
+									</Button>
 								</DropdownMenu.Trigger>
 								<DropdownMenu.Content>
 									<DropdownMenu.Group>
@@ -169,7 +183,11 @@
 												navigator.clipboard.writeText(torrent.id);
 											}}>Copy ID</DropdownMenu.Item
 										>
-										<DropdownMenu.Item>Details</DropdownMenu.Item>
+										<DropdownMenu.Item
+											on:click={() => {
+												goto(`/app/torrents/${torrent.id}`);
+											}}>Details</DropdownMenu.Item
+										>
 									</DropdownMenu.Group>
 								</DropdownMenu.Content>
 							</DropdownMenu.Root>
