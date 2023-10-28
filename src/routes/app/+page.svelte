@@ -77,9 +77,9 @@
 			<Table.Header>
 				<Table.Row>
 					<Table.Head>Filename</Table.Head>
-					<Table.Head class="w-[100px]">Size</Table.Head>
-					<Table.Head class="">Generated</Table.Head>
-					<Table.Head class="w-8" />
+					<Table.Head>Size</Table.Head>
+					<Table.Head>Generated</Table.Head>
+					<Table.Head>Actions</Table.Head>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
@@ -87,8 +87,8 @@
 					<Table.Row>
 						<Table.Cell>{download.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
-						<Table.Cell class="">{formatDate(download.generated)}</Table.Cell>
-						<Table.Cell class="text-right flex justify-end">
+						<Table.Cell>{formatDate(download.generated)}</Table.Cell>
+						<Table.Cell>
 							<DropdownMenu.Root>
 								<DropdownMenu.Trigger asChild let:builder>
 									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
@@ -145,10 +145,10 @@
 			<Table.Header>
 				<Table.Row>
 					<Table.Head>Filename</Table.Head>
-					<Table.Head class="w-[100px]">Size</Table.Head>
-					<Table.Head class="">Status</Table.Head>
-					<Table.Head class="">Added</Table.Head>
-					<Table.Head class="w-8" />
+					<Table.Head>Size</Table.Head>
+					<Table.Head>Status</Table.Head>
+					<Table.Head>Added</Table.Head>
+					<Table.Head>Actions</Table.Head>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
@@ -156,9 +156,9 @@
 					<Table.Row>
 						<Table.Cell>{torrent.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>
-						<Table.Cell class="">{capitalizeFirstLetter(torrent.status)}</Table.Cell>
-						<Table.Cell class="">{formatDate(torrent.added)}</Table.Cell>
-						<Table.Cell class="text-right flex justify-end">
+						<Table.Cell>{capitalizeFirstLetter(torrent.status)}</Table.Cell>
+						<Table.Cell>{formatDate(torrent.added)}</Table.Cell>
+						<Table.Cell>
 							<DropdownMenu.Root>
 								<DropdownMenu.Trigger asChild let:builder>
 									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
