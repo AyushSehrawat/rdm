@@ -17,6 +17,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import Actions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
+	import { capitalizeFirstLetter, formatDate, convertBytes } from '$lib/app/helpers';
 
 	interface TorrentsType {
 		added: string;
@@ -33,28 +34,6 @@
 	}
 
 	export let allTorrents;
-
-	function convertBytes(byteSize: number) {
-		if (byteSize < 1024) {
-			return byteSize + ' bytes';
-		} else if (byteSize < 1024 * 1024) {
-			return (byteSize / 1024).toFixed(2) + ' KB';
-		} else if (byteSize < 1024 * 1024 * 1024) {
-			return (byteSize / (1024 * 1024)).toFixed(2) + ' MB';
-		} else {
-			return (byteSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-		}
-	}
-
-	function formatDate(inputDate: string) {
-		const options = { year: 'numeric', month: 'short', day: 'numeric' };
-		// @ts-ignore
-		return new Date(inputDate).toLocaleDateString('en-US', options);
-	}
-
-	function upperCaseFirstLetter(string: string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	}
 
 	let torrents: TorrentsType[] = allTorrents;
 
@@ -112,7 +91,7 @@
 			accessor: 'status',
 			header: 'Status',
 			cell: ({ value }) => {
-				const formatted = upperCaseFirstLetter(value);
+				const formatted = capitalizeFirstLetter(value);
 				return formatted;
 			}
 		}),
@@ -159,7 +138,7 @@
 
 	const { selectedDataIds } = pluginStates.select;
 
-	const hideableCols = ['filename', 'filesize', 'generated'];
+	const hideableCols = ['filename', 'bytes', 'status', 'added'];
 </script>
 
 <div class="w-full">

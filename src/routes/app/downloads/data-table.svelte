@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PUBLIC_BASE_URI } from '$env/static/public';
 	import { createTable, Subscribe, Render, createRender } from 'svelte-headless-table';
 	import {
 		addSortBy,
@@ -17,6 +16,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import Actions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
+	import { formatDate, convertBytes } from '$lib/app/helpers';
 
 	export let allDownloads;
 
@@ -33,24 +33,6 @@
 		mimeType: string | null;
 		streamable: number | null;
 	};
-
-	function convertBytes(byteSize: number) {
-		if (byteSize < 1024) {
-			return byteSize + ' bytes';
-		} else if (byteSize < 1024 * 1024) {
-			return (byteSize / 1024).toFixed(2) + ' KB';
-		} else if (byteSize < 1024 * 1024 * 1024) {
-			return (byteSize / (1024 * 1024)).toFixed(2) + ' MB';
-		} else {
-			return (byteSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-		}
-	}
-
-	function formatDate(inputDate: string) {
-		const options = { year: 'numeric', month: 'short', day: 'numeric' };
-		// @ts-ignore
-		return new Date(inputDate).toLocaleDateString('en-US', options);
-	}
 
 	let downloads: DownlodsType[] = allDownloads;
 

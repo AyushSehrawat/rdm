@@ -1,40 +1,19 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
 	import TableActions from './table-actions.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-	import { RotateCw, Loader2, Trash, PlusCircle, Copy, ClipboardCheck } from 'lucide-svelte';
+	import { Loader2, Trash, PlusCircle, Copy, ClipboardCheck } from 'lucide-svelte';
+	import {
+		formatDate,
+		convertBytes,
+		capitalizeFirstLetter,
+		removeFirstChar
+	} from '$lib/app/helpers';
 
 	export let data;
 
 	$: getTorrentInfo = data.streamed.getTorrentInfo;
-
-	function convertBytes(byteSize: number) {
-		if (byteSize < 1024) {
-			return byteSize + ' bytes';
-		} else if (byteSize < 1024 * 1024) {
-			return (byteSize / 1024).toFixed(2) + ' KB';
-		} else if (byteSize < 1024 * 1024 * 1024) {
-			return (byteSize / (1024 * 1024)).toFixed(2) + ' MB';
-		} else {
-			return (byteSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-		}
-	}
-
-	function formatDate(inputDate: string) {
-		const options = { year: 'numeric', month: 'short', day: 'numeric' };
-		// @ts-ignore
-		return new Date(inputDate).toLocaleDateString('en-US', options);
-	}
-
-	function capitalizeFirstLetter(string: string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	}
-
-	function removeFirstChar(str: string) {
-		return str.slice(1);
-	}
 
 	let totalSelectedFiles = 0;
 

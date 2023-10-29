@@ -2,7 +2,6 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
-	import { goto } from '$app/navigation';
 
 	export let link: string;
 </script>

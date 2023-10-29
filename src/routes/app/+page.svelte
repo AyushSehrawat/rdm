@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { PUBLIC_BASE_URI } from '$env/static/public';
 	import { Button } from '$lib/components/ui/button';
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { RotateCw, Loader2 } from 'lucide-svelte';
 	import { DotsHorizontal } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
+	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
@@ -30,28 +30,6 @@
 	function refreshRecentTorrents() {
 		torrentRefresh = true;
 		doRecentTorrents = recentTorrents();
-	}
-
-	function convertBytes(byteSize: number) {
-		if (byteSize < 1024) {
-			return byteSize + ' bytes';
-		} else if (byteSize < 1024 * 1024) {
-			return (byteSize / 1024).toFixed(2) + ' KB';
-		} else if (byteSize < 1024 * 1024 * 1024) {
-			return (byteSize / (1024 * 1024)).toFixed(2) + ' MB';
-		} else {
-			return (byteSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-		}
-	}
-
-	function formatDate(inputDate: string) {
-		const options = { year: 'numeric', month: 'short', day: 'numeric' };
-		// @ts-ignore
-		return new Date(inputDate).toLocaleDateString('en-US', options);
-	}
-
-	function capitalizeFirstLetter(string: string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
 	}
 </script>
 
@@ -103,13 +81,15 @@
 										<DropdownMenu.Item
 											on:click={() => {
 												navigator.clipboard.writeText(download.download);
-											}}>Copy</DropdownMenu.Item
+											}}>Copy Download Link</DropdownMenu.Item
 										>
+										<DropdownMenu.Separator />
 										<DropdownMenu.Item
 											on:click={() => {
 												goto(`/app/downloads/${download.id}`);
 											}}>Details</DropdownMenu.Item
 										>
+										<DropdownMenu.Item>Delete</DropdownMenu.Item>
 									</DropdownMenu.Group>
 								</DropdownMenu.Content>
 							</DropdownMenu.Root>

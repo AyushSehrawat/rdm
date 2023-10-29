@@ -8,6 +8,7 @@
 	import { LayoutGrid } from 'lucide-svelte';
 	import { Sun } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
+	import { formatDate } from '$lib/app/helpers';
 
 	export let data;
 
@@ -96,14 +97,6 @@
 
 		return data.json();
 	};
-
-	function formatDate(date: string) {
-		return new Date(date).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		});
-	}
 </script>
 
 <svelte:head>
