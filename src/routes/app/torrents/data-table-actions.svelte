@@ -24,7 +24,7 @@
 			>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item>Delete</DropdownMenu.Item>
 		<DropdownMenu.Item on:click={() => goto(`/app/torrents/${id}`)}>Details</DropdownMenu.Item>
+		<DropdownMenu.Item>Delete</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

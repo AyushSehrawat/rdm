@@ -17,6 +17,8 @@
 	import Actions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import { formatDate, convertBytes } from '$lib/app/helpers';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { invalidate } from '$app/navigation';
 
 	export let allDownloads;
 
@@ -102,7 +104,8 @@
 					// @ts-ignore
 					id: item.row.original.id,
 					// @ts-ignore
-					download: item.row.original.download
+					download: item.row.original.download,
+					deleteDownload: deleteDownload
 				});
 			},
 			plugins: {
@@ -132,6 +135,36 @@
 	const { selectedDataIds } = pluginStates.select;
 
 	const hideableCols = ['filename', 'filesize', 'generated'];
+
+	let deleteDownload = async function deleteDownloadData(ids: string[]) {
+		const data = await fetch(`/api/app/downloads`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ ids })
+		});
+		let resp = await data.json();
+		if (resp.success === true) {
+			toast.push(`Success! ${resp.message}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(72,187,120,1)',
+					'--toastBarBackground': '#2F855A'
+				}
+			});
+		} else if (resp.success === false) {
+			toast.push(`Error! ${resp.error}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(220,38,38,1)',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+
+		await invalidate((url) => url.pathname === '/api/app/downloads');
+	};
 </script>
 
 <div class="w-full">

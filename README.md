@@ -38,3 +38,9 @@ npm run dev
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
 ```
+
+#### TODO
+
+- [ ] Support bulk copying and deleting
+- [ ] Maybe instead of getting all data at once, get data in chunks but get all data at once when searching ?
+- [ ] Use indexedDB to store data locally and then search through it first before making api calls

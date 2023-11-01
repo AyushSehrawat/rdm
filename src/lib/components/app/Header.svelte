@@ -41,7 +41,7 @@
 					>Downloads</a
 				>
 			</nav>
-			<div class="flex items-center gap-4">
+			<div class="flex items-center gap-2">
 				<Logout />
 				{#if $mode === 'light'}
 					<Button

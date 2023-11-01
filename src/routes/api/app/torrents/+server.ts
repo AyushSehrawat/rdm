@@ -99,3 +99,96 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 		});
 	}
 };
+
+export const DELETE = async ({ request, cookies, fetch }) => {
+	const body = await request.json();
+	const accessToken = cookies.get('accessToken') ?? '';
+	const refreshToken = cookies.get('refreshToken') ?? '';
+	const ids: string[] = body.ids;
+	console.log(ids);
+
+	try {
+		if (refreshToken === '') {
+			return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+
+		if (accessToken === '') {
+			let res = await fetch('/api/refresh', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			let data = await res.json();
+			if (data.hasOwnProperty('error')) {
+				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
+					status: 401,
+					headers: { 'Content-Type': 'application/json' }
+				});
+			}
+		}
+
+		const token = cookies.get('accessToken') ?? '';
+
+		let deletedIds: string[] = [];
+		let failures: string[] = [];
+
+		await Promise.all(
+			ids.map(async (id: string) => {
+				console.log(`Deleting ${id}`);
+				let res = await fetch(`${PUBLIC_BASE_URI}/torrents/delete/${id}`, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${token}`
+					}
+				});
+
+				if (res.status === 204) {
+					deletedIds.push(id);
+				} else {
+					failures.push(id);
+				}
+			})
+		);
+
+		if (deletedIds.length === 0) {
+			return new Response(JSON.stringify({ success: false, error: 'No torrents deleted' }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		} else if (deletedIds.length === ids.length) {
+			return new Response(
+				JSON.stringify({
+					success: true,
+					message: `Deleted ${deletedIds.length} torrents`
+				}),
+				{
+					status: 200,
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+		} else {
+			return new Response(
+				JSON.stringify({
+					success: 'partial',
+					message: `Deleted ${deletedIds.length} torrents`,
+					failures: failures
+				}),
+				{
+					status: 200,
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+		}
+	} catch (error) {
+		return new Response(JSON.stringify({ error: error?.message }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+};

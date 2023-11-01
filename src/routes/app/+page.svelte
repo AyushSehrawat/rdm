@@ -6,6 +6,7 @@
 	import { DotsHorizontal } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
 	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
+	import { toast } from '@zerodevx/svelte-toast';
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
@@ -31,6 +32,64 @@
 		torrentRefresh = true;
 		doRecentTorrents = recentTorrents();
 	}
+
+	let deleteDownload = async function deleteDownloadData(ids: string[]) {
+		const data = await fetch(`/api/app/downloads`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ ids })
+		});
+		let resp = await data.json();
+		if (resp.success === true) {
+			toast.push(`Success! ${resp.message}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(72,187,120,1)',
+					'--toastBarBackground': '#2F855A'
+				}
+			});
+		} else if (resp.success === false) {
+			toast.push(`Error! ${resp.error}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(220,38,38,1)',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+		doRecentDownloads = recentDownloads();
+	};
+
+	let deleteTorrent = async function deleteTorrentData(ids: string[]) {
+		const data = await fetch(`/api/app/torrents`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ ids })
+		});
+		let resp = await data.json();
+		if (resp.success === true) {
+			toast.push(`Success! ${resp.message}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(72,187,120,1)',
+					'--toastBarBackground': '#2F855A'
+				}
+			});
+		} else if (resp.success === false) {
+			toast.push(`Error! ${resp.error}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(220,38,38,1)',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+		doRecentTorrents = recentTorrents();
+	};
 </script>
 
 <div class="p-8 md:px-24 lg:px-32 flex flex-col">
@@ -84,12 +143,12 @@
 											}}>Copy Download Link</DropdownMenu.Item
 										>
 										<DropdownMenu.Separator />
+										<DropdownMenu.Item disabled>Details (Soon)</DropdownMenu.Item>
 										<DropdownMenu.Item
 											on:click={() => {
-												goto(`/app/downloads/${download.id}`);
-											}}>Details</DropdownMenu.Item
+												deleteDownload([download.id]);
+											}}>Delete</DropdownMenu.Item
 										>
-										<DropdownMenu.Item>Delete</DropdownMenu.Item>
 									</DropdownMenu.Group>
 								</DropdownMenu.Content>
 							</DropdownMenu.Root>
@@ -155,10 +214,16 @@
 												navigator.clipboard.writeText(torrent.id);
 											}}>Copy ID</DropdownMenu.Item
 										>
+										<DropdownMenu.Separator />
 										<DropdownMenu.Item
 											on:click={() => {
 												goto(`/app/torrents/${torrent.id}`);
 											}}>Details</DropdownMenu.Item
+										>
+										<DropdownMenu.Item
+											on:click={() => {
+												deleteTorrent([torrent.id]);
+											}}>Delete</DropdownMenu.Item
 										>
 									</DropdownMenu.Group>
 								</DropdownMenu.Content>

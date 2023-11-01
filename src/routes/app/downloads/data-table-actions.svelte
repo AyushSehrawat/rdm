@@ -6,6 +6,7 @@
 
 	export let id: string;
 	export let download: string;
+	export let deleteDownload: (ids: string[]) => void;
 </script>
 
 <DropdownMenu.Root>
@@ -23,7 +24,11 @@
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item>Delete</DropdownMenu.Item>
-		<DropdownMenu.Item on:click={() => goto(`/app/downloads/${id}`)}>Details</DropdownMenu.Item>
+		<DropdownMenu.Item disabled>Details (Soon)</DropdownMenu.Item>
+		<DropdownMenu.Item
+			on:click={() => {
+				deleteDownload([id]);
+			}}>Delete</DropdownMenu.Item
+		>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
