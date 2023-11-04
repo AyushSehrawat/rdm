@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-	import { Loader2, Trash, PlusCircle, Copy, ClipboardCheck } from 'lucide-svelte';
+	import { Loader2, Trash, PlusCircle, Copy, ClipboardCheck, Unlock } from 'lucide-svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 	import {
 		formatDate,
@@ -129,6 +129,10 @@
 						<Button disabled>
 							<PlusCircle class="mr-2 h-4 w-4" />
 							Reinsert (Soon)
+						</Button>
+						<Button disabled>
+							<Unlock class="mr-2 h-4 w-4" />
+							Unrestrict All (Soon)
 						</Button>
 					</div>
 					<p class="break-words"><span class="font-semibold">Hash: </span>{torrentInfo.hash}</p>

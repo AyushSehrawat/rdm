@@ -23,6 +23,6 @@
 			>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item disabled>Unrestrict (Soon)</DropdownMenu.Item>
+		<DropdownMenu.Item disabled>Unrestrict & Copy (Soon)</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
