@@ -46,3 +46,7 @@ export function capitalizeFirstLetter(string: string) {
 export function removeFirstChar(str: string) {
 	return str.slice(1);
 }
+
+export function isStreamable(num: number | null) {
+	return num === 1 ? 'Streamable' : 'Not Streamable';
+}

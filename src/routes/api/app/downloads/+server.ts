@@ -1,6 +1,6 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
 
-type DownlodsType = {
+type DownloadsType = {
 	chunks: number;
 	download: string;
 	filename: string;
@@ -64,7 +64,7 @@ export const GET = async ({ url, cookies, fetch }) => {
 		} else if (downloadType === 'all') {
 			let page = 1;
 			let limit = 2500;
-			let data: DownlodsType[] = [];
+			let data: DownloadsType[] = [];
 
 			while (true) {
 				console.log(`Fetching page ${page}`);

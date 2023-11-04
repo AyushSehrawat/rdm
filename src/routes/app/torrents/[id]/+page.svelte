@@ -15,6 +15,7 @@
 
 	export let data;
 
+	// TODO: remove reactivity from this
 	$: getTorrentInfo = data.streamed.getTorrentInfo;
 
 	let totalSelectedFiles = 0;

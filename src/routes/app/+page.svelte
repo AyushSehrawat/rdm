@@ -7,6 +7,21 @@
 	import { goto } from '$app/navigation';
 	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { currentDownloadData } from '$lib/store';
+
+	type DownloadsType = {
+		chunks: number;
+		download: string;
+		filename: string;
+		filesize: number;
+		generated: string;
+		host: string;
+		host_icon: string;
+		id: string;
+		link: string;
+		mimeType: string | null;
+		streamable: number | null;
+	};
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
@@ -90,6 +105,11 @@
 		}
 		doRecentTorrents = recentTorrents();
 	};
+
+	function setCurrentDataAndRedirect(data: DownloadsType) {
+		currentDownloadData.set(data);
+		goto(`/app/downloads/${data.id}`);
+	}
 </script>
 
 <div class="p-8 md:px-24 lg:px-32 flex flex-col">
@@ -143,7 +163,11 @@
 											}}>Copy Download Link</DropdownMenu.Item
 										>
 										<DropdownMenu.Separator />
-										<DropdownMenu.Item disabled>Details (Soon)</DropdownMenu.Item>
+										<DropdownMenu.Item
+											on:click={() => {
+												setCurrentDataAndRedirect(download);
+											}}>Details</DropdownMenu.Item
+										>
 										<DropdownMenu.Item
 											on:click={() => {
 												deleteDownload([download.id]);
