@@ -5,14 +5,17 @@ Manage your Real Debrid downloads and torrents with ease.
 Aim of this project is to provide a simple interface to manage and search through your Real Debrid downloads and torrents.
 
 <figure>
-    <img src="./assets/rd01.jpeg" alt="App Screenshot">
+    <img src="./assets/homepage-light.jpeg" alt="App Screenshot">
+</figure>
+<figure>
+    <img src="./assets/homepage-dark.jpeg" alt="App Screenshot">
     <figcaption>Dashboard Screenshot (This could be outdated)</figcaption>
 </figure>
 
 ## Features
 
 - View all your downloads and torrents
-- Search through your downloads and torrents (the app loads all the user torrents and downloads and then filters them locally)
+- Search through your downloads and torrents (currently the app loads all the user torrents and downloads and then filters them locally)
 - Copy download links, delete, stream and get info on your downloads and torrents (Some of these features are not yet implemented)
 - Integrate download manager to bulk download files (Not yet implemented)
 - Add torrents through magnet links, hashes and imdb ids (Not yet implemented)
