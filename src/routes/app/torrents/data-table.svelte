@@ -18,6 +18,8 @@
 	import Actions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import { capitalizeFirstLetter, formatDate, convertBytes } from '$lib/app/helpers';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { invalidate } from '$app/navigation';
 
 	interface TorrentsType {
 		added: string;
@@ -109,7 +111,8 @@
 			cell: (item) => {
 				return createRender(Actions, {
 					// @ts-ignore
-					id: item.row.original.id
+					id: item.row.original.id,
+					deleteTorrent: deleteTorrent
 				});
 			},
 			plugins: {
@@ -139,6 +142,36 @@
 	const { selectedDataIds } = pluginStates.select;
 
 	const hideableCols = ['filename', 'bytes', 'status', 'added'];
+
+	let deleteTorrent = async function deleteTorrentData(ids: string[]) {
+		const data = await fetch(`/api/app/torrents`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ ids })
+		});
+		let resp = await data.json();
+		if (resp.success === true) {
+			toast.push(`Success! ${resp.message}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(72,187,120,1)',
+					'--toastBarBackground': '#2F855A'
+				}
+			});
+		} else if (resp.success === false) {
+			toast.push(`Error! ${resp.error}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(220,38,38,1)',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+
+		await invalidate((url) => url.pathname === '/api/app/torrents');
+	};
 </script>
 
 <div class="w-full">

@@ -5,6 +5,7 @@
 	import { goto } from '$app/navigation';
 
 	export let id: string;
+	export let deleteTorrent: (ids: string[]) => void;
 </script>
 
 <DropdownMenu.Root>
@@ -25,6 +26,6 @@
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Item on:click={() => goto(`/app/torrents/${id}`)}>Details</DropdownMenu.Item>
-		<DropdownMenu.Item>Delete</DropdownMenu.Item>
+		<DropdownMenu.Item on:click={() => deleteTorrent([id])}>Delete</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

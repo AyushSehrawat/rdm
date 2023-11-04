@@ -4,12 +4,14 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import { Loader2, Trash, PlusCircle, Copy, ClipboardCheck } from 'lucide-svelte';
+	import { toast } from '@zerodevx/svelte-toast';
 	import {
 		formatDate,
 		convertBytes,
 		capitalizeFirstLetter,
 		removeFirstChar
 	} from '$lib/app/helpers';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -28,6 +30,36 @@
 
 	let isIDCopied = false;
 	let isMagnetCopied = false;
+
+	let deleteTorrent = async function deleteTorrentData(ids: string[]) {
+		const data = await fetch(`/api/app/torrents`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ ids })
+		});
+		let resp = await data.json();
+		if (resp.success === true) {
+			toast.push(`Success! ${resp.message}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(72,187,120,1)',
+					'--toastBarBackground': '#2F855A'
+				}
+			});
+		} else if (resp.success === false) {
+			toast.push(`Error! ${resp.error}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(220,38,38,1)',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+
+		goto('/app/torrents');
+	};
 </script>
 
 <div class="flex flex-col p-8 md:px-24 lg:px-32 gap-4 w-full">
@@ -86,13 +118,17 @@
 								Copy magnet link
 							{/if}
 						</Button>
-						<Button>
+						<Button
+							on:click={() => {
+								deleteTorrent([data.props.id]);
+							}}
+						>
 							<Trash class="mr-2 h-4 w-4" />
 							Delete
 						</Button>
-						<Button>
+						<Button disabled>
 							<PlusCircle class="mr-2 h-4 w-4" />
-							Reinsert
+							Reinsert (Soon)
 						</Button>
 					</div>
 					<p class="break-words"><span class="font-semibold">Hash: </span>{torrentInfo.hash}</p>
