@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import Logout from '$lib/components/Logout.svelte';
 	import { setMode, mode } from 'mode-watcher';
@@ -39,6 +38,12 @@
 					href="/app/downloads"
 					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
 					>Downloads</a
+				>
+				<a
+					class:underline={$page.url.pathname === '/app/scraper'}
+					href="/app/scraper"
+					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+					>Scraper</a
 				>
 			</nav>
 			<div class="flex items-center gap-2">
@@ -83,6 +88,12 @@
 			href="/app/downloads"
 			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
 			>Downloads</a
+		>
+		<a
+			class:underline={$page.url.pathname === '/app/scraper'}
+			href="/app/scraper"
+			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+			>Scraper</a
 		>
 	</nav>
 
