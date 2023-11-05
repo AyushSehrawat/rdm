@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Header from "$lib/Header.svelte";
 </script>
 
 <div class="flex flex-col w-full font-poppins h-[100dvh] items-center justify-center">
@@ -8,4 +9,5 @@
 		</h2>
 	</div>
 	<slot />
+	<Header />
 </div>
