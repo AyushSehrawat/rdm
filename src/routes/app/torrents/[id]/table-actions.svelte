@@ -2,8 +2,38 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
+	import { toast } from '@zerodevx/svelte-toast';
 
 	export let link: string;
+
+	let unrestrictLink = async function unrestrictLinkData(links: string[]) {
+		const data = await fetch(`/api/app/unrestrict`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ links })
+		});
+		let resp = await data.json();
+		if (resp.success === true) {
+			toast.push(`Success! ${resp.message}. Copied link to clipboard`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(72,187,120,1)',
+					'--toastBarBackground': '#2F855A'
+				}
+			});
+		} else if (resp.success === false) {
+			toast.push(`Error! ${resp.error}`, {
+				theme: {
+					'--toastColor': 'mintcream',
+					'--toastBackground': 'rgba(220,38,38,1)',
+					'--toastBarBackground': '#C53030'
+				}
+			});
+		}
+		return resp.data[0].download;
+	};
 </script>
 
 <DropdownMenu.Root>
@@ -23,6 +53,10 @@
 			>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item disabled>Unrestrict & Copy (Soon)</DropdownMenu.Item>
+		<DropdownMenu.Item
+			on:click={async () => {
+				navigator.clipboard.writeText(await unrestrictLink([link]));
+			}}>Unrestrict & Copy Link</DropdownMenu.Item
+		>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

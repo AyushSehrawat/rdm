@@ -85,7 +85,7 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="flex flex-col gap-4">
-					<div class="flex flex-col md:flex-row w-full md:max-w-max gap-4">
+					<div class="flex flex-col md:flex-row md:flex-wrap w-full md:max-w-max gap-4">
 						<Button
 							on:click={() => {
 								navigator.clipboard.writeText($currentDownloadData.id);
