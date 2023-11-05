@@ -22,7 +22,7 @@
 
 	export let allDownloads;
 
-	type DownlodsType = {
+	type DownloadsType = {
 		chunks: number;
 		download: string;
 		filename: string;
@@ -36,7 +36,7 @@
 		streamable: number | null;
 	};
 
-	let downloads: DownlodsType[] = allDownloads;
+	let downloads: DownloadsType[] = allDownloads;
 
 	const table = createTable(readable(downloads), {
 		sort: addSortBy({ disableMultiSort: true }),
@@ -101,11 +101,32 @@
 			accessor: ({ id }) => id,
 			cell: (item) => {
 				return createRender(Actions, {
+					deleteDownload: deleteDownload,
 					// @ts-ignore
-					id: item.row.original.id,
-					// @ts-ignore
-					download: item.row.original.download,
-					deleteDownload: deleteDownload
+					downloadData: {
+						// @ts-ignore
+						chunks: item.row.original.chunks,
+						// @ts-ignore
+						download: item.row.original.download,
+						// @ts-ignore
+						filename: item.row.original.filename,
+						// @ts-ignore
+						filesize: item.row.original.filesize,
+						// @ts-ignore
+						generated: item.row.original.generated,
+						// @ts-ignore
+						host: item.row.original.host,
+						// @ts-ignore
+						host_icon: item.row.original.host_icon,
+						// @ts-ignore
+						id: item.row.original.id,
+						// @ts-ignore
+						link: item.row.original.link,
+						// @ts-ignore
+						mimeType: item.row.original.mimeType,
+						// @ts-ignore
+						streamable: item.row.original.streamable
+					}
 				});
 			},
 			plugins: {

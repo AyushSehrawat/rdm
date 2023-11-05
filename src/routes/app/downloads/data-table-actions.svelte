@@ -3,10 +3,29 @@
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
+	import { currentDownloadData } from '$lib/store';
 
-	export let id: string;
-	export let download: string;
+	type DownloadsType = {
+		chunks: number;
+		download: string;
+		filename: string;
+		filesize: number;
+		generated: string;
+		host: string;
+		host_icon: string;
+		id: string;
+		link: string;
+		mimeType: string | null;
+		streamable: number | null;
+	};
+
+	export let downloadData: DownloadsType;
 	export let deleteDownload: (ids: string[]) => void;
+
+	function setCurrentDataAndRedirect(data: DownloadsType) {
+		currentDownloadData.set(data);
+		goto(`/app/downloads/${data.id}`);
+	}
 </script>
 
 <DropdownMenu.Root>
@@ -19,15 +38,19 @@
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
 			<DropdownMenu.Label>Actions</DropdownMenu.Label>
-			<DropdownMenu.Item on:click={() => navigator.clipboard.writeText(download)}>
+			<DropdownMenu.Item on:click={() => navigator.clipboard.writeText(downloadData.download)}>
 				Copy Download Link
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item disabled>Details (Soon)</DropdownMenu.Item>
 		<DropdownMenu.Item
 			on:click={() => {
-				deleteDownload([id]);
+				setCurrentDataAndRedirect(downloadData);
+			}}>Details</DropdownMenu.Item
+		>
+		<DropdownMenu.Item
+			on:click={() => {
+				deleteDownload([downloadData.id]);
 			}}>Delete</DropdownMenu.Item
 		>
 	</DropdownMenu.Content>
