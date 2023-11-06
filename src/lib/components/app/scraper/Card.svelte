@@ -8,7 +8,7 @@
 
 <a
 	href="/app/scraper/{type}/{imdbId}"
-	class="flex flex-col group justify-end gap-2 w-48 h-72 rounded-md bg-cover bg-center relative"
+	class="flex flex-col group justify-end gap-2 w-48 h-72 rounded-md bg-cover bg-center relative select-none"
 	style="background-image: url({poster})"
 >
 	<div

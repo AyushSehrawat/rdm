@@ -15,7 +15,7 @@
 	// TODO: add similar genre
 
 	function setTitle(name: string) {
-		title = name;
+		title = `RDM | ${name}`;
 		return '';
 	}
 
@@ -35,7 +35,7 @@
 <div class="flex flex-col gap-4 overflow-x-hidden">
 	{#await data.streamed.getIdInfo}
 		<div class="p-8 md:px-24 lg:px-32">
-			<Loader2 class="w-6 h-6 text-primary" />
+			<Loader2 class="w-6 h-6 text-primary animate-spin" />
 		</div>
 	{:then info}
 		{setTitle(info.meta.name)}
@@ -101,26 +101,21 @@
 						</Select.Content>
 					</Select.Root>
 
-					<div class="flex flex-col gap-4">
-						{#if currentSeason === 0}
-							<p class="text-sm text-muted-foreground">These are special episodes</p>
-						{/if}
-						{#each videosData[currentSeason] as video}
-							<div class="flex flex-col md:flex-row gap-4">
+					{#if currentSeason === 0}
+						<p class="text-sm text-muted-foreground">These are special episodes</p>
+					{/if}
+					<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-6">
+						{#each videosData[currentSeason] as video, i}
+							<div class="flex flex-col gap-4 w-full md:max-w-[18rem]">
 								<img
 									src={video.thumbnail}
 									alt={video.name}
-									class="w-48 rounded-md aspect-video"
-									onerror="this.onerror=null;this.src='https://rdm.ayush.gg/icon.svg';"
+									class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md"
+									onerror="this.src='https://via.placeholder.com/300x150.png?text=No+thumbnail';"
 								/>
-								<div class="flex flex-col gap-2">
-									<h2 class="text-xl font-semibold">{video.episode}. {video.name}</h2>
-									<div class="flex flex-wrap items-center gap-2">
-										<Badge>{formatDate(video.released)}</Badge>
-									</div>
-									{#if video.description}
-										<p class="text-sm text-muted-foreground">{video.description}</p>
-									{/if}
+								<div class="flex flex-col gap-1">
+									<h2 class="text-base break-words">{video.episode}. {video.name}</h2>
+									<p class="text-sm text-muted-foreground">{formatDate(video.released, 'short')}</p>
 								</div>
 							</div>
 						{/each}
@@ -141,7 +136,7 @@
 								frameborder="0"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
 								allowfullscreen
-								class="aspect-video w-96 rounded-md"
+								class="aspect-video w-96 h-[13.5rem] rounded-md"
 							/>
 						{/each}
 					</div>

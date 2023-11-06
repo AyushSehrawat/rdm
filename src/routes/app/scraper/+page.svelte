@@ -50,6 +50,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>RDM | Scraper</title>
+</svelte:head>
+
 <div class="flex flex-col gap-4 w-full p-8 md:px-24 lg:px-32">
 	<div class="flex flex-col w-full gap-1.5">
 		<Label for="query">Search</Label>

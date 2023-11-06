@@ -29,17 +29,28 @@ export function convertBytes(byteSize: number) {
 	}
 }
 
-export function formatDate(inputDate: string) {
+export function formatDate(inputDate: string, format: string = 'long') {
+	let options;
 	const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	const options = {
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric',
-		hour: 'numeric',
-		minute: 'numeric',
-		second: 'numeric',
-		timeZone: userTimeZone
-	};
+
+	if (format === 'short') {
+		options = {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		};
+	} else {
+		options = {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			second: 'numeric',
+			timeZone: userTimeZone
+		};
+	}
+
 	// @ts-ignore
 	const formattedDate = new Date(inputDate).toLocaleString('en-US', options);
 	if (formattedDate.includes('Invalid Date')) {
