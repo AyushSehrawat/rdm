@@ -3,6 +3,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { organizeVideosBySeason } from '$lib/app/helpers';
 	import * as Select from '$lib/components/ui/select';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
 
 	export let data;
@@ -106,18 +107,34 @@
 					{/if}
 					<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-6">
 						{#each videosData[currentSeason] as video, i}
-							<div class="flex flex-col gap-4 w-full md:max-w-[18rem]">
-								<img
-									src={video.thumbnail}
-									alt={video.name}
-									class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md"
-									onerror="this.src='https://via.placeholder.com/300x150.png?text=No+thumbnail';"
-								/>
-								<div class="flex flex-col gap-1">
-									<h2 class="text-base break-words">{video.episode}. {video.name}</h2>
-									<p class="text-sm text-muted-foreground">{formatDate(video.released, 'short')}</p>
-								</div>
-							</div>
+							<Sheet.Root>
+								<Sheet.Trigger>
+									<div class="flex flex-col gap-4 w-full md:max-w-[18rem]">
+										<img
+											src={video.thumbnail}
+											alt={video.name}
+											class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md hover:opacity-80 transition-opacity duration-200"
+											onerror="this.src='https://via.placeholder.com/300x150.png?text=No+thumbnail';"
+										/>
+										<div class="flex flex-col gap-1">
+											<h2 class="text-base break-words">{video.episode}. {video.name}</h2>
+											<p class="text-sm text-muted-foreground">
+												{formatDate(video.released, 'short')}
+											</p>
+										</div>
+									</div>
+								</Sheet.Trigger>
+								<Sheet.Content>
+									<Sheet.Header>
+										<Sheet.Title>{video.name}</Sheet.Title>
+										<Sheet.Description>
+											{#if video.description}
+												{video.description}
+											{/if}
+										</Sheet.Description>
+									</Sheet.Header>
+								</Sheet.Content>
+							</Sheet.Root>
 						{/each}
 					</div>
 				{/if}
