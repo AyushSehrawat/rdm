@@ -124,7 +124,7 @@
 										</div>
 									</div>
 								</Sheet.Trigger>
-								<Sheet.Content>
+								<Sheet.Content class="overflow-y-scroll">
 									<Sheet.Header>
 										<Sheet.Title>{video.name}</Sheet.Title>
 										<Sheet.Description>
@@ -133,6 +133,7 @@
 											{/if}
 										</Sheet.Description>
 									</Sheet.Header>
+
 								</Sheet.Content>
 							</Sheet.Root>
 						{/each}
