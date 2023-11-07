@@ -55,6 +55,21 @@
 			}
 		});
 	}
+
+	function addToRD(url: string) {
+		const res = fetch(url, {
+			method: 'HEAD',
+			redirect: 'error'
+		});
+
+		toast.push('Added to Real Debrid', {
+			theme: {
+				'--toastColor': 'mintcream',
+				'--toastBackground': 'rgba(72,187,120,1)',
+				'--toastBarBackground': '#2F855A'
+			}
+		});
+	}
 </script>
 
 <svelte:head>
@@ -138,7 +153,11 @@
 										>
 											<Copy class="w-4 h-4" />
 										</Button>
-										<Button disabled>
+										<Button
+											on:click={() => {
+												addToRD(stream.url);
+											}}
+										>
 											<PlusSquare class="w-4 h-4" />
 										</Button>
 									</div>
@@ -260,7 +279,11 @@
 																	>
 																		<Copy class="w-4 h-4" />
 																	</Button>
-																	<Button disabled>
+																	<Button
+																		on:click={() => {
+																			addToRD(stream.url);
+																		}}
+																	>
 																		<PlusSquare class="w-4 h-4" />
 																	</Button>
 																</div>
