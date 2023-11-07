@@ -4,33 +4,15 @@ Manage your Real Debrid downloads and torrents with ease.
 
 Aim of this project is to provide a simple interface to manage and search through your Real Debrid downloads and torrents.
 
-<figure>
-    <img src="./assets/homepage-light.jpeg" alt="App Screenshot">
-</figure>
-<figure>
-    <img src="./assets/homepage-dark.jpeg" alt="App Screenshot">
-    <figcaption>Dashboard Screenshot (This could be outdated)</figcaption>
-</figure>
+These screenshots may not be up to date with the current version of the app.
 
-<figure>
-    <img src="./assets/app-torrents.png" alt="App Torrents">
-    <figcaption>Torrents Screenshot (This could be outdated)</figcaption>
-</figure>
+![App Light Screenshot](./assets/homepage-light.jpeg)
+![App Dark Screenshot](./assets/homepage-dark.jpeg)
 
-<figure>
-    <img src="./assets/app-downloads.png" alt="App Downloads">
-    <figcaption>Downloads Screenshot (This could be outdated)</figcaption>
-</figure>
-
-<figure>
-    <img src="./assets/app-scraper.png" alt="App Scraper">
-    <figcaption>Scraper Screenshot (This could be outdated)</figcaption>
-</figure>
-
-<figure>
-    <img src="./assets/app-scraper-result.png" alt="App Scraper Result">
-    <figcaption>Scraper Result Screenshot (This could be outdated)</figcaption>
-</figure>
+![App Torrents Screenshot](./assets/app-torrents.png)
+![App Downloads Screenshot](./assets/app-downloads.png)
+![App Scraper Screenshot](./assets/app-scraper.png)
+![App Scraper Result Screenshot](./assets/app-scraper-result.png)
 
 ## Features
 
