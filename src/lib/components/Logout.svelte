@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Loader2 } from 'lucide-svelte';
@@ -10,7 +10,7 @@
 		const data = await res.json();
 
 		if (data.hasOwnProperty('success')) {
-			invalidateAll();
+			goto('/', { invalidateAll: true });
 		} else {
 			alert('Error logging out..');
 		}

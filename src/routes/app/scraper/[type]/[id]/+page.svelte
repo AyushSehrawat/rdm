@@ -1,16 +1,21 @@
 <script lang="ts">
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, Copy, PlusSquare } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import { organizeVideosBySeason } from '$lib/app/helpers';
 	import * as Select from '$lib/components/ui/select';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
+	import { PUBLIC_TORRENTIO_BASE_URI } from '$env/static/public';
+	import { toast } from '@zerodevx/svelte-toast';
 
 	export let data;
 
 	let title = data.props.id;
 	let currentSeason: number;
 	let videosData: any;
+
+	let limit = 10;
 
 	// TODO: add torrentio
 	// TODO: add similar genre
@@ -27,6 +32,29 @@
 	}
 
 	$: console.log(currentSeason);
+
+	let torrentIoData: any;
+
+	async function getTorrentIoStreamsData(id: string) {
+		const res = await fetch(
+			`${PUBLIC_TORRENTIO_BASE_URI}${data.props.accessToken}/stream/${data.props.type}/${id}.json`
+		);
+		if (data.props.type === 'movie') {
+			return res.json();
+		} else {
+			torrentIoData = await res.json();
+		}
+	}
+
+	function copiedToClipboard() {
+		toast.push('Copied to clipboard', {
+			theme: {
+				'--toastColor': 'mintcream',
+				'--toastBackground': 'rgba(72,187,120,1)',
+				'--toastBarBackground': '#2F855A'
+			}
+		});
+	}
 </script>
 
 <svelte:head>
@@ -79,6 +107,68 @@
 			</div>
 		</div>
 		<div class="p-8 md:px-24 lg:px-32 flex flex-col gap-4">
+			{#if data.props.type === 'movie'}
+				<h2 class="text-2xl font-semibold">Torrents</h2>
+				{#await getTorrentIoStreamsData(info.meta.id)}
+					<div class="flex gap-2">
+						<Loader2 class="w-6 h-6 text-primary animate-spin" />
+						<p class="text-sm text-muted-foreground">Loading streams...</p>
+					</div>
+				{:then streams}
+					<div class="flex flex-col md:flex-row md:flex-wrap gap-4 w-full">
+						{#each streams.streams as stream, i}
+							{#if i <= limit}
+								<div
+									class="w-full md:w-64 flex flex-col break-words gap-2 border rounded-md p-4 justify-between"
+								>
+									<div class="flex flex-col gap-2">
+										<p class="text-sm text-muted-foreground break-words">{stream.name}</p>
+										<div class="flex flex-col gap-1">
+											{#each stream.title.split('\n') as info, i}
+												<p class="text-sm">{info}</p>
+											{/each}
+										</div>
+									</div>
+									<div class="flex items-center gap-2">
+										<Button
+											on:click={() => {
+												navigator.clipboard.writeText(stream.url);
+												copiedToClipboard();
+											}}
+										>
+											<Copy class="w-4 h-4" />
+										</Button>
+										<Button>
+											<PlusSquare class="w-4 h-4" />
+										</Button>
+									</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
+					<div class="flex flex-col md:flex-row gap-2">
+						<Button
+							class="w-full md:max-w-[180px]"
+							on:click={() => {
+								limit += 10;
+							}}>Show more</Button
+						>
+						<Button
+							on:click={() => {
+								limit = streams.streams.length;
+							}}
+							class="w-full md:max-w-[180px]">Show all</Button
+						>
+						<Button
+							class="w-full md:max-w-[180px]"
+							on:click={() => {
+								limit = 10;
+							}}>Show less</Button
+						>
+					</div>
+				{/await}
+			{/if}
+
 			{#if info.meta.videos}
 				{organizeVideos(info.meta.videos)}
 				{#if videosData}
@@ -105,9 +195,18 @@
 					{#if currentSeason === 0}
 						<p class="text-sm text-muted-foreground">These are special episodes</p>
 					{/if}
-					<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-6">
+					<div class="flex flex-col md:flex-row md:flex-wrap items-start w-full gap-6">
 						{#each videosData[currentSeason] as video, i}
-							<Sheet.Root>
+							<Sheet.Root
+								onOpenChange={async (open) => {
+									if (open) {
+										await getTorrentIoStreamsData(video.id);
+									} else {
+										torrentIoData = null;
+										limit = 10;
+									}
+								}}
+							>
 								<Sheet.Trigger>
 									<div class="flex flex-col gap-4 w-full md:max-w-[18rem]">
 										<img
@@ -116,7 +215,7 @@
 											class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md hover:opacity-80 transition-opacity duration-200"
 											onerror="this.src='https://via.placeholder.com/300x150.png?text=No+thumbnail';"
 										/>
-										<div class="flex flex-col gap-1">
+										<div class="flex flex-col gap-1 text-start">
 											<h2 class="text-base break-words">{video.episode}. {video.name}</h2>
 											<p class="text-sm text-muted-foreground">
 												{formatDate(video.released, 'short')}
@@ -131,9 +230,67 @@
 											{#if video.description}
 												{video.description}
 											{/if}
+
+											<div class="flex flex-col gap-4 mt-4">
+												<h2 class="text-2xl font-semibold">Torrents</h2>
+												{#if !torrentIoData}
+													<p class="text-sm text-muted-foreground">Loading streams...</p>
+												{:else}
+													{#each torrentIoData.streams as stream, i}
+														{#if i <= limit}
+															<div
+																class="w-full flex flex-col break-words gap-2 border rounded-md p-4 justify-between"
+															>
+																<div class="flex flex-col gap-2">
+																	<p class="text-sm text-muted-foreground break-words">
+																		{stream.name}
+																	</p>
+																	<div class="flex flex-col gap-1">
+																		{#each stream.title.split('\n') as info, i}
+																			<p class="text-sm">{info}</p>
+																		{/each}
+																	</div>
+																</div>
+																<div class="flex items-center gap-2">
+																	<Button
+																		on:click={() => {
+																			navigator.clipboard.writeText(stream.url);
+																			copiedToClipboard();
+																		}}
+																	>
+																		<Copy class="w-4 h-4" />
+																	</Button>
+																	<Button>
+																		<PlusSquare class="w-4 h-4" />
+																	</Button>
+																</div>
+															</div>
+														{/if}
+													{/each}
+													<div class="flex flex-col gap-2">
+														<Button
+															class="w-full"
+															on:click={() => {
+																limit += 10;
+															}}>Show more</Button
+														>
+														<Button
+															on:click={() => {
+																limit = torrentIoData.streams.length;
+															}}
+															class="w-full">Show all</Button
+														>
+														<Button
+															class="w-full"
+															on:click={() => {
+																limit = 10;
+															}}>Show less</Button
+														>
+													</div>
+												{/if}
+											</div>
 										</Sheet.Description>
 									</Sheet.Header>
-
 								</Sheet.Content>
 							</Sheet.Root>
 						{/each}
@@ -160,9 +317,6 @@
 					</div>
 				</div>
 			{/if}
-			<!-- 
-				<pre>{JSON.stringify(info, null, 2)}</pre>
-			-->
 		</div>
 	{:catch error}
 		<p class="text-sm text-muted-foreground">Error: {error.message}</p>

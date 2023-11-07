@@ -1,6 +1,6 @@
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params }) => {
+export const load: PageLoad = async ({ fetch, params, data }) => {
 	const type = params.type;
 	const id = params.id;
 
@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 	};
 
 	return {
-		props: { id: id },
+		props: { id: id, type: type, accessToken: data.accessToken },
 		streamed: { getIdInfo: getIdInfo() }
 	};
 };
