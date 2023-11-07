@@ -10,14 +10,12 @@
 	import { toast } from '@zerodevx/svelte-toast';
 
 	export let data;
-
 	let title = data.props.id;
 	let currentSeason: number;
 	let videosData: any;
-
+	let torrentIoData: any;
 	let limit = 10;
 
-	// TODO: add torrentio
 	// TODO: add similar genre
 
 	function setTitle(name: string) {
@@ -30,10 +28,6 @@
 		currentSeason = Number(Object.keys(videosData)[0]);
 		return '';
 	}
-
-	$: console.log(currentSeason);
-
-	let torrentIoData: any;
 
 	async function getTorrentIoStreamsData(id: string) {
 		const res = await fetch(
