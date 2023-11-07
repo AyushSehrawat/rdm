@@ -4,7 +4,7 @@ Manage your Real Debrid downloads and torrents with ease.
 
 Aim of this project is to provide a simple interface to manage and search through your Real Debrid downloads and torrents.
 
-These screenshots may not be up to date with the current version of the app.
+> These screenshots may not be up to date with the current version of the app.
 
 ![App Light Screenshot](./assets/homepage-light.jpeg)
 ![App Dark Screenshot](./assets/homepage-dark.jpeg)
