@@ -138,7 +138,7 @@
 										>
 											<Copy class="w-4 h-4" />
 										</Button>
-										<Button>
+										<Button disabled>
 											<PlusSquare class="w-4 h-4" />
 										</Button>
 									</div>
@@ -260,7 +260,7 @@
 																	>
 																		<Copy class="w-4 h-4" />
 																	</Button>
-																	<Button>
+																	<Button disabled>
 																		<PlusSquare class="w-4 h-4" />
 																	</Button>
 																</div>
