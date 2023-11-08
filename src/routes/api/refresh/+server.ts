@@ -25,7 +25,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 
 		let data = await res.json();
 
-		if (data.hasOwnProperty('access_token')) {
+		if ('access_token' in data) {
 			cookies.set('accessToken', data.access_token, {
 				path: '/',
 				httpOnly: true,

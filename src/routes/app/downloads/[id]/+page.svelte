@@ -7,26 +7,13 @@
 	import { formatDate, convertBytes, isStreamable } from '$lib/app/helpers';
 	import { goto, afterNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
+	import type { DownloadsType } from '$lib/app/types';
 
 	let previousPage: string = base;
 
 	afterNavigate(({ from }) => {
 		previousPage = from?.url.pathname || previousPage;
 	});
-
-	type DownloadsType = {
-		chunks: number;
-		download: string;
-		filename: string;
-		filesize: number;
-		generated: string;
-		host: string;
-		host_icon: string;
-		id: string;
-		link: string;
-		mimeType: string | null;
-		streamable: number | null;
-	};
 
 	let isIDCopied = false;
 	let isDownloadLinkCopied = false;

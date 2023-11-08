@@ -2,7 +2,7 @@ import { PUBLIC_BASE_URI } from '$env/static/public';
 
 export const DELETE = async ({ request, cookies, fetch }) => {
 	const body = await request.json();
-	const accessToken = cookies.get('accessToken') ?? '';
+	let accessToken = cookies.get('accessToken') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
 	const links: string[] = body.links;
 	console.log(links);
@@ -24,15 +24,15 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }
 				});
 			}
-		}
 
-		const token = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken') ?? '';
+		}
 
 		let unrestrictedIdsData: any[] = [];
 		let failures: string[] = [];
@@ -44,7 +44,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${accessToken}`
 					},
 					body: `link=${link}&password=`
 				});
@@ -67,7 +67,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			return new Response(
 				JSON.stringify({
 					success: true,
-                    data: unrestrictedIdsData,
+					data: unrestrictedIdsData,
 					message: `Unrestricted ${unrestrictedIdsData.length} / ${links.length} torrent files`
 				}),
 				{
@@ -79,7 +79,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			return new Response(
 				JSON.stringify({
 					success: 'partial',
-                    data: unrestrictedIdsData,
+					data: unrestrictedIdsData,
 					message: `Unrestricted ${unrestrictedIdsData.length} / ${links.length} torrent files`,
 					failures: failures
 				}),

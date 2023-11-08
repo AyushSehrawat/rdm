@@ -3,7 +3,7 @@ import { PUBLIC_BASE_URI } from '$env/static/public';
 export const GET = async ({ url, request, cookies, fetch }) => {
 	const torrentType = url.searchParams.get('type') ?? 'recent';
 	const torrentLimit = url.searchParams.get('limit') ?? 5;
-	const accessToken = cookies.get('accessToken') ?? '';
+	let accessToken = cookies.get('accessToken') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
 
 	try {
@@ -23,22 +23,22 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }
 				});
 			}
-		}
 
-		const token = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken') ?? '';
+		}
 
 		if (torrentType === 'recent') {
 			let res = await fetch(`${PUBLIC_BASE_URI}/torrents?limit=${torrentLimit}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${accessToken}`
 				}
 			});
 
@@ -50,7 +50,7 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 		} else if (torrentType === 'all') {
 			let page = 1;
 			let limit = 2500;
-			let data = [];
+			let data: any[] = [];
 
 			while (true) {
 				console.log(`Fetching page ${page}`);
@@ -58,7 +58,7 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${accessToken}`
 					}
 				});
 
@@ -102,7 +102,7 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 
 export const DELETE = async ({ request, cookies, fetch }) => {
 	const body = await request.json();
-	const accessToken = cookies.get('accessToken') ?? '';
+	let accessToken = cookies.get('accessToken') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
 	const ids: string[] = body.ids;
 	console.log(ids);
@@ -124,15 +124,15 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }
 				});
 			}
-		}
 
-		const token = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken') ?? '';
+		}
 
 		let deletedIds: string[] = [];
 		let failures: string[] = [];
@@ -144,7 +144,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${accessToken}`
 					}
 				});
 

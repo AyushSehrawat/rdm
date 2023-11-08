@@ -9,21 +9,9 @@
 	import { Sun } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
 	import { formatDate } from '$lib/app/helpers';
+	import type { UserDataType } from '$lib/app/types.js';
 
 	export let data;
-
-	interface UserDataType {
-		avatar: string;
-		email: string;
-		expiration: string;
-		id: number;
-		locale: string;
-		points: number;
-		premium: number;
-		type: string;
-		username: string;
-	}
-
 	let userCode: string;
 	let deviceCode: string;
 	let loading = false;
@@ -47,7 +35,7 @@
 		try {
 			const res = await fetch(`/api/rd/getClientData?deviceCode=${deviceCode}`);
 			const data = await res.json();
-			if (data.hasOwnProperty('client_id') && data.hasOwnProperty('client_secret')) {
+			if ('client_id' in data && 'client_secret' in data) {
 				clearInterval(pollingInterval);
 				let clientId = data.client_id;
 				let clientSecret = data.client_secret;
@@ -61,7 +49,7 @@
 					})
 				});
 				const tokenData = await tokenRes.json();
-				if (tokenData.hasOwnProperty('access_token') && tokenData.hasOwnProperty('refresh_token')) {
+				if ('access_token' in tokenData && 'refresh_token' in tokenData) {
 					const tokenDataSet = await fetch('/api/login', {
 						method: 'POST',
 						body: JSON.stringify({
@@ -75,7 +63,7 @@
 					});
 
 					const tokenDataRes = await tokenDataSet.json();
-					if (tokenDataRes.hasOwnProperty('success')) {
+					if ('success' in tokenDataRes) {
 						loading = false;
 						invalidateAll();
 					} else {

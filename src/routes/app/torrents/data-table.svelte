@@ -20,20 +20,7 @@
 	import { capitalizeFirstLetter, formatDate, convertBytes } from '$lib/app/helpers';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { invalidate } from '$app/navigation';
-
-	interface TorrentsType {
-		added: string;
-		bytes: number;
-		ended: string | null | undefined;
-		filename: string;
-		hash: string;
-		host: string;
-		id: string;
-		links: string[];
-		progress: number | null | undefined;
-		split: number;
-		status: string;
-	}
+	import type { TorrentsType } from '$lib/app/types';
 
 	export let allTorrents;
 

@@ -2,7 +2,7 @@ import { PUBLIC_BASE_URI } from '$env/static/public';
 
 export const GET = async ({ url, request, cookies, fetch, params }) => {
 	const id = params.id;
-	const accessToken = cookies.get('accessToken') ?? '';
+	let accessToken = cookies.get('accessToken') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
 
 	try {
@@ -22,21 +22,21 @@ export const GET = async ({ url, request, cookies, fetch, params }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }
 				});
 			}
-		}
 
-		const token = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken') ?? '';
+		}
 
 		const res = await fetch(`${PUBLIC_BASE_URI}/torrents/info/${id}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${accessToken}`
 			}
 		});
 

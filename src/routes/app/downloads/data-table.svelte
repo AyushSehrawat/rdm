@@ -19,23 +19,9 @@
 	import { formatDate, convertBytes } from '$lib/app/helpers';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { invalidate } from '$app/navigation';
+	import type { DownloadsType } from '$lib/app/types';
 
 	export let allDownloads;
-
-	type DownloadsType = {
-		chunks: number;
-		download: string;
-		filename: string;
-		filesize: number;
-		generated: string;
-		host: string;
-		host_icon: string;
-		id: string;
-		link: string;
-		mimeType: string | null;
-		streamable: number | null;
-	};
-
 	let downloads: DownloadsType[] = allDownloads;
 
 	const table = createTable(readable(downloads), {

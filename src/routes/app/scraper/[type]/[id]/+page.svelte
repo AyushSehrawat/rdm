@@ -8,7 +8,6 @@
 	import { formatDate } from '$lib/app/helpers';
 	import { PUBLIC_TORRENTIO_BASE_URI } from '$env/static/public';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { goto } from '$app/navigation';
 
 	export let data;
 	let title = data.props.id;

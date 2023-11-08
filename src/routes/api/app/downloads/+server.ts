@@ -1,23 +1,10 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
-
-type DownloadsType = {
-	chunks: number;
-	download: string;
-	filename: string;
-	filesize: number;
-	generated: string;
-	host: string;
-	host_icon: string;
-	id: string;
-	link: string;
-	mimeType: string | null;
-	streamable: number | null;
-};
+import type { DownloadsType } from '$lib/app/types';
 
 export const GET = async ({ url, cookies, fetch }) => {
 	const downloadType = url.searchParams.get('type') ?? 'recent';
 	const downloadLimit = url.searchParams.get('limit') ?? 5;
-	const accessToken = cookies.get('accessToken') ?? '';
+	let accessToken = cookies.get('accessToken') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
 
 	try {
@@ -37,22 +24,22 @@ export const GET = async ({ url, cookies, fetch }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }
 				});
 			}
-		}
 
-		const token = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken') ?? '';
+		}
 
 		if (downloadType === 'recent') {
 			let res = await fetch(`${PUBLIC_BASE_URI}/downloads?limit=${downloadLimit}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${accessToken}`
 				}
 			});
 
@@ -72,7 +59,7 @@ export const GET = async ({ url, cookies, fetch }) => {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${accessToken}`
 					}
 				});
 
@@ -138,7 +125,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }

@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 			});
 
 			let data = await res.json();
-			if (data.hasOwnProperty('error')) {
+			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }

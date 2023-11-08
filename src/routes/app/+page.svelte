@@ -8,20 +8,7 @@
 	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { currentDownloadData } from '$lib/store';
-
-	type DownloadsType = {
-		chunks: number;
-		download: string;
-		filename: string;
-		filesize: number;
-		generated: string;
-		host: string;
-		host_icon: string;
-		id: string;
-		link: string;
-		mimeType: string | null;
-		streamable: number | null;
-	};
+	import type { DownloadsType } from '$lib/app/types';
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
