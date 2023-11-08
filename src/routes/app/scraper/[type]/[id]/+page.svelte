@@ -209,7 +209,7 @@
 						<Select.Trigger class="w-full md:max-w-[180px]">
 							<Select.Value placeholder="Select season" />
 						</Select.Trigger>
-						<Select.Content>
+						<Select.Content class="h-64 overflow-y-scroll">
 							<Select.Label>Seasons</Select.Label>
 							{#each Object.keys(videosData) as season}
 								<Select.Item value={season} label="Season {season}">Season {season}</Select.Item>
