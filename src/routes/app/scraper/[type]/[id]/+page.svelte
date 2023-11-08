@@ -8,6 +8,7 @@
 	import { formatDate } from '$lib/app/helpers';
 	import { PUBLIC_TORRENTIO_BASE_URI } from '$env/static/public';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { goto } from '$app/navigation';
 
 	export let data;
 	let title = data.props.id;
@@ -63,6 +64,10 @@
 				'--toastBarBackground': '#2F855A'
 			}
 		});
+	}
+
+	function getTitle(streams: any[]) {
+		return streams.map((stream) => stream.title).join('\n');
 	}
 </script>
 
@@ -167,16 +172,24 @@
 							}}>Show more</Button
 						>
 						<Button
+							class="w-full md:max-w-[180px]"
+							on:click={() => {
+								limit = 10;
+							}}>Show less</Button
+						>
+						<Button
 							on:click={() => {
 								limit = streams.streams.length;
 							}}
 							class="w-full md:max-w-[180px]">Show all</Button
 						>
 						<Button
-							class="w-full md:max-w-[180px]"
-							on:click={() => {
-								limit = 10;
-							}}>Show less</Button
+							class="w-full md:max-w-max"
+							on:click={async () => {
+								await navigator.clipboard.writeText(getTitle(streams.streams));
+								copiedToClipboard();
+								window.open('https://regex101.com/', '_blank');
+							}}>Copy titles and goto regex101</Button
 						>
 					</div>
 				{/await}
@@ -292,6 +305,12 @@
 															}}>Show more</Button
 														>
 														<Button
+															class="w-full"
+															on:click={() => {
+																limit = 10;
+															}}>Show less</Button
+														>
+														<Button
 															on:click={() => {
 																limit = torrentIoData.streams.length;
 															}}
@@ -299,9 +318,13 @@
 														>
 														<Button
 															class="w-full"
-															on:click={() => {
-																limit = 10;
-															}}>Show less</Button
+															on:click={async () => {
+																await navigator.clipboard.writeText(
+																	getTitle(torrentIoData.streams)
+																);
+																copiedToClipboard();
+																window.open('https://regex101.com/', '_blank');
+															}}>Copy titles and goto regex101</Button
 														>
 													</div>
 												{/if}
