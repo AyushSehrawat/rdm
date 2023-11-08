@@ -70,7 +70,7 @@
 			</div>
 		</div>
 	</div>
-	<nav class="flex lg:hidden items-center gap-4 pt-8 px-4">
+	<nav class="flex flex-wrap lg:hidden items-center gap-4 pt-8 px-4">
 		<a
 			class:underline={$page.url.pathname === '/app'}
 			href="/app"

@@ -23,14 +23,15 @@
 
 	export let allDownloads;
 	let downloads: DownloadsType[] = allDownloads;
+	let pageSize = 20;
 
 	const table = createTable(readable(downloads), {
 		sort: addSortBy({ disableMultiSort: true }),
 		page: addPagination({
-			initialPageSize: 20
+			initialPageSize: pageSize
 		}),
 		filter: addTableFilter({
-			fn: ({ filterValue, value }) => value.includes(filterValue)
+			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		}),
 		select: addSelectedRows(),
 		hide: addHiddenColumns()
@@ -72,6 +73,11 @@
 			cell: ({ value }) => {
 				const formatted = convertBytes(value);
 				return formatted;
+			},
+			plugins: {
+				filter: {
+					exclude: true
+				}
 			}
 		}),
 		table.column({
@@ -80,6 +86,11 @@
 			cell: ({ value }) => {
 				const formatted = formatDate(value);
 				return formatted;
+			},
+			plugins: {
+				filter: {
+					exclude: true
+				}
 			}
 		}),
 		table.column({
@@ -118,6 +129,9 @@
 			plugins: {
 				sort: {
 					disable: true
+				},
+				filter: {
+					exclude: true
 				}
 			}
 		})

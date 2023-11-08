@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PUBLIC_BASE_URI } from '$env/static/public';
 	import { createTable, Subscribe, Render, createRender } from 'svelte-headless-table';
 	import {
 		addSortBy,
@@ -25,14 +24,15 @@
 	export let allTorrents;
 
 	let torrents: TorrentsType[] = allTorrents;
+	let pageSize = 20;
 
 	const table = createTable(readable(torrents), {
 		sort: addSortBy({ disableMultiSort: true }),
 		page: addPagination({
-			initialPageSize: 20
+			initialPageSize: pageSize,
 		}),
 		filter: addTableFilter({
-			fn: ({ filterValue, value }) => value.includes(filterValue)
+			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		}),
 		select: addSelectedRows(),
 		hide: addHiddenColumns()
@@ -43,7 +43,7 @@
 			header: (_, { pluginStates }) => {
 				const { allPageRowsSelected } = pluginStates.select;
 				return createRender(DataTableCheckbox, {
-					checked: allPageRowsSelected
+					checked: allPageRowsSelected,
 				});
 			},
 			accessor: 'id',
@@ -52,7 +52,7 @@
 				const { isSelected } = getRowState(row);
 
 				return createRender(DataTableCheckbox, {
-					checked: isSelected
+					checked: isSelected,
 				});
 			},
 			plugins: {
@@ -74,6 +74,11 @@
 			cell: ({ value }) => {
 				const formatted = convertBytes(value);
 				return formatted;
+			},
+			plugins: {
+				filter: {
+					exclude: true
+				}
 			}
 		}),
 		table.column({
@@ -82,6 +87,11 @@
 			cell: ({ value }) => {
 				const formatted = capitalizeFirstLetter(value);
 				return formatted;
+			},
+			plugins: {
+				filter: {
+					exclude: true
+				}
 			}
 		}),
 		table.column({
@@ -90,6 +100,11 @@
 			cell: ({ value }) => {
 				const formatted = formatDate(value);
 				return formatted;
+			},
+			plugins: {
+				filter: {
+					exclude: true
+				}
 			}
 		}),
 		table.column({
@@ -105,6 +120,9 @@
 			plugins: {
 				sort: {
 					disable: true
+				},
+				filter: {
+					exclude: true
 				}
 			}
 		})
