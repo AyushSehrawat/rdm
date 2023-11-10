@@ -2,8 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import Logout from '$lib/components/Logout.svelte';
 	import { setMode, mode } from 'mode-watcher';
-	import { Sun } from 'lucide-svelte';
-	import { Moon } from 'lucide-svelte';
+	import { Sun, Moon, Loader2 } from 'lucide-svelte';
 	import { page, navigating } from '$app/stores';
 </script>
 
@@ -100,11 +99,20 @@
 	{#if $navigating}
 		<div class="pt-4 w-full flex items-center justify-center text-center">
 			{#if $navigating.to?.url.pathname === '/app/torrents'}
-				<p class="text-sm font-semibold">Loading Torrents...</p>
+				<div class="flex items-center gap-2">
+					<Loader2 class="h-4 w-4 animate-spin" />
+					<p class="text-sm font-semibold">Loading Torrents</p>
+				</div>
 			{:else if $navigating.to?.url.pathname === '/app/downloads'}
-				<p class="text-sm font-semibold">Loading Downloads...</p>
+				<div class="flex items-center gap-2">
+					<Loader2 class="h-4 w-4 animate-spin" />
+					<p class="text-sm font-semibold">Loading Downloads...</p>
+				</div>
 			{:else}
-				<p class="text-sm font-semibold">Loading...</p>
+				<div class="flex items-center gap-2">
+					<Loader2 class="h-4 w-4 animate-spin" />
+					<p class="text-sm font-semibold">Loading...</p>
+				</div>
 			{/if}
 		</div>
 	{/if}

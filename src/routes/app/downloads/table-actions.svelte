@@ -2,10 +2,12 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
-	import { goto } from '$app/navigation';
+	import { showToast } from '$lib/app/helpers';
+	import type { DownloadsType } from '$lib/app/types';
 
-	export let id: string;
-	export let deleteTorrent: (ids: string[]) => void;
+	export let downloadData: DownloadsType;
+	export let deleteDownload: (ids: string[]) => void;
+	export let setCurrentDataAndRedirect: (data: DownloadsType) => void;
 </script>
 
 <DropdownMenu.Root>
@@ -20,12 +22,23 @@
 			<DropdownMenu.Label>Actions</DropdownMenu.Label>
 			<DropdownMenu.Item
 				on:click={() => {
-					navigator.clipboard.writeText(id);
-				}}>Copy ID</DropdownMenu.Item
+					navigator.clipboard.writeText(downloadData.download);
+					showToast('Copied download link', 'success');
+				}}
 			>
+				Copy Download Link
+			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item on:click={() => goto(`/app/torrents/${id}`)}>Details</DropdownMenu.Item>
-		<DropdownMenu.Item on:click={() => deleteTorrent([id])}>Delete</DropdownMenu.Item>
+		<DropdownMenu.Item
+			on:click={() => {
+				setCurrentDataAndRedirect(downloadData);
+			}}>Details</DropdownMenu.Item
+		>
+		<DropdownMenu.Item
+			on:click={() => {
+				deleteDownload([downloadData.id]);
+			}}>Delete</DropdownMenu.Item
+		>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

@@ -2,30 +2,13 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
+	import { showToast } from '$lib/app/helpers';
+	import type { TorrentsType } from '$lib/app/types';
 	import { goto } from '$app/navigation';
-	import { currentDownloadData } from '$lib/store';
 
-	type DownloadsType = {
-		chunks: number;
-		download: string;
-		filename: string;
-		filesize: number;
-		generated: string;
-		host: string;
-		host_icon: string;
-		id: string;
-		link: string;
-		mimeType: string | null;
-		streamable: number | null;
-	};
-
-	export let downloadData: DownloadsType;
-	export let deleteDownload: (ids: string[]) => void;
-
-	function setCurrentDataAndRedirect(data: DownloadsType) {
-		currentDownloadData.set(data);
-		goto(`/app/downloads/${data.id}`);
-	}
+	export let id: string;
+	export let torrentData: TorrentsType;
+	export let deleteTorrent: (ids: string[]) => void;
 </script>
 
 <DropdownMenu.Root>
@@ -38,19 +21,24 @@
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
 			<DropdownMenu.Label>Actions</DropdownMenu.Label>
-			<DropdownMenu.Item on:click={() => navigator.clipboard.writeText(downloadData.download)}>
-				Copy Download Link
+			<DropdownMenu.Item
+				on:click={() => {
+					navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentData.hash}`);
+					showToast('Copied magnet url', 'success');
+				}}
+			>
+				Copy magnet url
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Item
 			on:click={() => {
-				setCurrentDataAndRedirect(downloadData);
+				goto(`/app/torrents/${id}`);
 			}}>Details</DropdownMenu.Item
 		>
 		<DropdownMenu.Item
 			on:click={() => {
-				deleteDownload([downloadData.id]);
+				deleteTorrent([id]);
 			}}>Delete</DropdownMenu.Item
 		>
 	</DropdownMenu.Content>

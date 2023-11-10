@@ -1,21 +1,31 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
 import type { DownloadsType } from '$lib/app/types';
 
-export const GET = async ({ url, cookies, fetch }) => {
-	const downloadType = url.searchParams.get('type') ?? 'recent';
-	const downloadLimit = url.searchParams.get('limit') ?? 5;
-	let accessToken = cookies.get('accessToken') ?? '';
-	const refreshToken = cookies.get('refreshToken') ?? '';
+export const GET = async ({ url, fetch, cookies }) => {
+	let accessToken = cookies.get('accessToken');
+	const refreshToken = cookies.get('refreshToken');
+	let limit = Number(url.searchParams.get('limit')) || 10;
+	let page = Number(url.searchParams.get('page')) || 1;
+	const query = url.searchParams.get('query');
 
 	try {
-		if (refreshToken === '') {
-			return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
-				status: 401,
-				headers: { 'Content-Type': 'application/json' }
-			});
+		if (!refreshToken) {
+			return new Response(
+				JSON.stringify({
+					status: 401,
+					error: 'Unauthorized',
+					message: 'No access token or refresh token'
+				}),
+				{
+					status: 401,
+					headers: {
+						'content-type': 'application/json'
+					}
+				}
+			);
 		}
 
-		if (accessToken === '') {
+		if (!accessToken) {
 			let res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
@@ -25,76 +35,148 @@ export const GET = async ({ url, cookies, fetch }) => {
 
 			let data = await res.json();
 			if ('error' in data) {
-				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
-					status: 401,
-					headers: { 'Content-Type': 'application/json' }
-				});
+				return new Response(
+					JSON.stringify({
+						status: 401,
+						error: 'Unauthorized',
+						message: 'No access token or refresh token'
+					}),
+					{
+						status: 401,
+						headers: {
+							'content-type': 'application/json'
+						}
+					}
+				);
 			}
 
-			accessToken = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken');
 		}
 
-		if (downloadType === 'recent') {
-			let res = await fetch(`${PUBLIC_BASE_URI}/downloads?limit=${downloadLimit}`, {
+		if (limit <= 0 || limit > 2500) {
+			return new Response(
+				JSON.stringify({
+					status: 400,
+					error: 'Bad Request',
+					message: 'Limit must be between 1 and 2500'
+				}),
+				{
+					status: 400,
+					headers: {
+						'content-type': 'application/json'
+					}
+				}
+			);
+		}
+
+		if (page <= 0) {
+			return new Response(
+				JSON.stringify({
+					status: 400,
+					error: 'Bad Request',
+					message: 'Page must be greater than 0'
+				}),
+				{
+					status: 400,
+					headers: {
+						'content-type': 'application/json'
+					}
+				}
+			);
+		}
+
+		if (!query) {
+			const res = await fetch(`${PUBLIC_BASE_URI}/downloads?limit=${limit}&page=${page}`, {
 				method: 'GET',
 				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${accessToken}`
+					Authorization: `Bearer ${accessToken}`,
+					'Content-Type': 'application/json'
 				}
 			});
+			if (!res.ok) return new Response(res.statusText, { status: res.status });
 
-			let data = await res.json();
-			return new Response(JSON.stringify(data), {
-				status: 200,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		} else if (downloadType === 'all') {
-			let page = 1;
-			let limit = 2500;
-			let data: DownloadsType[] = [];
+			const totalCount = res.headers.get('X-Total-Count');
+			const downloads: DownloadsType[] = await res.json();
+
+			return new Response(
+				JSON.stringify({
+					downloads: downloads,
+					totalCount: totalCount,
+					limit: limit,
+					page: page
+				}),
+				{
+					status: 200,
+					headers: {
+						'content-type': 'application/json'
+					}
+				}
+			);
+		} else {
+			let queryLimit = 2500;
+			let queryPage = 1;
+			let queryData: DownloadsType[] = [];
+			let queryTotalCount;
 
 			while (true) {
-				console.log(`Fetching page ${page}`);
-				const tempData = await fetch(`${PUBLIC_BASE_URI}/downloads?limit=${limit}&page=${page}`, {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`
-					}
-				});
+				console.log(`Querying page ${queryPage}...`);
 
-				if (!tempData.ok) {
-					throw new Error(`Failed to fetch data from page ${page}`);
-				}
+				const tempData = await fetch(
+					`${PUBLIC_BASE_URI}/downloads?limit=${queryLimit}&page=${queryPage}`,
+					{
+						method: 'GET',
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+							'Content-Type': 'application/json'
+						}
+					}
+				);
+
+				if (!tempData.ok) return new Response(tempData.statusText, { status: tempData.status });
 
 				if (tempData.status === 204) {
+					console.log('No more data to query.');
 					break;
 				}
 
 				try {
-					const jsonData = await tempData.json();
-
-					if (jsonData.length === 0) {
+					const tempJsonData = await tempData.json();
+					if (tempJsonData.length === 0) {
+						console.log('No more data to query.');
 						break;
 					}
 
-					data = data.concat(jsonData);
-					page++;
-				} catch (error) {
-					console.log(error);
+					for (let i = 0; i < tempJsonData.length; i++) {
+						if (tempJsonData[i].filename.toLowerCase().includes(query.toLowerCase())) {
+							queryData.push(tempJsonData[i]);
+						}
+					}
+
+					queryTotalCount = tempData.headers.get('X-Total-Count');
+					queryPage++;
+				} catch (e) {
+					console.log(e);
 					break;
 				}
 			}
 
-			console.log(`Fetched ${data.length} downloads`);
-
-			return new Response(JSON.stringify(data), {
-				status: 200,
-				headers: { 'Content-Type': 'application/json' }
-			});
+			return new Response(
+				JSON.stringify({
+					downloads: queryData,
+					totalCount: queryTotalCount,
+					limit: queryLimit,
+					page: queryPage
+				}),
+				{
+					status: 200,
+					headers: {
+						'content-type': 'application/json'
+					}
+				}
+			);
 		}
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});
@@ -103,20 +185,20 @@ export const GET = async ({ url, cookies, fetch }) => {
 
 export const DELETE = async ({ request, cookies, fetch }) => {
 	const body = await request.json();
-	const accessToken = cookies.get('accessToken') ?? '';
-	const refreshToken = cookies.get('refreshToken') ?? '';
+	let accessToken = cookies.get('accessToken');
+	const refreshToken = cookies.get('refreshToken');
 	const ids: string[] = body.ids;
 	console.log(ids);
 
 	try {
-		if (refreshToken === '') {
+		if (!refreshToken) {
 			return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' }
 			});
 		}
 
-		if (accessToken === '') {
+		if (!accessToken) {
 			let res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
@@ -131,9 +213,9 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 					headers: { 'Content-Type': 'application/json' }
 				});
 			}
-		}
 
-		const token = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken');
+		}
 
 		let deletedIds: string[] = [];
 		let failures: string[] = [];
@@ -145,7 +227,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${accessToken}`
 					}
 				});
 
@@ -158,7 +240,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 		);
 
 		if (deletedIds.length === 0) {
-			return new Response(JSON.stringify({ success: false, error: 'No torrents deleted' }), {
+			return new Response(JSON.stringify({ success: false, error: 'No downloads deleted' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' }
 			});
@@ -166,7 +248,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			return new Response(
 				JSON.stringify({
 					success: true,
-					message: `Deleted ${deletedIds.length} torrents`
+					message: `Deleted ${deletedIds.length} downloads`
 				}),
 				{
 					status: 200,
@@ -177,7 +259,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			return new Response(
 				JSON.stringify({
 					success: 'partial',
-					message: `Deleted ${deletedIds.length} torrents`,
+					message: `Deleted ${deletedIds.length} downloads`,
 					failures: failures
 				}),
 				{
@@ -187,7 +269,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			);
 		}
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

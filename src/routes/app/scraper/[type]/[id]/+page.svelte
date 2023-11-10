@@ -238,7 +238,9 @@
 											src={video.thumbnail}
 											alt={video.name}
 											class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md hover:opacity-80 transition-opacity duration-200"
-											onerror="this.src='https://via.placeholder.com/300x150.png?text=No+thumbnail';"
+											on:error={() =>
+												(video.thumbnail =
+													'https://via.placeholder.com/300x150.png?text=No+thumbnail')}
 										/>
 										<div class="flex flex-col gap-1 text-start">
 											<h2 class="text-base break-words">{video.episode}. {video.name}</h2>

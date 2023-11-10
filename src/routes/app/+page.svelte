@@ -5,8 +5,7 @@
 	import { RotateCw, Loader2 } from 'lucide-svelte';
 	import { DotsHorizontal } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
-	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
-	import { toast } from '@zerodevx/svelte-toast';
+	import { formatDate, convertBytes, capitalizeFirstLetter, showToast } from '$lib/app/helpers';
 	import { currentDownloadData } from '$lib/store';
 	import type { DownloadsType } from '$lib/app/types';
 
@@ -14,7 +13,7 @@
 	let torrentRefresh = false;
 
 	let recentDownloads = async function recentDownloadsData() {
-		const data = await fetch(`/api/app/downloads?type=recent`);
+		const data = await fetch(`/api/app/downloads?limit=5&page=1`);
 		downloadRefresh = false;
 		return data.json();
 	};
@@ -25,7 +24,7 @@
 	}
 
 	let recentTorrents = async function recentTorrentsData() {
-		const data = await fetch(`/api/app/torrents?type=recent`);
+		const data = await fetch(`/api/app/torrents?limit=5&page=1`);
 		torrentRefresh = false;
 		return data.json();
 	};
@@ -45,21 +44,9 @@
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
-			toast.push(`Success! ${resp.message}`, {
-				theme: {
-					'--toastColor': 'mintcream',
-					'--toastBackground': 'rgba(72,187,120,1)',
-					'--toastBarBackground': '#2F855A'
-				}
-			});
+			showToast(`Success! ${resp.message}`, 'success');
 		} else if (resp.success === false) {
-			toast.push(`Error! ${resp.error}`, {
-				theme: {
-					'--toastColor': 'mintcream',
-					'--toastBackground': 'rgba(220,38,38,1)',
-					'--toastBarBackground': '#C53030'
-				}
-			});
+			showToast(`Error! ${resp.error}`, 'error');
 		}
 		doRecentDownloads = recentDownloads();
 	};
@@ -74,21 +61,9 @@
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
-			toast.push(`Success! ${resp.message}`, {
-				theme: {
-					'--toastColor': 'mintcream',
-					'--toastBackground': 'rgba(72,187,120,1)',
-					'--toastBarBackground': '#2F855A'
-				}
-			});
+			showToast(`Success! ${resp.message}`, 'success');
 		} else if (resp.success === false) {
-			toast.push(`Error! ${resp.error}`, {
-				theme: {
-					'--toastColor': 'mintcream',
-					'--toastBackground': 'rgba(220,38,38,1)',
-					'--toastBarBackground': '#C53030'
-				}
-			});
+			showToast(`Error! ${resp.error}`, 'error');
 		}
 		doRecentTorrents = recentTorrents();
 	};
@@ -115,7 +90,7 @@
 		<div class="flex w-full items-center justify-center">
 			<Loader2 class="h-8 w-8 animate-spin" />
 		</div>
-	{:then $data}
+	{:then data}
 		<Table.Root class="my-2 mb-8">
 			<Table.Caption>Your last 5 Downloads</Table.Caption>
 			<Table.Header>
@@ -127,7 +102,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each $data as download}
+				{#each data.downloads as download}
 					<Table.Row>
 						<Table.Cell>{download.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
@@ -189,7 +164,7 @@
 		<div class="flex w-full items-center justify-center">
 			<Loader2 class="h-8 w-8 animate-spin" />
 		</div>
-	{:then $data}
+	{:then data}
 		<Table.Root class="my-2 mb-8">
 			<Table.Caption>Your last 5 Downloads</Table.Caption>
 			<Table.Header>
@@ -202,7 +177,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each $data as torrent, i}
+				{#each data.torrents as torrent, i}
 					<Table.Row>
 						<Table.Cell>{torrent.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>

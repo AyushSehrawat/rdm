@@ -1,3 +1,5 @@
+import { toast } from '@zerodevx/svelte-toast';
+
 interface VideoType {
 	name: string;
 	season: number | string;
@@ -100,4 +102,39 @@ export function organizeVideosBySeason(videos: VideoType[]) {
 	});
 
 	return seasonsDict;
+}
+
+export function debounce<F extends (...args: any[]) => Promise<void>>(
+	func: F,
+	timeout = 500
+): (...args: Parameters<F>) => void {
+	let timer: NodeJS.Timeout;
+	return async (...args: Parameters<F>) => {
+		clearTimeout(timer);
+		timer = setTimeout(async () => {
+			await func(...args);
+		}, timeout);
+	};
+}
+
+export function showToast(message: string, type: string) {
+	if (type === 'success') {
+		toast.push(message, {
+			theme: {
+				'--toastColor': 'mintcream',
+				'--toastBackground': 'rgba(72,187,120,1)',
+				'--toastBarBackground': '#2F855A'
+			}
+		});
+	} else if (type === 'error') {
+		toast.push(message, {
+			theme: {
+				'--toastColor': 'mintcream',
+				'--toastBackground': 'rgba(220,38,38,1)',
+				'--toastBarBackground': '#C53030'
+			}
+		});
+	} else {
+		toast.push(message);
+	}
 }
