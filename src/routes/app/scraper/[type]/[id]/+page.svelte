@@ -2,12 +2,11 @@
 	import { Loader2, Copy, PlusSquare } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { organizeVideosBySeason } from '$lib/app/helpers';
+	import { organizeVideosBySeason, showToast } from '$lib/app/helpers';
 	import * as Select from '$lib/components/ui/select';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
 	import { PUBLIC_TORRENTIO_BASE_URI } from '$env/static/public';
-	import { toast } from '@zerodevx/svelte-toast';
 
 	export let data;
 	let title = data.props.id;
@@ -41,13 +40,7 @@
 	}
 
 	function copiedToClipboard() {
-		toast.push('Copied to clipboard', {
-			theme: {
-				'--toastColor': 'mintcream',
-				'--toastBackground': 'rgba(72,187,120,1)',
-				'--toastBarBackground': '#2F855A'
-			}
-		});
+		showToast('Copied to clipboard', 'success')
 	}
 
 	function addToRD(url: string) {
@@ -56,13 +49,7 @@
 			redirect: 'error'
 		});
 
-		toast.push('Added to Real Debrid', {
-			theme: {
-				'--toastColor': 'mintcream',
-				'--toastBackground': 'rgba(72,187,120,1)',
-				'--toastBarBackground': '#2F855A'
-			}
-		});
+		showToast('Added to RD', 'success');
 	}
 
 	function getTitle(streams: any[]) {
