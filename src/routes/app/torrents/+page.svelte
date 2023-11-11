@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import * as Select from '$lib/components/ui/select';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -149,6 +150,27 @@
 	</Table.Root>
 
 	{#if query.length === 0}
+		<Select.Root
+			onSelectedChange={(selected) => {
+				pageSize = Number(selected?.value);
+				goto(`?limit=${selected?.value}&page=1`, { invalidateAll: true });
+			}}
+			selected={{
+				value: pageSize,
+				label: String(pageSize)
+			}}
+		>
+			<Select.Trigger class="w-[180px]">
+				<Select.Value placeholder="Rows per page" />
+			</Select.Trigger>
+			<Select.Content>
+				{#each [10, 25, 50, 100, 500, 1000, 2500] as size}
+					<Select.Item value={size} label={String(size)}>
+						{size}
+					</Select.Item>
+				{/each}
+			</Select.Content>
+		</Select.Root>
 		<div class="flex items-center justify-between w-full">
 			<div class="flex items-center gap-2">
 				<Button
