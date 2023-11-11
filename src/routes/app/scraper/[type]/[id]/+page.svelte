@@ -179,159 +179,161 @@
 						>
 					</div>
 				{/await}
-			{/if}
+			{:else if data.props.type === 'series'}
+				{#if info.meta.videos}
+					{organizeVideos(info.meta.videos)}
+					{#if videosData}
+						<Select.Root
+							onSelectedChange={(selected) => {
+								currentSeason = Number(selected?.value);
+							}}
+							selected={{
+								value: Object.keys(videosData)[0],
+								label: `Season ${Object.keys(videosData)[0]}`
+							}}
+						>
+							<Select.Trigger class="w-full md:max-w-[180px]">
+								<Select.Value placeholder="Select season" />
+							</Select.Trigger>
+							{#if Object.keys(videosData).length > 7}
+								<Select.Content class="h-64 overflow-y-scroll">
+									<Select.Label>Seasons</Select.Label>
+									{#each Object.keys(videosData) as season}
+										<Select.Item value={season} label="Season {season}">Season {season}</Select.Item
+										>
+									{/each}
+								</Select.Content>
+							{:else}
+								<Select.Content>
+									<Select.Label>Seasons</Select.Label>
+									{#each Object.keys(videosData) as season}
+										<Select.Item value={season} label="Season {season}">Season {season}</Select.Item
+										>
+									{/each}
+								</Select.Content>
+							{/if}
+						</Select.Root>
 
-			{#if info.meta.videos}
-				{organizeVideos(info.meta.videos)}
-				{#if videosData}
-					<Select.Root
-						onSelectedChange={(selected) => {
-							currentSeason = Number(selected?.value);
-						}}
-						selected={{
-							value: Object.keys(videosData)[0],
-							label: `Season ${Object.keys(videosData)[0]}`
-						}}
-					>
-						<Select.Trigger class="w-full md:max-w-[180px]">
-							<Select.Value placeholder="Select season" />
-						</Select.Trigger>
-						{#if Object.keys(videosData).length > 7}
-							<Select.Content class="h-64 overflow-y-scroll">
-								<Select.Label>Seasons</Select.Label>
-								{#each Object.keys(videosData) as season}
-									<Select.Item value={season} label="Season {season}">Season {season}</Select.Item>
-								{/each}
-							</Select.Content>
-						{:else}
-							<Select.Content>
-								<Select.Label>Seasons</Select.Label>
-								{#each Object.keys(videosData) as season}
-									<Select.Item value={season} label="Season {season}">Season {season}</Select.Item>
-								{/each}
-							</Select.Content>
+						{#if currentSeason === 0}
+							<p class="text-sm text-muted-foreground">These are special episodes</p>
 						{/if}
-					</Select.Root>
-
-					{#if currentSeason === 0}
-						<p class="text-sm text-muted-foreground">These are special episodes</p>
-					{/if}
-					<div class="flex flex-col md:flex-row md:flex-wrap items-start w-full gap-6">
-						{#each videosData[currentSeason] as video (video.id)}
-							<Sheet.Root
-								onOpenChange={async (open) => {
-									if (open) {
-										await getTorrentIoStreamsData(video.id);
-									} else {
-										torrentIoData = null;
-										limit = 10;
-									}
-								}}
-							>
-								<Sheet.Trigger>
-									<div class="flex flex-col gap-4 w-full md:max-w-[18rem]">
-										<img
-											src={video.thumbnail}
-											alt={video.name}
-											class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md hover:opacity-80 transition-opacity duration-200"
-											on:error={() =>
-												(video.thumbnail =
-													'https://via.placeholder.com/300x150.png?text=No+thumbnail')}
-										/>
-										<div class="flex flex-col gap-1 text-start">
-											<h2 class="text-base break-words">{video.episode}. {video.name}</h2>
-											<p class="text-sm text-muted-foreground">
-												{formatDate(video.released, 'short')}
-											</p>
+						<div class="flex flex-col md:flex-row md:flex-wrap items-start w-full gap-6">
+							{#each videosData[currentSeason] as video (video.id)}
+								<Sheet.Root
+									onOpenChange={async (open) => {
+										if (open) {
+											await getTorrentIoStreamsData(video.id);
+										} else {
+											torrentIoData = null;
+											limit = 10;
+										}
+									}}
+								>
+									<Sheet.Trigger>
+										<div class="flex flex-col gap-4 w-full md:max-w-[18rem]">
+											<img
+												src={video.thumbnail}
+												alt={video.name}
+												class="aspect-video w-full md:w-72 h-full md:h-[10rem] rounded-md hover:opacity-80 transition-opacity duration-200"
+												on:error={() =>
+													(video.thumbnail =
+														'https://via.placeholder.com/300x150.png?text=No+thumbnail')}
+											/>
+											<div class="flex flex-col gap-1 text-start">
+												<h2 class="text-base break-words">{video.episode}. {video.name}</h2>
+												<p class="text-sm text-muted-foreground">
+													{formatDate(video.released, 'short')}
+												</p>
+											</div>
 										</div>
-									</div>
-								</Sheet.Trigger>
-								<Sheet.Content class="overflow-y-scroll">
-									<Sheet.Header>
-										<Sheet.Title>{video.name}</Sheet.Title>
-										<Sheet.Description>
-											{#if video.description}
-												{video.description}
-											{/if}
+									</Sheet.Trigger>
+									<Sheet.Content class="overflow-y-scroll">
+										<Sheet.Header>
+											<Sheet.Title>{video.name}</Sheet.Title>
+											<Sheet.Description>
+												{#if video.description}
+													{video.description}
+												{/if}
 
-											<div class="flex flex-col gap-4 mt-4">
-												<h2 class="text-2xl font-semibold">Torrents</h2>
-												{#if !torrentIoData}
-													<p class="text-sm text-muted-foreground">Loading streams...</p>
-												{:else}
-													{#each torrentIoData.streams as stream, i}
-														{#if i <= limit}
-															<div
-																class="w-full flex flex-col break-words gap-2 border rounded-md p-4 justify-between"
-															>
-																<div class="flex flex-col gap-2">
-																	<p class="text-sm text-muted-foreground break-words">
-																		{stream.name}
-																	</p>
-																	<div class="flex flex-col gap-1">
-																		{#each stream.title.split('\n') as info, i}
-																			<p class="text-sm">{info}</p>
-																		{/each}
+												<div class="flex flex-col gap-4 mt-4">
+													<h2 class="text-2xl font-semibold">Torrents</h2>
+													{#if !torrentIoData}
+														<p class="text-sm text-muted-foreground">Loading streams...</p>
+													{:else}
+														{#each torrentIoData.streams as stream, i}
+															{#if i <= limit}
+																<div
+																	class="w-full flex flex-col break-words gap-2 border rounded-md p-4 justify-between"
+																>
+																	<div class="flex flex-col gap-2">
+																		<p class="text-sm text-muted-foreground break-words">
+																			{stream.name}
+																		</p>
+																		<div class="flex flex-col gap-1">
+																			{#each stream.title.split('\n') as info, i}
+																				<p class="text-sm">{info}</p>
+																			{/each}
+																		</div>
+																	</div>
+																	<div class="flex items-center gap-2">
+																		<Button
+																			on:click={() => {
+																				navigator.clipboard.writeText(stream.url);
+																				copiedToClipboard();
+																			}}
+																		>
+																			<Copy class="w-4 h-4" />
+																		</Button>
+																		<Button
+																			on:click={() => {
+																				addToRD(stream.url);
+																			}}
+																		>
+																			<PlusSquare class="w-4 h-4" />
+																		</Button>
 																	</div>
 																</div>
-																<div class="flex items-center gap-2">
-																	<Button
-																		on:click={() => {
-																			navigator.clipboard.writeText(stream.url);
-																			copiedToClipboard();
-																		}}
-																	>
-																		<Copy class="w-4 h-4" />
-																	</Button>
-																	<Button
-																		on:click={() => {
-																			addToRD(stream.url);
-																		}}
-																	>
-																		<PlusSquare class="w-4 h-4" />
-																	</Button>
-																</div>
-															</div>
-														{/if}
-													{/each}
-													<div class="flex flex-col gap-2">
-														<Button
-															class="w-full"
-															on:click={() => {
-																limit += 10;
-															}}>Show more</Button
-														>
-														<Button
-															class="w-full"
-															on:click={() => {
-																limit = 10;
-															}}>Show less</Button
-														>
-														<Button
-															on:click={() => {
-																limit = torrentIoData.streams.length;
-															}}
-															class="w-full">Show all</Button
-														>
-														<Button
-															class="w-full"
-															on:click={async () => {
-																await navigator.clipboard.writeText(
-																	getTitle(torrentIoData.streams)
-																);
-																copiedToClipboard();
-																window.open('https://regex101.com/', '_blank');
-															}}>Copy titles and goto regex101</Button
-														>
-													</div>
-												{/if}
-											</div>
-										</Sheet.Description>
-									</Sheet.Header>
-								</Sheet.Content>
-							</Sheet.Root>
-						{/each}
-					</div>
+															{/if}
+														{/each}
+														<div class="flex flex-col gap-2">
+															<Button
+																class="w-full"
+																on:click={() => {
+																	limit += 10;
+																}}>Show more</Button
+															>
+															<Button
+																class="w-full"
+																on:click={() => {
+																	limit = 10;
+																}}>Show less</Button
+															>
+															<Button
+																on:click={() => {
+																	limit = torrentIoData.streams.length;
+																}}
+																class="w-full">Show all</Button
+															>
+															<Button
+																class="w-full"
+																on:click={async () => {
+																	await navigator.clipboard.writeText(
+																		getTitle(torrentIoData.streams)
+																	);
+																	copiedToClipboard();
+																	window.open('https://regex101.com/', '_blank');
+																}}>Copy titles and goto regex101</Button
+															>
+														</div>
+													{/if}
+												</div>
+											</Sheet.Description>
+										</Sheet.Header>
+									</Sheet.Content>
+								</Sheet.Root>
+							{/each}
+						</div>
+					{/if}
 				{/if}
 			{/if}
 

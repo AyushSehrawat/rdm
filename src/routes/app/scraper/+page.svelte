@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page, navigating } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$lib/app/helpers';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import Card from '$lib/components/app/scraper/Card.svelte';
-	import { Loader2, Trash2 } from 'lucide-svelte';
+	import { Loader2 } from 'lucide-svelte';
 
 	export let data;
 	let loading = false;
@@ -57,11 +56,13 @@
 				<Tabs.Trigger value="series">Series</Tabs.Trigger>
 			</Tabs.List>
 			<Tabs.Content value="movies">
-				{#if movies.length === 0}
+				{#if $navigating || loading}
+					<Loader2 class="w-6 h-6 animate-spin" />
+				{:else if movies.length === 0 && !loading}
 					<p>No movies found</p>
 				{:else}
 					<div class="flex flex-row flex-wrap w-full gap-4">
-						{#each movies as movie, i}
+						{#each movies as movie}
 							<Card
 								poster={movie.poster}
 								name={movie.name}
@@ -74,11 +75,13 @@
 				{/if}
 			</Tabs.Content>
 			<Tabs.Content value="series">
-				{#if series.length === 0}
+				{#if $navigating || loading}
+					<Loader2 class="w-6 h-6 animate-spin" />
+				{:else if series.length === 0 && !loading}
 					<p>No series found</p>
 				{:else}
 					<div class="flex flex-row flex-wrap w-full gap-4">
-						{#each series as series, i}
+						{#each series as series}
 							<Card
 								poster={series.poster}
 								name={series.name}
