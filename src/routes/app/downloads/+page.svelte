@@ -19,10 +19,11 @@
 	import Actions from './table-actions.svelte';
 	import type { DownloadsType } from '$lib/app/types';
 	import { currentDownloadData } from '$lib/store';
+	import TableOptions from '$lib/components/app/TableOptions.svelte';
 
 	export let data;
 	let loading = false;
-	let pageSize = 10;
+	$: pageSize = 10;
 	let query = $page.url.searchParams.get('query') || '';
 
 	$: totalDownloads = Number(data.downloads?.totalCount);

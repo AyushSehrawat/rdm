@@ -26,7 +26,7 @@
 
 	export let data;
 	let loading = false;
-	let pageSize = 10;
+	$: pageSize = 10;
 	let query = $page.url.searchParams.get('query') || '';
 
 	$: totalTorrents = Number(data.torrents?.totalCount);
