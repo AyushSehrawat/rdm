@@ -77,7 +77,11 @@
 			showToast(`Partial success! ${resp.message}. Failed: ${resp.failures}`, 'success');
 		}
 
-		await invalidate(`/api/app/downloads?limit=${pageSize}&page=${currentPage}`);
+		if (query.length > 0) {
+			await invalidate(`/api/app/downloads?limit=${pageSize}&page=1&query=${query}`);
+		} else {
+			await invalidate(`/api/app/downloads?limit=${pageSize}&page=${currentPage}`);
+		}
 	};
 </script>
 
