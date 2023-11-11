@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { page, navigating } from '$app/stores';
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$lib/app/helpers';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import { Button } from '$lib/components/ui/button';
 	import Card from '$lib/components/app/scraper/Card.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { Loader2 } from 'lucide-svelte';
 
 	export let data;
@@ -56,7 +57,7 @@
 				<Tabs.Trigger value="series">Series</Tabs.Trigger>
 			</Tabs.List>
 			<Tabs.Content value="movies">
-				{#if $navigating || loading}
+				{#if loading}
 					<Loader2 class="w-6 h-6 animate-spin" />
 				{:else if movies.length === 0 && !loading}
 					<p>No movies found</p>
@@ -75,7 +76,7 @@
 				{/if}
 			</Tabs.Content>
 			<Tabs.Content value="series">
-				{#if $navigating || loading}
+				{#if loading}
 					<Loader2 class="w-6 h-6 animate-spin" />
 				{:else if series.length === 0 && !loading}
 					<p>No series found</p>
@@ -95,4 +96,9 @@
 			</Tabs.Content>
 		</Tabs.Root>
 	{/if}
+	<h2 class="text-xl font-semibold mt-8">Checkout the top movies/series</h2>
+	<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-4">
+		<Button class="w-full md:w-auto" href="/app/scraper/top/movie">Top Movies</Button>
+		<Button class="w-full md:w-auto" href="/app/scraper/top/series">Top Series</Button>
+	</div>
 </div>

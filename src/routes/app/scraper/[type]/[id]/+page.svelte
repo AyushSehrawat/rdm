@@ -15,6 +15,8 @@
 	let torrentIoData: any;
 	let limit = 10;
 
+	$: console.log(currentSeason);
+
 	// TODO: add similar genre
 
 	function setTitle(name: string) {
