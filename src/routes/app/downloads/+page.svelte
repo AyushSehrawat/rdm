@@ -19,7 +19,6 @@
 	import Actions from './table-actions.svelte';
 	import type { DownloadsType } from '$lib/app/types';
 	import { currentDownloadData } from '$lib/store';
-	import TableOptions from '$lib/components/app/TableOptions.svelte';
 
 	export let data;
 	let loading = false;
