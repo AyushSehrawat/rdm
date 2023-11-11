@@ -16,10 +16,10 @@ Aim of this project is to provide a simple interface to manage and search throug
 
 ## Features
 
-- View all your downloads and torrents
-- Search through your downloads and torrents
+- View and search through all your downloads and torrents
 - Copy download links, delete, stream and get info on your downloads and torrents
-- Added scraper to search for torrents and download links and add them to your Real Debrid.
+- Bulk delete downloads and torrents
+- Scraper to search for torrents and download links and add them to your Real Debrid.
 - Add torrents through magnet links and torrent files (Not yet implemented)
 - Look for dead download links and torrents and refresh them (Not yet implemented)
 

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto, invalidate } from '$app/navigation';
+	import { writable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Select from '$lib/components/ui/select';
 	import {
 		ArrowLeft,
@@ -28,6 +30,7 @@
 	let loading = false;
 	$: pageSize = 10;
 	let query = $page.url.searchParams.get('query') || '';
+	const selectedTorrentIds = writable<string[]>([]);
 
 	$: totalTorrents = Number(data.torrents?.totalCount);
 	$: totalPages = Math.ceil(totalTorrents / pageSize);
@@ -69,6 +72,8 @@
 			showToast(`Success! ${resp.message}`, 'success');
 		} else if (resp.success === false) {
 			showToast(`Error! ${resp.error}`, 'error');
+		} else if (resp.success === 'partial') {
+			showToast(`Partial success! ${resp.message}. Failed: ${resp.failures}`, 'success');
 		}
 
 		await invalidate(`/api/app/torrents?limit=${pageSize}&page=${currentPage}`);
@@ -137,7 +142,23 @@
 		<Table.Body>
 			{#each data.torrents?.torrents as torrent, i}
 				<Table.Row>
-					<Table.Cell>{torrent.filename}</Table.Cell>
+					<Table.Cell class="flex items-center gap-2">
+						<Checkbox
+							on:click={() => {
+								if ($selectedTorrentIds.includes(torrent.id)) {
+									$selectedTorrentIds = $selectedTorrentIds.filter((id) => id !== torrent.id);
+								} else {
+									$selectedTorrentIds = [...$selectedTorrentIds, torrent.id];
+								}
+							}}
+							checked={$selectedTorrentIds.includes(torrent.id)}
+							id={torrent.id}
+							aria-labelledby="torrent-label"
+						/>
+						<Label id="torrent-label" for={torrent.id}>
+							{torrent.filename}
+						</Label>
+					</Table.Cell>
 					<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>
 					<Table.Cell>{formatDate(torrent.added)}</Table.Cell>
 					<Table.Cell>{capitalizeFirstLetter(torrent.status)}</Table.Cell>
@@ -149,7 +170,34 @@
 		</Table.Body>
 	</Table.Root>
 
+	<p class="text-sm text-muted-foreground">
+		Selected {$selectedTorrentIds.length} items
+	</p>
+
+	{#if $selectedTorrentIds.length > 0}
+		<div class="flex items-center gap-2">
+			<Button
+				on:click={() => {
+					$selectedTorrentIds = [];
+				}}
+			>
+				Clear
+			</Button>
+			<Button
+				on:click={() => {
+					deleteTorrent($selectedTorrentIds);
+					$selectedTorrentIds = [];
+				}}
+			>
+				Delete
+			</Button>
+		</div>
+	{/if}
+
 	{#if query.length === 0}
+		<p class="text-sm text-muted-foreground mt-4">
+			Showing {data.torrents?.torrents.length} of {totalTorrents} torrents
+		</p>
 		<Select.Root
 			onSelectedChange={(selected) => {
 				pageSize = Number(selected?.value);

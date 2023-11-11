@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto, invalidate } from '$app/navigation';
+	import { currentDownloadData } from '$lib/store';
+	import { writable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -18,12 +21,12 @@
 	import { formatDate, debounce, convertBytes, showToast } from '$lib/app/helpers.js';
 	import Actions from './table-actions.svelte';
 	import type { DownloadsType } from '$lib/app/types';
-	import { currentDownloadData } from '$lib/store';
 
 	export let data;
 	let loading = false;
 	$: pageSize = 10;
 	let query = $page.url.searchParams.get('query') || '';
+	const selectedDownloadIds = writable<string[]>([]);
 
 	$: totalDownloads = Number(data.downloads?.totalCount);
 	$: totalPages = Math.ceil(totalDownloads / pageSize);
@@ -70,6 +73,8 @@
 			showToast(`Success! ${resp.message}`, 'success');
 		} else if (resp.success === false) {
 			showToast(`Error! ${resp.error}`, 'error');
+		} else if (resp.success === 'partial') {
+			showToast(`Partial success! ${resp.message}. Failed: ${resp.failures}`, 'success');
 		}
 
 		await invalidate(`/api/app/downloads?limit=${pageSize}&page=${currentPage}`);
@@ -137,7 +142,23 @@
 		<Table.Body>
 			{#each data.downloads?.downloads as download, i}
 				<Table.Row>
-					<Table.Cell>{download.filename}</Table.Cell>
+					<Table.Cell class="flex items-center gap-2">
+						<Checkbox
+							on:click={() => {
+								if ($selectedDownloadIds.includes(download.id)) {
+									$selectedDownloadIds = $selectedDownloadIds.filter((id) => id !== download.id);
+								} else {
+									$selectedDownloadIds = [...$selectedDownloadIds, download.id];
+								}
+							}}
+							checked={$selectedDownloadIds.includes(download.id)}
+							id={download.id}
+							aria-labelledby="download-label"
+						/>
+						<Label id="download-label" for={download.id}>
+							{download.filename}
+						</Label>
+					</Table.Cell>
 					<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
 					<Table.Cell>{formatDate(download.generated)}</Table.Cell>
 					<Table.Cell>
@@ -148,7 +169,34 @@
 		</Table.Body>
 	</Table.Root>
 
+	<p class="text-sm text-muted-foreground">
+		Selected {$selectedDownloadIds.length} items
+	</p>
+
+	{#if $selectedDownloadIds.length > 0}
+		<div class="flex items-center gap-2">
+			<Button
+				on:click={() => {
+					$selectedDownloadIds = [];
+				}}
+			>
+				Clear
+			</Button>
+			<Button
+				on:click={() => {
+					deleteDownload($selectedDownloadIds);
+					$selectedDownloadIds = [];
+				}}
+			>
+				Delete
+			</Button>
+		</div>
+	{/if}
+
 	{#if query.length === 0}
+		<p class="text-sm text-muted-foreground mt-4">
+			Showing {data.downloads?.downloads.length} of {totalDownloads} downloads
+		</p>
 		<Select.Root
 			onSelectedChange={(selected) => {
 				pageSize = Number(selected?.value);
