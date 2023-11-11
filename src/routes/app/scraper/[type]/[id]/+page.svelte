@@ -40,7 +40,7 @@
 	}
 
 	function copiedToClipboard() {
-		showToast('Copied to clipboard', 'success')
+		showToast('Copied to clipboard', 'success');
 	}
 
 	function addToRD(url: string) {
@@ -196,19 +196,28 @@
 						<Select.Trigger class="w-full md:max-w-[180px]">
 							<Select.Value placeholder="Select season" />
 						</Select.Trigger>
-						<Select.Content class="h-64 overflow-y-scroll">
-							<Select.Label>Seasons</Select.Label>
-							{#each Object.keys(videosData) as season}
-								<Select.Item value={season} label="Season {season}">Season {season}</Select.Item>
-							{/each}
-						</Select.Content>
+						{#if Object.keys(videosData).length > 7}
+							<Select.Content class="h-64 overflow-y-scroll">
+								<Select.Label>Seasons</Select.Label>
+								{#each Object.keys(videosData) as season}
+									<Select.Item value={season} label="Season {season}">Season {season}</Select.Item>
+								{/each}
+							</Select.Content>
+						{:else}
+							<Select.Content>
+								<Select.Label>Seasons</Select.Label>
+								{#each Object.keys(videosData) as season}
+									<Select.Item value={season} label="Season {season}">Season {season}</Select.Item>
+								{/each}
+							</Select.Content>
+						{/if}
 					</Select.Root>
 
 					{#if currentSeason === 0}
 						<p class="text-sm text-muted-foreground">These are special episodes</p>
 					{/if}
 					<div class="flex flex-col md:flex-row md:flex-wrap items-start w-full gap-6">
-						{#each videosData[currentSeason] as video, i}
+						{#each videosData[currentSeason] as video (video.id)}
 							<Sheet.Root
 								onOpenChange={async (open) => {
 									if (open) {
@@ -327,7 +336,9 @@
 			{/if}
 
 			{#if info.meta.trailerStreams}
-				<div class="flex flex-col items-center md:items-start gap-2 w-full mt-8">
+				<div
+					class="flex flex-col items-center md:items-start text-center md:text-start gap-2 w-full mt-8"
+				>
 					<h2 class="text-2xl font-semibold">Trailer</h2>
 					<div
 						class="flex flex-row flex-wrap gap-4 items-center md:items-start justify-center md:justify-start w-full"
