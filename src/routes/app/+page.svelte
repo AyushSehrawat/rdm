@@ -167,7 +167,7 @@
 		</div>
 	{:then data}
 		<Table.Root class="my-2 mb-8">
-			<Table.Caption>Your last 5 Downloads</Table.Caption>
+			<Table.Caption>Your last 5 Torrents</Table.Caption>
 			<Table.Header>
 				<Table.Row>
 					<Table.Head>Filename</Table.Head>
