@@ -202,63 +202,65 @@
 		<p class="text-sm text-muted-foreground mt-4">
 			Showing {data.torrents?.torrents.length} of {totalTorrents} torrents
 		</p>
-		<Select.Root
-			onSelectedChange={(selected) => {
-				pageSize = Number(selected?.value);
-				goto(`?limit=${selected?.value}&page=1`, { invalidateAll: true });
-			}}
-			selected={{
-				value: pageSize,
-				label: String(pageSize)
-			}}
-		>
-			<Select.Trigger class="w-[180px]">
-				<Select.Value placeholder="Rows per page" />
-			</Select.Trigger>
-			<Select.Content>
-				{#each [10, 25, 50, 100, 500, 1000, 2500] as size}
-					<Select.Item value={size} label={String(size)}>
-						{size}
-					</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
-		<div class="flex items-center justify-between w-full">
-			<div class="flex items-center gap-2">
-				<Button
-					disabled={!hasPreviousPage}
-					on:click={() => {
-						goto(`?limit=${pageSize}&page=1`);
-					}}
-				>
-					<DoubleArrowLeft />
-				</Button>
-				<Button
-					disabled={!hasPreviousPage}
-					on:click={() => {
-						goto(`?limit=${pageSize}&page=${currentPage - 1}`);
-					}}
-				>
-					<ArrowLeft />
-				</Button>
-			</div>
-			<div class="flex items-center gap-2">
-				<Button
-					disabled={!hasNextPage}
-					on:click={() => {
-						goto(`?limit=${pageSize}&page=${currentPage + 1}`);
-					}}
-				>
-					<ArrowRight />
-				</Button>
-				<Button
-					disabled={!hasNextPage}
-					on:click={() => {
-						goto(`?limit=${pageSize}&page=${totalPages}`);
-					}}
-				>
-					<DoubleArrowRight />
-				</Button>
+		<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+			<Select.Root
+				onSelectedChange={(selected) => {
+					pageSize = Number(selected?.value);
+					goto(`?limit=${selected?.value}&page=1`, { invalidateAll: true });
+				}}
+				selected={{
+					value: pageSize,
+					label: String(pageSize)
+				}}
+			>
+				<Select.Trigger class="w-[180px]">
+					<Select.Value placeholder="Rows per page" />
+				</Select.Trigger>
+				<Select.Content>
+					{#each [10, 25, 50, 100, 500, 1000, 2500] as size}
+						<Select.Item value={size} label={String(size)}>
+							{size}
+						</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+			<div class="flex items-center justify-between md:justify-normal md:gap-4">
+				<div class="flex items-center gap-2">
+					<Button
+						disabled={!hasPreviousPage}
+						on:click={() => {
+							goto(`?limit=${pageSize}&page=1`);
+						}}
+					>
+						<DoubleArrowLeft />
+					</Button>
+					<Button
+						disabled={!hasPreviousPage}
+						on:click={() => {
+							goto(`?limit=${pageSize}&page=${currentPage - 1}`);
+						}}
+					>
+						<ArrowLeft />
+					</Button>
+				</div>
+				<div class="flex items-center gap-2">
+					<Button
+						disabled={!hasNextPage}
+						on:click={() => {
+							goto(`?limit=${pageSize}&page=${currentPage + 1}`);
+						}}
+					>
+						<ArrowRight />
+					</Button>
+					<Button
+						disabled={!hasNextPage}
+						on:click={() => {
+							goto(`?limit=${pageSize}&page=${totalPages}`);
+						}}
+					>
+						<DoubleArrowRight />
+					</Button>
+				</div>
 			</div>
 		</div>
 

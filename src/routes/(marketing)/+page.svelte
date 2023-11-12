@@ -9,7 +9,6 @@
 	import { Sun } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
 	import { formatDate } from '$lib/app/helpers';
-	import type { UserDataType } from '$lib/app/types.js';
 
 	export let data;
 	let userCode: string;

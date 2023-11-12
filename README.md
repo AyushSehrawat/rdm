@@ -6,7 +6,12 @@ Aim of this project is to provide a simple interface to manage and search throug
 
 > These screenshots may not be up to date with the current version of the app.
 
-<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/homepage-light.jpeg" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/homepage-dark.jpeg" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-torrents.png" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-downloads.png" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-scraper.png" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-scraper-result.png" width="30%"></img>
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/homepage-light.jpeg" width="30%"></img>
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/homepage-dark.jpeg" width="30%"></img>
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-torrents.png" width="30%"></img>
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-downloads.png" width="30%"></img>
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-scraper.png" width="30%"></img>
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-scraper-result.png" width="30%"></img>
 
 ## Features
 
