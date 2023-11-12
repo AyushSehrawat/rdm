@@ -82,9 +82,6 @@ devDependencies:
   svelte-check:
     specifier: ^3.5.2
     version: 3.5.2(postcss-load-config@4.0.1)(postcss@8.4.31)(svelte@4.2.2)
-  svelte-headless-table:
-    specifier: ^0.17.7
-    version: 0.17.7(svelte@4.2.2)
   tailwindcss:
     specifier: ^3.3.5
     version: 3.3.5
@@ -2252,30 +2249,11 @@ packages:
       svelte: 4.2.2
     dev: true
 
-  /svelte-headless-table@0.17.7(svelte@4.2.2):
-    resolution: {integrity: sha512-GRQEM0c4pXfFs6W+LGbsvrBbDqBaMxxibsWq8Q8o4ve4dTHIC9WsbuKMP3jRHl+iC9jd4K/TXJfLJHtLzuKSQA==}
-    peerDependencies:
-      svelte: ^3 || ^4
-    dependencies:
-      svelte: 4.2.2
-      svelte-keyed: 1.1.7(svelte@4.2.2)
-      svelte-render: 1.6.1(svelte@4.2.2)
-      svelte-subscribe: 1.0.6(svelte@4.2.2)
-    dev: true
-
   /svelte-hmr@0.15.3(svelte@4.2.2):
     resolution: {integrity: sha512-41snaPswvSf8TJUhlkoJBekRrABDXDMdpNpT2tfHIv4JuhgvHqLMhEPGtaQn0BmbNSTkuz2Ed20DF2eHw0SmBQ==}
     engines: {node: ^12.20 || ^14.13.1 || >= 16}
     peerDependencies:
       svelte: ^3.19.0 || ^4.0.0
-    dependencies:
-      svelte: 4.2.2
-    dev: true
-
-  /svelte-keyed@1.1.7(svelte@4.2.2):
-    resolution: {integrity: sha512-d3VIwBza12PIQ0mXf8js+r4xoSFiQikDobbi6hx03oQzZx0BImXCBcdsZeYEN7VrNswXcjIrhc9qqjlxcro49w==}
-    peerDependencies:
-      svelte: ^3.49.0 || ^4
     dependencies:
       svelte: 4.2.2
     dev: true
@@ -2336,23 +2314,6 @@ packages:
       strip-indent: 3.0.0
       svelte: 4.2.2
       typescript: 5.2.2
-    dev: true
-
-  /svelte-render@1.6.1(svelte@4.2.2):
-    resolution: {integrity: sha512-pn580Z6DtxIDrXqQaGR/7z8tdHasgURn1AG5tt4ym1PfE6qFjT27NpN6vIg5kvDl1ewK9pYeTfIWPw4pPXqyuw==}
-    peerDependencies:
-      svelte: ^3 || ^4
-    dependencies:
-      svelte: 4.2.2
-      svelte-subscribe: 1.0.6(svelte@4.2.2)
-    dev: true
-
-  /svelte-subscribe@1.0.6(svelte@4.2.2):
-    resolution: {integrity: sha512-legaLPjOGAN3G6xUa8+1ms3qo3lE4nfypZe1CedyOEoUUwWPfmzJHuBXtwdro4xUf4kezUbzjtyK1UOeZDksog==}
-    peerDependencies:
-      svelte: ^3 || ^4
-    dependencies:
-      svelte: 4.2.2
     dev: true
 
   /svelte@4.2.2:
