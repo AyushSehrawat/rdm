@@ -7,7 +7,6 @@
 	import { formatDate, convertBytes, isStreamable } from '$lib/app/helpers';
 	import { goto, afterNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
-	import type { DownloadsType } from '$lib/app/types';
 
 	let previousPage: string = base;
 

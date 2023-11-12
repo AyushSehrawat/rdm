@@ -22,14 +22,14 @@ export const load: PageLoad = async ({ fetch, url }) => {
 		};
 	}
 	const getTorrents = async () => {
-		let res = await fetch(`/api/app/torrents?limit=${limit}&page=${page}`);
-		let data = await res.json();
+		const res = await fetch(`/api/app/torrents?limit=${limit}&page=${page}`);
+		const data = await res.json();
 		return data;
 	};
 
 	const getQueryTorrents = async () => {
-		let res = await fetch(`/api/app/torrents?limit=${limit}&page=${page}&query=${query}`);
-		let data = await res.json();
+		const res = await fetch(`/api/app/torrents?limit=${limit}&page=${page}&query=${query}`);
+		const data = await res.json();
 		return data;
 	};
 

@@ -1,4 +1,4 @@
-export const GET = async ({ url, request, cookies, fetch }) => {
+export const GET = async ({ cookies }) => {
 	try {
 		cookies.set('accessToken', '', {
 			path: '/',
@@ -22,7 +22,7 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

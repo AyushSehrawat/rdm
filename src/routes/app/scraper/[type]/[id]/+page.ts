@@ -5,8 +5,8 @@ export const load: PageLoad = async ({ fetch, params, data }) => {
 	const id = params.id;
 
 	const getIdInfo = async () => {
-		let res = await fetch(`https://v3-cinemeta.strem.io/meta/${type}/${id}.json`);
-		let data = await res.json();
+		const res = await fetch(`https://v3-cinemeta.strem.io/meta/${type}/${id}.json`);
+		const data = await res.json();
 		return data;
 	};
 

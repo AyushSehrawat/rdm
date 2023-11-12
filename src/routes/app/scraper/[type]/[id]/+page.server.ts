@@ -10,14 +10,14 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		}
 
 		if (accessToken === '') {
-			let res = await fetch('/api/refresh', {
+			const res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				}
 			});
 
-			let data = await res.json();
+			const data = await res.json();
 			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,

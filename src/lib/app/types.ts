@@ -25,15 +25,15 @@ export type DownloadsType = {
 };
 
 export interface TorrentsType {
-    added: string;
-    bytes: number;
-    ended: string | null | undefined;
-    filename: string;
-    hash: string;
-    host: string;
-    id: string;
-    links: string[];
-    progress: number | null | undefined;
-    split: number;
-    status: string;
+	added: string;
+	bytes: number;
+	ended: string | null | undefined;
+	filename: string;
+	hash: string;
+	host: string;
+	id: string;
+	links: string[];
+	progress: number | null | undefined;
+	split: number;
+	status: string;
 }

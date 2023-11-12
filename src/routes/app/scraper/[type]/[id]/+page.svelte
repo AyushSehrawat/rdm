@@ -82,7 +82,7 @@
 	}
 
 	function addToRD(url: string) {
-		const res = fetch(url, {
+		const _ = fetch(url, {
 			method: 'HEAD',
 			redirect: 'error'
 		});
@@ -229,7 +229,7 @@
 									<div class="flex flex-col gap-2">
 										<p class="text-sm text-muted-foreground break-words">{stream.name}</p>
 										<div class="flex flex-col gap-1">
-											{#each stream.title.split('\n') as info, i}
+											{#each stream.title.split('\n') as info}
 												<p class="text-sm">{info}</p>
 											{/each}
 										</div>
@@ -378,7 +378,7 @@
 																			{stream.name}
 																		</p>
 																		<div class="flex flex-col gap-1">
-																			{#each stream.title.split('\n') as info, i}
+																			{#each stream.title.split('\n') as info}
 																				<p class="text-sm">{info}</p>
 																			{/each}
 																		</div>

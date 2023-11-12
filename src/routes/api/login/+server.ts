@@ -1,4 +1,4 @@
-export const POST = async ({ url, request, cookies, fetch }) => {
+export const POST = async ({ request, cookies }) => {
 	const body = await request.json();
 
 	try {
@@ -7,7 +7,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 		const clientId = body.clientId ?? '';
 		const clientSecret = body.clientSecret ?? '';
 		const expiresIn = body.expiresIn ?? '';
-		const expiresAt = body.expiresAt ?? '';
+		// const expiresAt = body.expiresAt ?? '';
 
 		cookies.set('accessToken', accessToken, {
 			path: '/',
@@ -42,7 +42,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

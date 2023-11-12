@@ -1,6 +1,6 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
 
-export const GET = async ({ url, request, cookies, fetch, params }) => {
+export const GET = async ({ cookies, fetch, params }) => {
 	const id = params.id;
 	let accessToken = cookies.get('accessToken') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
@@ -14,14 +14,14 @@ export const GET = async ({ url, request, cookies, fetch, params }) => {
 		}
 
 		if (accessToken === '') {
-			let res = await fetch('/api/refresh', {
+			const res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				}
 			});
 
-			let data = await res.json();
+			const data = await res.json();
 			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
@@ -46,7 +46,7 @@ export const GET = async ({ url, request, cookies, fetch, params }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

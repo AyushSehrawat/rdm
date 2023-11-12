@@ -145,7 +145,7 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each data.downloads?.downloads as download, i}
+			{#each data.downloads?.downloads as download}
 				<Table.Row>
 					<Table.Cell class="flex items-center gap-2">
 						<Checkbox

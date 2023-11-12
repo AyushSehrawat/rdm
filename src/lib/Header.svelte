@@ -2,7 +2,9 @@
 	// Header for (marketing) group
 </script>
 
-<div class="p-8 md:px-24 lg:px-32 flex flex-col gap-1 w-full items-center justify-center text-gray-600 dark:text-gray-400">
+<div
+	class="p-8 md:px-24 lg:px-32 flex flex-col gap-1 w-full items-center justify-center text-gray-600 dark:text-gray-400"
+>
 	<p>
 		Made with &hearts; by <a
 			href="https://github.com/ayushsehrawat"

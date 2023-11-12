@@ -178,7 +178,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each data.torrents as torrent, i}
+				{#each data.torrents as torrent}
 					<Table.Row>
 						<Table.Cell>{torrent.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>

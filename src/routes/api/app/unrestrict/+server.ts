@@ -16,14 +16,14 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 		}
 
 		if (accessToken === '') {
-			let res = await fetch('/api/refresh', {
+			const res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				}
 			});
 
-			let data = await res.json();
+			const data = await res.json();
 			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
@@ -34,13 +34,13 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			accessToken = cookies.get('accessToken') ?? '';
 		}
 
-		let unrestrictedIdsData: any[] = [];
-		let failures: string[] = [];
+		const unrestrictedIdsData: any[] = [];
+		const failures: string[] = [];
 
 		await Promise.all(
 			links.map(async (link: string) => {
 				console.log(`Unrestricting ${link}`);
-				let res = await fetch(`${PUBLIC_BASE_URI}/unrestrict/link`, {
+				const res = await fetch(`${PUBLIC_BASE_URI}/unrestrict/link`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 					},
 					body: `link=${link}&password=`
 				});
-				let data = await res.json();
+				const data = await res.json();
 
 				if (res.status === 200) {
 					unrestrictedIdsData.push({ id: data.id, download: data.download });
@@ -90,7 +90,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			);
 		}
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

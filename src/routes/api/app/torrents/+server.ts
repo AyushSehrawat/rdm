@@ -4,8 +4,8 @@ import type { TorrentsType } from '$lib/app/types';
 export const GET = async ({ url, fetch, cookies }) => {
 	let accessToken = cookies.get('accessToken');
 	const refreshToken = cookies.get('refreshToken');
-	let limit = Number(url.searchParams.get('limit')) || 10;
-	let page = Number(url.searchParams.get('page')) || 1;
+	const limit = Number(url.searchParams.get('limit')) || 10;
+	const page = Number(url.searchParams.get('page')) || 1;
 	const query = url.searchParams.get('query');
 
 	try {
@@ -33,7 +33,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 			});
 
-			let data = await res.json();
+			const data = await res.json();
 			if ('error' in data) {
 				return new Response(
 					JSON.stringify({
@@ -113,9 +113,9 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 			);
 		} else {
-			let queryLimit = 2500;
+			const queryLimit = 2500;
 			let queryPage = 1;
-			let queryData: TorrentsType[] = [];
+			const queryData: TorrentsType[] = [];
 			let queryTotalCount;
 
 			while (true) {
@@ -199,14 +199,14 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 		}
 
 		if (!accessToken) {
-			let res = await fetch('/api/refresh', {
+			const res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				}
 			});
 
-			let data = await res.json();
+			const data = await res.json();
 			if ('error' in data) {
 				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 					status: 401,
@@ -217,13 +217,13 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 			accessToken = cookies.get('accessToken');
 		}
 
-		let deletedIds: string[] = [];
-		let failures: string[] = [];
+		const deletedIds: string[] = [];
+		const failures: string[] = [];
 
 		await Promise.all(
 			ids.map(async (id: string) => {
 				console.log(`Deleting ${id}`);
-				let res = await fetch(`${PUBLIC_BASE_URI}/torrents/delete/${id}`, {
+				const res = await fetch(`${PUBLIC_BASE_URI}/torrents/delete/${id}`, {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json',

@@ -23,6 +23,7 @@
 			<DropdownMenu.Item
 				on:click={() => {
 					navigator.clipboard.writeText(downloadData.download);
+					toast.success('Download link copied to clipboard!');
 				}}
 			>
 				Copy Download Link

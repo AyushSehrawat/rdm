@@ -2,14 +2,13 @@
 	import { goto } from '$app/navigation';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Loader2 } from 'lucide-svelte';
 	import { LogOut } from 'lucide-svelte';
 
 	async function logout() {
 		const res = await fetch('/api/logout');
 		const data = await res.json();
 
-		if (data.hasOwnProperty('success')) {
+		if ('success' in data) {
 			goto('/', { invalidateAll: true });
 		} else {
 			alert('Error logging out..');

@@ -1,6 +1,6 @@
-import { PUBLIC_BASE_URI, PUBLIC_BASE_AUTH_URI, PUBLIC_CLIENT_ID } from '$env/static/public';
+import { PUBLIC_BASE_AUTH_URI } from '$env/static/public';
 
-export const POST = async ({ url, request, cookies, fetch }) => {
+export const POST = async ({ request, fetch }) => {
 	const body = await request.json();
 	const clientId = body.clientId ?? '';
 	const clientSecret = body.clientSecret ?? '';
@@ -20,7 +20,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

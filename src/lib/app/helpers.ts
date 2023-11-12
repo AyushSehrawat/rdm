@@ -86,11 +86,7 @@ export function organizeVideosBySeason(videos: VideoType[]) {
 	const seasonsDict: SeasonDictType = {};
 
 	videos.forEach((video) => {
-		let seasonNum = video.season;
-
-		/*if (seasonNum === 0) {
-			seasonNum = 'Specials';
-		}*/
+		const seasonNum = video.season;
 
 		if (!seasonsDict[seasonNum]) {
 			seasonsDict[seasonNum] = [];

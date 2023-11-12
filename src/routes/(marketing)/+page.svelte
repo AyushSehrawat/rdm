@@ -155,7 +155,7 @@
 				<p>{data.points} points</p>
 			</div>
 		{:catch error}
-			<p class="text-red-500">Error getting user data..</p>
+			<p class="text-red-500">Error getting user data.. {error?.message}</p>
 		{/await}
 		<div class="flex flex-col md:flex-row items-center gap-2">
 			<Button href="/app">

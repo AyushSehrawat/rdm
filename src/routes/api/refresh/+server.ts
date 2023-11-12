@@ -1,4 +1,4 @@
-export const POST = async ({ url, request, cookies, fetch }) => {
+export const POST = async ({ cookies, fetch }) => {
 	const clientId = cookies.get('clientId') ?? '';
 	const clientSecret = cookies.get('clientSecret') ?? '';
 	const refreshToken = cookies.get('refreshToken') ?? '';
@@ -11,7 +11,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 	}
 
 	try {
-		let res = await fetch('/api/rd/token', {
+		const res = await fetch('/api/rd/token', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 			})
 		});
 
-		let data = await res.json();
+		const data = await res.json();
 
 		if ('access_token' in data) {
 			cookies.set('accessToken', data.access_token, {
@@ -44,7 +44,7 @@ export const POST = async ({ url, request, cookies, fetch }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

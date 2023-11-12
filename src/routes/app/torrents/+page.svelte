@@ -17,12 +17,7 @@
 		Reset
 	} from 'radix-icons-svelte';
 	import { Loader2 } from 'lucide-svelte';
-	import {
-		formatDate,
-		debounce,
-		convertBytes,
-		capitalizeFirstLetter
-	} from '$lib/app/helpers.js';
+	import { formatDate, debounce, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers.js';
 	import { toast } from 'svelte-sonner';
 	import Actions from './table-actions.svelte';
 
@@ -144,7 +139,7 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each data.torrents?.torrents as torrent, i}
+			{#each data.torrents?.torrents as torrent}
 				<Table.Row>
 					<Table.Cell class="flex items-center gap-2">
 						<Checkbox

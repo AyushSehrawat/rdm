@@ -1,8 +1,8 @@
-import { PUBLIC_BASE_URI, PUBLIC_BASE_AUTH_URI, PUBLIC_CLIENT_ID } from '$env/static/public';
+import { PUBLIC_BASE_AUTH_URI, PUBLIC_CLIENT_ID } from '$env/static/public';
 
-export const GET = async ({ url, request, cookies, fetch }) => {
+export const GET = async ({ url, fetch }) => {
 	const deviceCode = url.searchParams.get('deviceCode') ?? '';
-	console.log(deviceCode);	
+	console.log(deviceCode);
 
 	try {
 		const res = await fetch(
@@ -15,7 +15,7 @@ export const GET = async ({ url, request, cookies, fetch }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error?.message }), {
+		return new Response(JSON.stringify({ error: error }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});

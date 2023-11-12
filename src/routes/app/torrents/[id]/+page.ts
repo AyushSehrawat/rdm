@@ -4,8 +4,8 @@ export const load: PageLoad = async ({ fetch, params }) => {
 	const id = params.id;
 
 	const getTorrentInfo = async () => {
-		let res = await fetch(`/api/app/torrents/${id}`);
-		let data = await res.json();
+		const res = await fetch(`/api/app/torrents/${id}`);
+		const data = await res.json();
 		return data;
 	};
 

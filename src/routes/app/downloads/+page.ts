@@ -22,14 +22,14 @@ export const load: PageLoad = async ({ fetch, url }) => {
 		};
 	}
 	const getDownloads = async () => {
-		let res = await fetch(`/api/app/downloads?limit=${limit}&page=${page}`);
-		let data = await res.json();
+		const res = await fetch(`/api/app/downloads?limit=${limit}&page=${page}`);
+		const data = await res.json();
 		return data;
 	};
 
 	const getQueryDownloads = async () => {
-		let res = await fetch(`/api/app/downloads?limit=${limit}&page=${page}&query=${query}`);
-		let data = await res.json();
+		const res = await fetch(`/api/app/downloads?limit=${limit}&page=${page}&query=${query}`);
+		const data = await res.json();
 		return data;
 	};
 
