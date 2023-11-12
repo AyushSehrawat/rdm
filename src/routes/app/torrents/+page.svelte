@@ -21,9 +21,9 @@
 		formatDate,
 		debounce,
 		convertBytes,
-		showToast,
 		capitalizeFirstLetter
 	} from '$lib/app/helpers.js';
+	import { toast } from 'svelte-sonner';
 	import Actions from './table-actions.svelte';
 
 	export let data;
@@ -69,11 +69,11 @@
 
 		let resp = await data.json();
 		if (resp.success === true) {
-			showToast(`Success! ${resp.message}`, 'success');
+			toast.success(`Success! ${resp.message}`);
 		} else if (resp.success === false) {
-			showToast(`Error! ${resp.error}`, 'error');
+			toast.error(`Error! ${resp.error}`);
 		} else if (resp.success === 'partial') {
-			showToast(`Partial success! ${resp.message}. Failed: ${resp.failures}`, 'success');
+			toast.warning(`Partial success! ${resp.message}. Failed: ${resp.failures}`);
 		}
 
 		if (query.length > 0) {

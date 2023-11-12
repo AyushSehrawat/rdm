@@ -1,9 +1,9 @@
 <script>
 	import { ModeWatcher } from 'mode-watcher';
-	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import { Toaster } from 'svelte-sonner';
 	import '../app.postcss';
 </script>
 
 <ModeWatcher />
-<SvelteToast />
+<Toaster richColors closeButton />
 <slot />

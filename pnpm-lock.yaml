@@ -23,6 +23,9 @@ dependencies:
   svelte-persisted-store:
     specifier: ^0.7.0
     version: 0.7.0(svelte@4.2.2)
+  svelte-sonner:
+    specifier: ^0.3.3
+    version: 0.3.3(svelte@4.2.2)
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
@@ -49,9 +52,6 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^6.9.1
     version: 6.9.1(eslint@8.53.0)(typescript@5.2.2)
-  '@zerodevx/svelte-toast':
-    specifier: ^0.9.5
-    version: 0.9.5(svelte@4.2.2)
   autoprefixer:
     specifier: ^10.4.16
     version: 10.4.16(postcss@8.4.31)
@@ -766,14 +766,6 @@ packages:
       diff-sequences: 29.6.3
       loupe: 2.3.7
       pretty-format: 29.7.0
-    dev: true
-
-  /@zerodevx/svelte-toast@0.9.5(svelte@4.2.2):
-    resolution: {integrity: sha512-JLeB/oRdJfT+dz9A5bgd3Z7TuQnBQbeUtXrGIrNWMGqWbabpepBF2KxtWVhL2qtxpRqhae2f6NAOzH7xs4jUSw==}
-    peerDependencies:
-      svelte: ^3.57.0 || ^4.0.0
-    dependencies:
-      svelte: 4.2.2
     dev: true
 
   /acorn-jsx@5.3.2(acorn@8.11.2):
@@ -2315,6 +2307,14 @@ packages:
       svelte: 4.2.2
       typescript: 5.2.2
     dev: true
+
+  /svelte-sonner@0.3.3(svelte@4.2.2):
+    resolution: {integrity: sha512-fUPHh5X88GctOjUBXflfXWplJxErDDm2erYh3EUjMWdfYiT9SGMpAv5NGDGbmKfZ+qUKOiTFrJ2P/iahYrTvhA==}
+    peerDependencies:
+      svelte: '>=3 <5'
+    dependencies:
+      svelte: 4.2.2
+    dev: false
 
   /svelte@4.2.2:
     resolution: {integrity: sha512-My2tytF2e2NnHSpn2M7/3VdXT4JdTglYVUuSuK/mXL2XtulPYbeBfl8Dm1QiaKRn0zoULRnL+EtfZHHP0k4H3A==}

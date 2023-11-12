@@ -21,7 +21,6 @@
 		"@sveltejs/kit": "^1.27.3",
 		"@typescript-eslint/eslint-plugin": "^6.9.1",
 		"@typescript-eslint/parser": "^6.9.1",
-		"@zerodevx/svelte-toast": "^0.9.5",
 		"autoprefixer": "^10.4.16",
 		"eslint": "^8.53.0",
 		"eslint-config-prettier": "^8.10.0",
@@ -46,6 +45,7 @@
 		"mode-watcher": "^0.0.7",
 		"radix-icons-svelte": "^1.2.1",
 		"svelte-persisted-store": "^0.7.0",
+		"svelte-sonner": "^0.3.3",
 		"tailwind-merge": "^1.14.0",
 		"tailwind-variants": "^0.1.18"
 	}

@@ -2,7 +2,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
-	import { toast } from '@zerodevx/svelte-toast';
+	import { toast } from 'svelte-sonner';
 
 	export let link: string;
 
@@ -16,21 +16,9 @@
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
-			toast.push(`Success! ${resp.message}. Copied link to clipboard`, {
-				theme: {
-					'--toastColor': 'mintcream',
-					'--toastBackground': 'rgba(72,187,120,1)',
-					'--toastBarBackground': '#2F855A'
-				}
-			});
+			toast.success(`Success! ${resp.message}. Copied link to clipboard`);
 		} else if (resp.success === false) {
-			toast.push(`Error! ${resp.error}`, {
-				theme: {
-					'--toastColor': 'mintcream',
-					'--toastBackground': 'rgba(220,38,38,1)',
-					'--toastBarBackground': '#C53030'
-				}
-			});
+			toast.error(`Error! ${resp.error}`);
 		}
 		return resp.data[0].download;
 	};

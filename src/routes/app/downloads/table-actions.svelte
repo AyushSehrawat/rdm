@@ -2,7 +2,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
-	import { showToast } from '$lib/app/helpers';
+	import { toast } from 'svelte-sonner';
 	import type { DownloadsType } from '$lib/app/types';
 
 	export let downloadData: DownloadsType;
@@ -23,7 +23,6 @@
 			<DropdownMenu.Item
 				on:click={() => {
 					navigator.clipboard.writeText(downloadData.download);
-					showToast('Copied download link', 'success');
 				}}
 			>
 				Copy Download Link

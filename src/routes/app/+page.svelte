@@ -5,7 +5,8 @@
 	import { RotateCw, Loader2 } from 'lucide-svelte';
 	import { DotsHorizontal } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
-	import { formatDate, convertBytes, capitalizeFirstLetter, showToast } from '$lib/app/helpers';
+	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
+	import { toast } from 'svelte-sonner';
 	import { currentDownloadData } from '$lib/store';
 	import type { DownloadsType } from '$lib/app/types';
 
@@ -44,9 +45,9 @@
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
-			showToast(`Success! ${resp.message}`, 'success');
+			toast.success(`Success! ${resp.message}`);
 		} else if (resp.success === false) {
-			showToast(`Error! ${resp.error}`, 'error');
+			toast.error(`Error! ${resp.error}`);
 		}
 		doRecentDownloads = recentDownloads();
 	};
@@ -61,9 +62,9 @@
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
-			showToast(`Success! ${resp.message}`, 'success');
+			toast.success(`Success! ${resp.message}`);
 		} else if (resp.success === false) {
-			showToast(`Error! ${resp.error}`, 'error');
+			toast.error(`Error! ${resp.error}`);
 		}
 		doRecentTorrents = recentTorrents();
 	};

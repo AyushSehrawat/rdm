@@ -2,7 +2,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
-	import { showToast } from '$lib/app/helpers';
+	import { toast } from 'svelte-sonner';
 	import type { TorrentsType } from '$lib/app/types';
 	import { goto } from '$app/navigation';
 
@@ -24,7 +24,7 @@
 			<DropdownMenu.Item
 				on:click={() => {
 					navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentData.hash}`);
-					showToast('Copied magnet url', 'success');
+					toast.success('Copied magnet url to clipboard');
 				}}
 			>
 				Copy magnet url

@@ -2,7 +2,8 @@
 	import { Loader2, Copy, PlusSquare, Rocket, Trash2 } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { organizeVideosBySeason, showToast } from '$lib/app/helpers';
+	import { organizeVideosBySeason } from '$lib/app/helpers';
+	import { toast } from 'svelte-sonner';
 	import * as Select from '$lib/components/ui/select';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
@@ -77,7 +78,7 @@
 	}
 
 	function copiedToClipboard() {
-		showToast('Copied to clipboard', 'success');
+		toast.success('Copied to clipboard');
 	}
 
 	function addToRD(url: string) {
@@ -85,8 +86,7 @@
 			method: 'HEAD',
 			redirect: 'error'
 		});
-
-		showToast('Added to RD', 'success');
+		toast.success('Added to RD');
 	}
 
 	function getTitle(streams: any[]) {

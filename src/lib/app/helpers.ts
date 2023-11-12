@@ -1,5 +1,3 @@
-import { toast } from '@zerodevx/svelte-toast';
-
 interface VideoType {
 	name: string;
 	season: number | string;
@@ -115,26 +113,4 @@ export function debounce<F extends (...args: any[]) => Promise<void>>(
 			await func(...args);
 		}, timeout);
 	};
-}
-
-export function showToast(message: string, type: string) {
-	if (type === 'success') {
-		toast.push(message, {
-			theme: {
-				'--toastColor': 'mintcream',
-				'--toastBackground': 'rgba(72,187,120,1)',
-				'--toastBarBackground': '#2F855A'
-			}
-		});
-	} else if (type === 'error') {
-		toast.push(message, {
-			theme: {
-				'--toastColor': 'mintcream',
-				'--toastBackground': 'rgba(220,38,38,1)',
-				'--toastBarBackground': '#C53030'
-			}
-		});
-	} else {
-		toast.push(message);
-	}
 }
