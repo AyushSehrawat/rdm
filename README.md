@@ -13,6 +13,8 @@ Aim of this project is to provide a simple interface to manage and search throug
 <img src="./assets/scraper-movie.jpeg" width="30%"></img>
 <img src="./assets/scraper-series.jpeg" width="30%"></img>
 
+https://github.com/AyushSehrawat/rdm/assets/69469790/315f615c-e567-4c51-a3e8-229830596f3c
+
 ## Features
 
 - View and search through all your downloads and torrents
