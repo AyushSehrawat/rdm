@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Loader2, Copy, PlusSquare } from 'lucide-svelte';
+	import { Loader2, Copy, PlusSquare, Rocket, Trash2 } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { organizeVideosBySeason, showToast } from '$lib/app/helpers';
@@ -7,6 +7,10 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
 	import { PUBLIC_TORRENTIO_BASE_URI } from '$env/static/public';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Label } from '$lib/components/ui/label';
+	import { invalidateAll } from '$app/navigation';
 
 	export let data;
 	let title = data.props.id;
@@ -14,8 +18,31 @@
 	let videosData: any;
 	let torrentIoData: any;
 	let limit = 10;
+	let maxResultsPerQuality: string | number | undefined | null;
 
 	$: console.log(currentSeason);
+	$: console.log('maxResultsPerQuality', maxResultsPerQuality);
+
+	interface filtersObjType {
+		[key: string]: string;
+	}
+
+	const filtersObj: filtersObjType = {
+		brremux: 'BluRay Remux',
+		hdrall: 'HDR/HDR10+/Dolby Vision',
+		dolbyvision: 'Dolby Vision',
+		'4k': '4K',
+		'1080p': '1080p',
+		'720p': '720p',
+		'480p': '480p',
+		other: 'Other (DVDRip/HDRip/BDRip...',
+		scr: 'Screener',
+		cam: 'Cam',
+		unknown: 'Unknown'
+	};
+
+	let filters: string[] = ['480p', 'other', 'scr', 'cam', 'unknown'];
+	let debridOptions = 'debridoptions=nodownloadlinks';
 
 	// TODO: add similar genre
 
@@ -31,9 +58,17 @@
 	}
 
 	async function getTorrentIoStreamsData(id: string) {
+		let appliedFilters = filters.join(',');
+		let otherFilters = `|${debridOptions}|realdebrid=${data.props.accessToken}`;
+
+		if (maxResultsPerQuality) {
+			otherFilters += `|limit=${maxResultsPerQuality}`;
+		}
+
 		const res = await fetch(
-			`${PUBLIC_TORRENTIO_BASE_URI}${data.props.accessToken}/stream/${data.props.type}/${id}.json`
+			`${PUBLIC_TORRENTIO_BASE_URI}/qualityfilter=${appliedFilters}${otherFilters}/stream/${data.props.type}/${id}.json`
 		);
+
 		if (data.props.type === 'movie') {
 			return res.json();
 		} else {
@@ -109,6 +144,74 @@
 			</div>
 		</div>
 		<div class="p-8 md:px-24 lg:px-32 flex flex-col gap-4">
+			<div class="flex flex-col md:flex-row md:flex-wrap items-center gap-2">
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger class="w-full md:max-w-max border px-3 py-2 rounded-md text-start"
+						>Exclude Quality Filters</DropdownMenu.Trigger
+					>
+					<DropdownMenu.Content>
+						<DropdownMenu.Group>
+							{#each Object.keys(filtersObj) as filter}
+								<div class="flex items-center gap-2 py-1">
+									<Checkbox
+										on:click={() => {
+											if (filters.includes(filter)) {
+												filters = filters.filter((f) => f !== filter);
+											} else {
+												filters = [...filters, filter];
+											}
+										}}
+										checked={filters.includes(filter)}
+										id={filter}
+										aria-labelledby={filter}
+									/>
+									<Label id={filter} for={filter}>
+										{filtersObj[filter]}
+									</Label>
+								</div>
+							{/each}
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+				<Select.Root
+					onSelectedChange={(selected) => {
+						maxResultsPerQuality = Number(selected?.value);
+					}}
+				>
+					<Select.Trigger class="w-full md:max-w-max">
+						<Select.Value placeholder="Max Results Per Quality" />
+					</Select.Trigger>
+					<Select.Content>
+						{#each [5, 10, 20, 50, 100] as size}
+							<Select.Item value={size} label="{size} results">
+								{size} results
+							</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+				{#if data.props.type === 'movie'}
+					<Button
+						class="w-full md:max-w-max"
+						on:click={() => {
+							invalidateAll();
+						}}
+					>
+						<Rocket class="mr-2 w-4 h-4" />
+						Apply
+					</Button>
+				{/if}
+				<Button
+					class="w-full md:max-w-max"
+					on:click={() => {
+						filters = ['480p', 'other', 'scr', 'cam', 'unknown'];
+						maxResultsPerQuality = undefined;
+						invalidateAll();
+					}}
+				>
+					<Trash2 class="mr-2 w-4 h-4" />
+					Reset
+				</Button>
+			</div>
 			{#if data.props.type === 'movie'}
 				<h2 class="text-2xl font-semibold">Torrents</h2>
 				{#await getTorrentIoStreamsData(info.meta.id)}
