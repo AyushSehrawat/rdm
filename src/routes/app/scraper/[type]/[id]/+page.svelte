@@ -258,17 +258,20 @@
 					<div class="flex flex-col md:flex-row gap-2">
 						<Button
 							class="w-full md:max-w-[180px]"
+							disabled={limit >= streams.streams.length}
 							on:click={() => {
 								limit += 10;
 							}}>Show more</Button
 						>
 						<Button
 							class="w-full md:max-w-[180px]"
+							disabled={limit <= 10}
 							on:click={() => {
 								limit = 10;
 							}}>Show less</Button
 						>
 						<Button
+							disabled={limit >= streams.streams.length}
 							on:click={() => {
 								limit = streams.streams.length;
 							}}
@@ -403,17 +406,20 @@
 														<div class="flex flex-col gap-2">
 															<Button
 																class="w-full"
+																disabled={limit >= torrentIoData.streams.length}
 																on:click={() => {
 																	limit += 10;
 																}}>Show more</Button
 															>
 															<Button
+																disabled={limit <= 10}
 																class="w-full"
 																on:click={() => {
 																	limit = 10;
 																}}>Show less</Button
 															>
 															<Button
+																disabled={limit >= torrentIoData.streams.length}
 																on:click={() => {
 																	limit = torrentIoData.streams.length;
 																}}
