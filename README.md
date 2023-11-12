@@ -6,13 +6,7 @@ Aim of this project is to provide a simple interface to manage and search throug
 
 > These screenshots may not be up to date with the current version of the app.
 
-![App Light Screenshot](./assets/homepage-light.jpeg)
-![App Dark Screenshot](./assets/homepage-dark.jpeg)
-
-![App Torrents Screenshot](./assets/app-torrents.png)
-![App Downloads Screenshot](./assets/app-downloads.png)
-![App Scraper Screenshot](./assets/app-scraper.png)
-![App Scraper Result Screenshot](./assets/app-scraper-result.png)
+<img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/homepage-light.jpeg" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/homepage-dark.jpeg" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-torrents.png" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-downloads.png" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-scraper.png" width="30%"></img> <img src="https://github.com/AyushSehrawat/rdm/raw/main/assets/app-scraper-result.png" width="30%"></img>
 
 ## Features
 
