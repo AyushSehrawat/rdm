@@ -1,21 +1,21 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
 
-export const DELETE = async ({ request, cookies, fetch }) => {
+export const POST = async ({ request, cookies, fetch }) => {
 	const body = await request.json();
-	let accessToken = cookies.get('accessToken') ?? '';
-	const refreshToken = cookies.get('refreshToken') ?? '';
+	let accessToken = cookies.get('accessToken');
+	const refreshToken = cookies.get('refreshToken');
 	const links: string[] = body.links;
 	console.log(links);
 
 	try {
-		if (refreshToken === '') {
+		if (!refreshToken) {
 			return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' }
 			});
 		}
 
-		if (accessToken === '') {
+		if (!accessToken) {
 			const res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
@@ -31,7 +31,7 @@ export const DELETE = async ({ request, cookies, fetch }) => {
 				});
 			}
 
-			accessToken = cookies.get('accessToken') ?? '';
+			accessToken = cookies.get('accessToken');
 		}
 
 		const unrestrictedIdsData: any[] = [];

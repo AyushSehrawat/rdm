@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { goto, invalidate } from '$app/navigation';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { currentDownloadData } from '$lib/store';
 	import { writable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
@@ -9,6 +9,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Progress } from '$lib/components/ui/progress';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -21,7 +22,7 @@
 	import { formatDate, debounce, convertBytes } from '$lib/app/helpers.js';
 	import { toast } from 'svelte-sonner';
 	import Actions from './table-actions.svelte';
-	import type { DownloadsType } from '$lib/app/types';
+	import type { DownloadsType, DownloadsPageDataType } from '$lib/app/types';
 
 	export let data;
 	let loading = false;
@@ -34,6 +35,11 @@
 	$: currentPage = Number($page.url.searchParams.get('page')) || 1;
 	$: hasPreviousPage = currentPage > 1;
 	$: hasNextPage = currentPage < totalPages;
+
+	let deletionProgress: number | null | undefined;
+	$: maxDeletionProgress = $selectedDownloadIds.length;
+	let deletedOneStatus: string;
+	let failedOnes: string[] = [];
 
 	let fetchedResults = debounce(async (e) => {
 		query = e.target.value;
@@ -60,13 +66,12 @@
 		goto(`/app/downloads/${data.id}`);
 	}
 
-	let deleteDownload = async function deleteDownloadData(ids: string[]) {
-		const data = await fetch('/api/app/downloads', {
+	let deleteDownload = async function deleteDownloadData(id: string) {
+		const data = await fetch(`/api/app/downloads/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ ids })
+			}
 		});
 
 		let resp = await data.json();
@@ -74,14 +79,50 @@
 			toast.success(`Success! ${resp.message}`);
 		} else if (resp.success === false) {
 			toast.error(`Error! ${resp.error}`);
-		} else if (resp.success === 'partial') {
-			toast.warning(`Partial success! ${resp.message}. Failed: ${resp.failures}`);
 		}
 
-		if (query.length > 0) {
-			await invalidate(`/api/app/downloads?limit=${pageSize}&page=1&query=${query}`);
+		await invalidateAll();
+	};
+
+	let bulkDelete = async function bulkDeleteDownload(ids: string[]) {
+		deletedOneStatus = '';
+		deletionProgress = 0;
+		for (const id of ids) {
+			const data = await fetch(`/api/app/downloads/${id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			let resp = await data.json();
+			if (resp.success === true) {
+				deletedOneStatus = `Deleted ${id}`;
+			} else if (resp.success === false) {
+				failedOnes.push(id);
+			}
+
+			deletionProgress++;
+			await new Promise((resolve) => setTimeout(resolve, 200));
+		}
+
+		if (failedOnes.length > 0) {
+			toast.error(`Failed to delete ${failedOnes.length} downloads`);
 		} else {
-			await invalidate(`/api/app/downloads?limit=${pageSize}&page=${currentPage}`);
+			toast.success(`Success! Deleted ${ids.length} downloads`);
+		}
+
+		deletionProgress = null;
+		failedOnes = [];
+		selectedDownloadIds.set([]);
+
+		await invalidateAll();
+	};
+
+	$: resetSelectedDownloadIdsOnPageChange = () => {
+		if ($selectedDownloadIds.length === data.downloads?.downloads.length) {
+			$selectedDownloadIds = [];
+			toast.info('Select all reset on page change. You can change rows per page to avoid this');
 		}
 	};
 </script>
@@ -138,7 +179,22 @@
 		{/if}
 		<Table.Header>
 			<Table.Row>
-				<Table.Head>Filename</Table.Head>
+				<Table.Head class="flex items-center gap-2">
+					<Checkbox
+						on:click={() => {
+							if ($selectedDownloadIds.length === data.downloads?.downloads.length) {
+								$selectedDownloadIds = [];
+							} else {
+								// @ts-ignore
+								$selectedDownloadIds = data.downloads?.downloads.map((download) => download.id);
+							}
+						}}
+						checked={$selectedDownloadIds.length === data.downloads?.downloads.length}
+						id="select-all"
+						aria-labelledby="select-all-label"
+					/>
+					<Label id="select-all-label" for="select-all">Filename</Label>
+				</Table.Head>
 				<Table.Head>Size</Table.Head>
 				<Table.Head>Generated</Table.Head>
 				<Table.Head>Actions</Table.Head>
@@ -188,16 +244,27 @@
 				Clear
 			</Button>
 			<Button
-				on:click={() => {
-					deleteDownload($selectedDownloadIds);
-					$selectedDownloadIds = [];
-				}}
+				on:click={async () => {
+					toast.info(
+						`Deleting ${$selectedDownloadIds.length} downloads. Checkout the progress bar below`
+					);
+					await bulkDelete($selectedDownloadIds);
+				}}>Delete</Button
 			>
-				Delete
-			</Button>
 		</div>
 	{/if}
 
+	{#if deletionProgress}
+		<div class="flex flex-col my-4 gap-2">
+			<p class="text-sm text-muted-foreground">
+				{deletedOneStatus}
+			</p>
+			<Progress value={deletionProgress} max={maxDeletionProgress} />
+			<p class="text-sm text-muted-foreground">
+				Deleting {$selectedDownloadIds.length} downloads
+			</p>
+		</div>
+	{/if}
 	{#if query.length === 0}
 		<p class="text-sm text-muted-foreground mt-4">
 			Showing {data.downloads?.downloads.length} of {totalDownloads} downloads
@@ -206,6 +273,7 @@
 			<Select.Root
 				onSelectedChange={(selected) => {
 					pageSize = Number(selected?.value);
+					resetSelectedDownloadIdsOnPageChange();
 					goto(`?limit=${selected?.value}&page=1`, { invalidateAll: true });
 				}}
 				selected={{
@@ -229,6 +297,7 @@
 					<Button
 						disabled={!hasPreviousPage}
 						on:click={() => {
+							resetSelectedDownloadIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=1`);
 						}}
 					>
@@ -237,6 +306,7 @@
 					<Button
 						disabled={!hasPreviousPage}
 						on:click={() => {
+							resetSelectedDownloadIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=${currentPage - 1}`);
 						}}
 					>
@@ -247,6 +317,7 @@
 					<Button
 						disabled={!hasNextPage}
 						on:click={() => {
+							resetSelectedDownloadIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=${currentPage + 1}`);
 						}}
 					>
@@ -255,6 +326,7 @@
 					<Button
 						disabled={!hasNextPage}
 						on:click={() => {
+							resetSelectedDownloadIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=${totalPages}`);
 						}}
 					>
@@ -270,6 +342,9 @@
 					class="m-1"
 					variant={currentPage === page ? 'default' : 'secondary'}
 					href={`?limit=${pageSize}&page=${page}`}
+					on:click={() => {
+						resetSelectedDownloadIdsOnPageChange();
+					}}
 				>
 					{page}
 				</Button>

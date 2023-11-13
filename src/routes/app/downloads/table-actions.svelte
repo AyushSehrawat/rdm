@@ -6,7 +6,7 @@
 	import type { DownloadsType } from '$lib/app/types';
 
 	export let downloadData: DownloadsType;
-	export let deleteDownload: (ids: string[]) => void;
+	export let deleteDownload: (id: string) => void;
 	export let setCurrentDataAndRedirect: (data: DownloadsType) => void;
 </script>
 
@@ -37,7 +37,7 @@
 		>
 		<DropdownMenu.Item
 			on:click={() => {
-				deleteDownload([downloadData.id]);
+				deleteDownload(downloadData.id);
 			}}>Delete</DropdownMenu.Item
 		>
 	</DropdownMenu.Content>

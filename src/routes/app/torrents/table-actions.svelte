@@ -8,7 +8,7 @@
 
 	export let id: string;
 	export let torrentData: TorrentsType;
-	export let deleteTorrent: (ids: string[]) => void;
+	export let deleteTorrent: (id: string) => void;
 </script>
 
 <DropdownMenu.Root>
@@ -38,7 +38,7 @@
 		>
 		<DropdownMenu.Item
 			on:click={() => {
-				deleteTorrent([id]);
+				deleteTorrent(id);
 			}}>Delete</DropdownMenu.Item
 		>
 	</DropdownMenu.Content>

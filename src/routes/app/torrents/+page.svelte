@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { goto, invalidate } from '$app/navigation';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
@@ -8,6 +8,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Select from '$lib/components/ui/select';
+	import { Progress } from '$lib/components/ui/progress';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -33,6 +34,11 @@
 	$: hasPreviousPage = currentPage > 1;
 	$: hasNextPage = currentPage < totalPages;
 
+	let deletionProgress: number | null | undefined;
+	$: maxDeletionProgress = $selectedTorrentIds.length;
+	let deletedOneStatus: string;
+	let failedOnes: string[] = [];
+
 	let fetchedResults = debounce(async (e) => {
 		query = e.target.value;
 		if (query.length === 0) {
@@ -53,13 +59,12 @@
 		goto(`?limit=${pageSize}&page=${currentPage}`, { invalidateAll: true });
 	}
 
-	let deleteTorrent = async function deleteTorrentData(ids: string[]) {
-		const data = await fetch('/api/app/torrents', {
+	let deleteTorrent = async function deleteTorrentData(id: string) {
+		const data = await fetch(`/api/app/torrents/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ ids })
+			}
 		});
 
 		let resp = await data.json();
@@ -67,14 +72,50 @@
 			toast.success(`Success! ${resp.message}`);
 		} else if (resp.success === false) {
 			toast.error(`Error! ${resp.error}`);
-		} else if (resp.success === 'partial') {
-			toast.warning(`Partial success! ${resp.message}. Failed: ${resp.failures}`);
 		}
 
-		if (query.length > 0) {
-			await invalidate(`/api/app/downloads?limit=${pageSize}&page=1&query=${query}`);
+		await invalidateAll();
+	};
+
+	let bulkDelete = async function bulkDeleteTorrent(ids: string[]) {
+		deletedOneStatus = '';
+		deletionProgress = 0;
+		for (const id of ids) {
+			const data = await fetch(`/api/app/torrents/${id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			let resp = await data.json();
+			if (resp.success === true) {
+				deletedOneStatus = `Deleted ${id}`;
+			} else if (resp.success === false) {
+				failedOnes.push(id);
+			}
+
+			deletionProgress++;
+			await new Promise((resolve) => setTimeout(resolve, 200));
+		}
+
+		if (failedOnes.length > 0) {
+			toast.error(`Failed to delete ${failedOnes.length} torrents`);
 		} else {
-			await invalidate(`/api/app/downloads?limit=${pageSize}&page=${currentPage}`);
+			toast.success(`Success! Deleted ${ids.length} torrents`);
+		}
+
+		deletionProgress = null;
+		failedOnes = [];
+		selectedTorrentIds.set([]);
+
+		await invalidateAll();
+	};
+
+	$: resetselectedTorrentIdsOnPageChange = () => {
+		if ($selectedTorrentIds.length === data.torrents?.torrents.length) {
+			$selectedTorrentIds = [];
+			toast.info('Select all reset on page change. You can change rows per page to avoid this');
 		}
 	};
 </script>
@@ -131,7 +172,22 @@
 		{/if}
 		<Table.Header>
 			<Table.Row>
-				<Table.Head>Filename</Table.Head>
+				<Table.Head class="flex items-center gap-2">
+					<Checkbox
+						on:click={() => {
+							if ($selectedTorrentIds.length === data.torrents?.torrents.length) {
+								$selectedTorrentIds = [];
+							} else {
+								// @ts-ignore
+								$selectedTorrentIds = data.torrents?.torrents.map((torrent) => torrent.id);
+							}
+						}}
+						checked={$selectedTorrentIds.length === data.torrents?.torrents.length}
+						id="select-all"
+						aria-labelledby="select-all-label"
+					/>
+					<Label id="select-all-label" for="select-all">Filename</Label>
+				</Table.Head>
 				<Table.Head>Size</Table.Head>
 				<Table.Head>Added</Table.Head>
 				<Table.Head>Status</Table.Head>
@@ -183,13 +239,25 @@
 				Clear
 			</Button>
 			<Button
-				on:click={() => {
-					deleteTorrent($selectedTorrentIds);
-					$selectedTorrentIds = [];
-				}}
+				on:click={async () => {
+					toast.info(
+						`Deleting ${$selectedTorrentIds.length} torrents. Checkout the progress bar below`
+					);
+					await bulkDelete($selectedTorrentIds);
+				}}>Delete</Button
 			>
-				Delete
-			</Button>
+		</div>
+	{/if}
+
+	{#if deletionProgress}
+		<div class="flex flex-col my-4 gap-2">
+			<p class="text-sm text-muted-foreground">
+				{deletedOneStatus}
+			</p>
+			<Progress value={deletionProgress} max={maxDeletionProgress} />
+			<p class="text-sm text-muted-foreground">
+				Deleting {$selectedTorrentIds.length} torrents
+			</p>
 		</div>
 	{/if}
 
@@ -201,6 +269,7 @@
 			<Select.Root
 				onSelectedChange={(selected) => {
 					pageSize = Number(selected?.value);
+					resetselectedTorrentIdsOnPageChange();
 					goto(`?limit=${selected?.value}&page=1`, { invalidateAll: true });
 				}}
 				selected={{
@@ -224,6 +293,7 @@
 					<Button
 						disabled={!hasPreviousPage}
 						on:click={() => {
+							resetselectedTorrentIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=1`);
 						}}
 					>
@@ -232,6 +302,7 @@
 					<Button
 						disabled={!hasPreviousPage}
 						on:click={() => {
+							resetselectedTorrentIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=${currentPage - 1}`);
 						}}
 					>
@@ -242,6 +313,7 @@
 					<Button
 						disabled={!hasNextPage}
 						on:click={() => {
+							resetselectedTorrentIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=${currentPage + 1}`);
 						}}
 					>
@@ -250,6 +322,7 @@
 					<Button
 						disabled={!hasNextPage}
 						on:click={() => {
+							resetselectedTorrentIdsOnPageChange();
 							goto(`?limit=${pageSize}&page=${totalPages}`);
 						}}
 					>
@@ -265,6 +338,9 @@
 					class="m-1"
 					variant={currentPage === page ? 'default' : 'secondary'}
 					href={`?limit=${pageSize}&page=${page}`}
+					on:click={() => {
+						resetselectedTorrentIdsOnPageChange();
+					}}
 				>
 					{page}
 				</Button>

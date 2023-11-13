@@ -8,7 +8,7 @@
 
 	let unrestrictLink = async function unrestrictLinkData(links: string[]) {
 		const data = await fetch(`/api/app/unrestrict`, {
-			method: 'DELETE',
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},

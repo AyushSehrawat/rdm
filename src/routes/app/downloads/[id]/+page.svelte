@@ -17,13 +17,12 @@
 	let isIDCopied = false;
 	let isDownloadLinkCopied = false;
 
-	let deleteDownload = async function deleteDownloadData(ids: string[]) {
-		const data = await fetch(`/api/app/downloads`, {
+	let deleteDownload = async function deleteDownloadData(id: string) {
+		const data = await fetch(`/api/app/downloads/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ ids })
+			}
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
@@ -107,7 +106,7 @@
 						</Button>
 						<Button
 							on:click={() => {
-								deleteDownload([$currentDownloadData.id]);
+								deleteDownload($currentDownloadData.id);
 							}}
 						>
 							<Trash class="mr-2 h-4 w-4" />

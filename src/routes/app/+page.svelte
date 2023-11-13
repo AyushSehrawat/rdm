@@ -35,13 +35,12 @@
 		doRecentTorrents = recentTorrents();
 	}
 
-	let deleteDownload = async function deleteDownloadData(ids: string[]) {
-		const data = await fetch(`/api/app/downloads`, {
+	let deleteDownload = async function deleteDownloadData(id: string) {
+		const data = await fetch(`/api/app/downloads/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ ids })
+			}
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
@@ -52,13 +51,12 @@
 		doRecentDownloads = recentDownloads();
 	};
 
-	let deleteTorrent = async function deleteTorrentData(ids: string[]) {
-		const data = await fetch(`/api/app/torrents`, {
+	let deleteTorrent = async function deleteTorrentData(id: string) {
+		const data = await fetch(`/api/app/torrents/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ ids })
+			}
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
@@ -133,7 +131,7 @@
 										>
 										<DropdownMenu.Item
 											on:click={() => {
-												deleteDownload([download.id]);
+												deleteDownload(download.id);
 											}}>Delete</DropdownMenu.Item
 										>
 									</DropdownMenu.Group>
@@ -209,7 +207,7 @@
 										>
 										<DropdownMenu.Item
 											on:click={() => {
-												deleteTorrent([torrent.id]);
+												deleteTorrent(torrent.id);
 											}}>Delete</DropdownMenu.Item
 										>
 									</DropdownMenu.Group>

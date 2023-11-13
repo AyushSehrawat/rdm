@@ -32,13 +32,12 @@
 	let isIDCopied = false;
 	let isMagnetCopied = false;
 
-	let deleteTorrent = async function deleteTorrentData(ids: string[]) {
-		const data = await fetch(`/api/app/torrents`, {
+	let deleteTorrent = async function deleteTorrentData(id: string) {
+		const data = await fetch(`/api/app/torrents/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ ids })
+			}
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
@@ -109,7 +108,7 @@
 						</Button>
 						<Button
 							on:click={() => {
-								deleteTorrent([data.props.id]);
+								deleteTorrent(data.props.id);
 							}}
 						>
 							<Trash class="mr-2 h-4 w-4" />

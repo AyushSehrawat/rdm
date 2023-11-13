@@ -37,3 +37,11 @@ export interface TorrentsType {
 	split: number;
 	status: string;
 }
+
+
+export interface DownloadsPageDataType {
+	downloads: DownloadsType[];
+	totalCount: string;
+	limit: number;
+	page: number;
+}
