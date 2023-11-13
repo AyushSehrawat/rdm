@@ -107,7 +107,7 @@
 		}
 
 		if (failedOnes.length > 0) {
-			toast.error(`Failed to delete ${failedOnes.length} downloads`);
+			toast.error(`Failed to delete ${failedOnes.length} / ${ids.length} downloads`);
 		} else {
 			toast.success(`Success! Deleted ${ids.length} downloads`);
 		}
