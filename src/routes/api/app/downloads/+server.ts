@@ -1,5 +1,23 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
 import type { DownloadsType } from '$lib/app/types';
+import Fuse from 'fuse.js';
+
+const fuseOptions = {
+	// isCaseSensitive: false,
+	// includeScore: true,
+	shouldSort: true,
+	// includeMatches: true,
+	// findAllMatches: false,
+	// minMatchCharLength: 1,
+	// location: 0,
+	// distance: 100,
+	// useExtendedSearch: false,
+	// ignoreLocation: false,
+	// ignoreFieldNorm: false,
+	// fieldNormWeight: 1,
+	// threshold: 0.6,
+	keys: ['filename']
+};
 
 export const GET = async ({ url, fetch, cookies }) => {
 	let accessToken = cookies.get('accessToken');
@@ -115,7 +133,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 		} else {
 			const queryLimit = 2500;
 			let queryPage = 1;
-			const queryData: DownloadsType[] = [];
+			let queryData: any[] = [];
 			let queryTotalCount;
 
 			while (true) {
@@ -146,12 +164,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 						break;
 					}
 
-					for (let i = 0; i < tempJsonData.length; i++) {
-						if (tempJsonData[i].filename.toLowerCase().includes(query.toLowerCase())) {
-							queryData.push(tempJsonData[i]);
-						}
-					}
-
+					queryData = queryData.concat(tempJsonData);
 					queryTotalCount = tempData.headers.get('X-Total-Count');
 					queryPage++;
 				} catch (e) {
@@ -160,12 +173,17 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 			}
 
+			const fuse = new Fuse(queryData, fuseOptions);
+			queryData = fuse.search(query);
+			queryData = queryData.map((result) => result.item);
+
 			return new Response(
 				JSON.stringify({
 					downloads: queryData,
 					totalCount: queryTotalCount,
 					limit: queryLimit,
-					page: queryPage
+					page: queryPage,
+					query: query
 				}),
 				{
 					status: 200,

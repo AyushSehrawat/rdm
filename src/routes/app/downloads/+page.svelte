@@ -30,6 +30,8 @@
 	let query = $page.url.searchParams.get('query') || '';
 	const selectedDownloadIds = writable<string[]>([]);
 
+	$: console.log(query);
+
 	$: totalDownloads = Number(data.downloads?.totalCount);
 	$: totalPages = Math.ceil(totalDownloads / pageSize);
 	$: currentPage = Number($page.url.searchParams.get('page')) || 1;
@@ -42,12 +44,14 @@
 	let failedOnes: string[] = [];
 
 	let fetchedResults = debounce(async (e) => {
+		loading = true;
 		query = e.target.value;
 		if (query.length === 0) {
 			goto(`?limit=${pageSize}&page=1`, { invalidateAll: true });
 		}
 
 		goto(`?limit=${pageSize}&page=1&query=${query}`, { invalidateAll: true });
+		loading = false;
 	});
 
 	async function refreshCurrentPage() {
@@ -57,8 +61,10 @@
 	}
 
 	function resetQuery() {
+		loading = true;
 		query = '';
 		goto(`?limit=${pageSize}&page=${currentPage}`, { invalidateAll: true });
+		loading = false;
 	}
 
 	function setCurrentDataAndRedirect(data: DownloadsType) {
@@ -125,6 +131,23 @@
 			toast.info('Select all reset on page change. You can change rows per page to avoid this');
 		}
 	};
+
+	$: selectAllCheck = () => {
+		if ($selectedDownloadIds.length === data.downloads?.downloads.length) {
+			$selectedDownloadIds = [];
+		} else {
+			// @ts-ignore
+			$selectedDownloadIds = data.downloads?.downloads.map((download) => download.id);
+		}
+	};
+
+	$: fileCheckedCheck = (download: DownloadsType) => {
+		if ($selectedDownloadIds.includes(download.id)) {
+			$selectedDownloadIds = $selectedDownloadIds.filter((id) => id !== download.id);
+		} else {
+			$selectedDownloadIds = [...$selectedDownloadIds, download.id];
+		}
+	};
 </script>
 
 <div class="p-8 md:px-24 lg:px-32 flex flex-col w-full gap-4">
@@ -157,14 +180,14 @@
 		<Input
 			type="text"
 			id="query"
-			placeholder="something here"
+			placeholder="search for filename"
 			bind:value={query}
 			on:input={fetchedResults}
 		/>
 	</div>
 	{#if query.length > 0}
 		<p class="text-sm text-muted-foreground">
-			Search results for <span class="font-semibold">{query}</span>
+			Search results for <span class="font-semibold">{$page.url.searchParams.get('query')}</span>
 		</p>
 	{/if}
 	<Table.Root>
@@ -182,12 +205,7 @@
 				<Table.Head class="flex items-center gap-2">
 					<Checkbox
 						on:click={() => {
-							if ($selectedDownloadIds.length === data.downloads?.downloads.length) {
-								$selectedDownloadIds = [];
-							} else {
-								// @ts-ignore
-								$selectedDownloadIds = data.downloads?.downloads.map((download) => download.id);
-							}
+							selectAllCheck();
 						}}
 						checked={$selectedDownloadIds.length === data.downloads?.downloads.length}
 						id="select-all"
@@ -201,16 +219,12 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each data.downloads?.downloads as download}
+			{#each data.downloads?.downloads as download (download.id)}
 				<Table.Row>
 					<Table.Cell class="flex items-center gap-2">
 						<Checkbox
 							on:click={() => {
-								if ($selectedDownloadIds.includes(download.id)) {
-									$selectedDownloadIds = $selectedDownloadIds.filter((id) => id !== download.id);
-								} else {
-									$selectedDownloadIds = [...$selectedDownloadIds, download.id];
-								}
+								fileCheckedCheck(download);
 							}}
 							checked={$selectedDownloadIds.includes(download.id)}
 							id={download.id}
@@ -285,7 +299,7 @@
 					<Select.Value placeholder="Rows per page" />
 				</Select.Trigger>
 				<Select.Content>
-					{#each [10, 25, 50, 100, 500, 1000, 2500] as size}
+					{#each [5, 10, 25, 50, 100, 500, 1000, 2500] as size}
 						<Select.Item value={size} label={String(size)}>
 							{size}
 						</Select.Item>
