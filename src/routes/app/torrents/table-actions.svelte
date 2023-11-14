@@ -23,11 +23,27 @@
 			<DropdownMenu.Label>Actions</DropdownMenu.Label>
 			<DropdownMenu.Item
 				on:click={() => {
+					navigator.clipboard.writeText(torrentData.id);
+					toast.success('Copied ID to clipboard');
+				}}
+			>
+				Copy ID
+			</DropdownMenu.Item>
+			<DropdownMenu.Item
+				on:click={() => {
 					navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentData.hash}`);
 					toast.success('Copied magnet url to clipboard');
 				}}
 			>
 				Copy magnet url
+			</DropdownMenu.Item>
+			<DropdownMenu.Item
+				on:click={() => {
+					navigator.clipboard.writeText(torrentData.hash);
+					toast.success('Copied hash to clipboard');
+				}}
+			>
+				Copy hash
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />

@@ -43,6 +43,41 @@
 	let deletedOneStatus: string;
 	let failedOnes: string[] = [];
 
+	$: generatePageNumbers = () => {
+		if (totalPages < 1) {
+			return [];
+		}
+
+		const nearbyPagesCount = 2;
+
+		const startPage = Math.max(1, currentPage - nearbyPagesCount);
+		const endPage = Math.min(totalPages, currentPage + nearbyPagesCount);
+
+		let pageNumbers = [];
+
+		if (startPage > 1) {
+			pageNumbers.push(1);
+
+			if (startPage > 2) {
+				pageNumbers.push('...');
+			}
+		}
+
+		for (let i = startPage; i <= endPage; i++) {
+			pageNumbers.push(i);
+		}
+
+		if (endPage < totalPages - 1) {
+			pageNumbers.push('...');
+		}
+
+		if (endPage < totalPages) {
+			pageNumbers.push(totalPages);
+		}
+
+		return pageNumbers;
+	};
+
 	let fetchedResults = debounce(async (e) => {
 		loading = true;
 		query = e.target.value;
@@ -251,6 +286,7 @@
 	{#if $selectedDownloadIds.length > 0}
 		<div class="flex items-center gap-2">
 			<Button
+				variant="secondary"
 				on:click={() => {
 					$selectedDownloadIds = [];
 				}}
@@ -258,6 +294,7 @@
 				Clear
 			</Button>
 			<Button
+				variant="destructive"
 				on:click={async () => {
 					toast.info(
 						`Deleting ${$selectedDownloadIds.length} downloads. Checkout the progress bar below`
@@ -351,17 +388,21 @@
 		</div>
 
 		<div class="flex flex-wrap items-center w-full justify-center">
-			{#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
-				<Button
-					class="m-1"
-					variant={currentPage === page ? 'default' : 'secondary'}
-					href={`?limit=${pageSize}&page=${page}`}
-					on:click={() => {
-						resetSelectedDownloadIdsOnPageChange();
-					}}
-				>
-					{page}
-				</Button>
+			{#each generatePageNumbers() as page}
+				{#if page === '...'}
+					<span class="m-1">...</span>
+				{:else}
+					<Button
+						class="m-1"
+						variant={currentPage === page ? 'default' : 'secondary'}
+						href={`?limit=${pageSize}&page=${page}`}
+						on:click={() => {
+							resetSelectedDownloadIdsOnPageChange();
+						}}
+					>
+						{page}
+					</Button>
+				{/if}
 			{/each}
 		</div>
 	{/if}

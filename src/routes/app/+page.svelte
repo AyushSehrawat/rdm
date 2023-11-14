@@ -121,6 +121,7 @@
 										<DropdownMenu.Item
 											on:click={() => {
 												navigator.clipboard.writeText(download.download);
+												toast.success('Download link copied to clipboard!');
 											}}>Copy Download Link</DropdownMenu.Item
 										>
 										<DropdownMenu.Separator />
@@ -197,7 +198,20 @@
 										<DropdownMenu.Item
 											on:click={() => {
 												navigator.clipboard.writeText(torrent.id);
+												toast.success('Copied ID to clipboard');
 											}}>Copy ID</DropdownMenu.Item
+										>
+										<DropdownMenu.Item
+											on:click={() => {
+												navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrent.hash}`);
+												toast.success('Copied magnet url to clipboard');
+											}}>Copy magnet url</DropdownMenu.Item
+										>
+										<DropdownMenu.Item
+											on:click={() => {
+												navigator.clipboard.writeText(torrent.hash);
+												toast.success('Copied hash to clipboard');
+											}}>Copy hash</DropdownMenu.Item
 										>
 										<DropdownMenu.Separator />
 										<DropdownMenu.Item
