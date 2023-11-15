@@ -57,7 +57,11 @@
 		return '';
 	}
 
-	async function getTorrentIoStreamsData(id: string) {
+	async function getTorrentIoStreamsData(id: string, info?: any) {
+		if (id.startsWith('tmdb')) {
+			id = info.meta.imdb_id;
+		}
+
 		let appliedFilters = get(filters).join(',');
 		let otherFilters = `|${debridOptions}|realdebrid=${data.props.accessToken}`;
 
@@ -106,7 +110,7 @@
 
 			{#if data.props.type === 'movie'}
 				<h2 class="text-2xl font-semibold">Cached Torrents</h2>
-				{#await getTorrentIoStreamsData(info.meta.id)}
+				{#await getTorrentIoStreamsData(info.meta.id, info)}
 					<div class="flex gap-2">
 						<Loader2 class="w-6 h-6 text-primary animate-spin" />
 						<p class="text-sm text-muted-foreground">Loading streams...</p>

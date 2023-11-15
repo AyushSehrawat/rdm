@@ -24,6 +24,49 @@
 		goto(`?query=${query}`, { invalidateAll: true });
 		loading = false;
 	});
+
+	const listObj = [
+		{
+			name: 'Top Movies',
+			ref: '/app/scraper/list/cinemeta/top/movie'
+		},
+		{
+			name: 'Top Series',
+			ref: '/app/scraper/list/cinemeta/top/series'
+		},
+		{
+			name: 'Featured Movies',
+			ref: '/app/scraper/list/cinemeta/featured/movie'
+		},
+		{
+			name: 'Featured Series',
+			ref: '/app/scraper/list/cinemeta/featured/series'
+		},
+		{
+			name: 'Trakt Trending Movies',
+			ref: '/app/scraper/list/trakt/trending/movies'
+		},
+		{
+			name: 'Trakt Trending Series',
+			ref: '/app/scraper/list/trakt/trending/series'
+		},
+		{
+			name: 'Trakt Popular Movies',
+			ref: '/app/scraper/list/trakt/popular/movies'
+		},
+		{
+			name: 'Trakt Popular Series',
+			ref: '/app/scraper/list/trakt/popular/series'
+		},
+		{
+			name: 'TMDB Top Movies',
+			ref: '/app/scraper/list/tmdb/top/movie'
+		},
+		{
+			name: 'TMDB Top Series',
+			ref: '/app/scraper/list/tmdb/top/series'
+		}
+	];
 </script>
 
 <svelte:head>
@@ -96,9 +139,15 @@
 			</Tabs.Content>
 		</Tabs.Root>
 	{/if}
-	<h2 class="text-xl font-semibold mt-8">Checkout the top movies/series</h2>
+	<div class="flex flex-col gap-2">
+		<h2 class="text-xl font-semibold mt-8">Checkout these lists</h2>
+		<p class="text-sm text-muted-foreground">
+			Some of these list may not work
+		</p>
+	</div>
 	<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-4">
-		<Button class="w-full md:w-auto" href="/app/scraper/top/movie">Top Movies</Button>
-		<Button class="w-full md:w-auto" href="/app/scraper/top/series">Top Series</Button>
+		{#each listObj as list}
+			<Button class="w-full md:w-auto" href={list.ref}>{list.name}</Button>
+		{/each}
 	</div>
 </div>

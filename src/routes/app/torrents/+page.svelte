@@ -25,13 +25,22 @@
 	});
 </script>
 
-<DataTable
-	{dataType}
-	{columns}
-	{pageSize}
-	{totalDataItems}
-	{totalPages}
-	{currentPage}
-	{hasPreviousPage}
-	{hasNextPage}
-/>
+{#if $page.data.items.items}
+	<DataTable
+		{dataType}
+		{columns}
+		{pageSize}
+		{totalDataItems}
+		{totalPages}
+		{currentPage}
+		{hasPreviousPage}
+		{hasNextPage}
+	/>
+{:else}
+	<div class="p-8 md:px-24 lg:px-32">
+		<div class="flex flex-col items-center justify-center">
+			<h1 class="text-3xl font-semibold text-gray-800 dark:text-gray-100">No {dataType} found!</h1>
+			<p class="text-gray-600 dark:text-gray-400 mt-2">There are no {dataType} to display.</p>
+		</div>
+	</div>
+{/if}

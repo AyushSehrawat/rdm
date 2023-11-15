@@ -101,46 +101,56 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each data.items as download}
+				{#if data.items}
+					{#each data.items as download}
+						<Table.Row>
+							<Table.Cell>{download.filename}</Table.Cell>
+							<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
+							<Table.Cell>{formatDate(download.generated)}</Table.Cell>
+							<Table.Cell>
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild let:builder>
+										<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
+											<span class="sr-only">Open menu</span>
+											<DotsHorizontal class="w-4 h-4" />
+										</Button>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content>
+										<DropdownMenu.Group>
+											<DropdownMenu.Label>Actions</DropdownMenu.Label>
+											<DropdownMenu.Separator />
+											<DropdownMenu.Item
+												on:click={() => {
+													navigator.clipboard.writeText(download.download);
+													toast.success('Download link copied to clipboard!');
+												}}>Copy Download Link</DropdownMenu.Item
+											>
+											<DropdownMenu.Separator />
+											<DropdownMenu.Item
+												on:click={() => {
+													setCurrentDataAndRedirect(download);
+												}}>Details</DropdownMenu.Item
+											>
+											<DropdownMenu.Item
+												on:click={() => {
+													deleteDownload(download.id);
+												}}>Delete</DropdownMenu.Item
+											>
+										</DropdownMenu.Group>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							</Table.Cell>
+						</Table.Row>
+					{/each}
+				{:else}
 					<Table.Row>
-						<Table.Cell>{download.filename}</Table.Cell>
-						<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
-						<Table.Cell>{formatDate(download.generated)}</Table.Cell>
 						<Table.Cell>
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger asChild let:builder>
-									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
-										<span class="sr-only">Open menu</span>
-										<DotsHorizontal class="w-4 h-4" />
-									</Button>
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Content>
-									<DropdownMenu.Group>
-										<DropdownMenu.Label>Actions</DropdownMenu.Label>
-										<DropdownMenu.Separator />
-										<DropdownMenu.Item
-											on:click={() => {
-												navigator.clipboard.writeText(download.download);
-												toast.success('Download link copied to clipboard!');
-											}}>Copy Download Link</DropdownMenu.Item
-										>
-										<DropdownMenu.Separator />
-										<DropdownMenu.Item
-											on:click={() => {
-												setCurrentDataAndRedirect(download);
-											}}>Details</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											on:click={() => {
-												deleteDownload(download.id);
-											}}>Delete</DropdownMenu.Item
-										>
-									</DropdownMenu.Group>
-								</DropdownMenu.Content>
-							</DropdownMenu.Root>
+							<div class="flex items-center justify-center">
+								<p class="text-gray-500">No downloads found</p>
+							</div>
 						</Table.Cell>
 					</Table.Row>
-				{/each}
+				{/if}
 			</Table.Body>
 		</Table.Root>
 	{:catch error}
@@ -177,59 +187,69 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each data.items as torrent}
+				{#if data.items}
+					{#each data.items as torrent}
+						<Table.Row>
+							<Table.Cell>{torrent.filename}</Table.Cell>
+							<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>
+							<Table.Cell>{capitalizeFirstLetter(torrent.status)}</Table.Cell>
+							<Table.Cell>{formatDate(torrent.added)}</Table.Cell>
+							<Table.Cell>
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild let:builder>
+										<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
+											<span class="sr-only">Open menu</span>
+											<DotsHorizontal class="w-4 h-4" />
+										</Button>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content>
+										<DropdownMenu.Group>
+											<DropdownMenu.Label>Actions</DropdownMenu.Label>
+											<DropdownMenu.Separator />
+											<DropdownMenu.Item
+												on:click={() => {
+													navigator.clipboard.writeText(torrent.id);
+													toast.success('Copied ID to clipboard');
+												}}>Copy ID</DropdownMenu.Item
+											>
+											<DropdownMenu.Item
+												on:click={() => {
+													navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrent.hash}`);
+													toast.success('Copied magnet url to clipboard');
+												}}>Copy magnet url</DropdownMenu.Item
+											>
+											<DropdownMenu.Item
+												on:click={() => {
+													navigator.clipboard.writeText(torrent.hash);
+													toast.success('Copied hash to clipboard');
+												}}>Copy hash</DropdownMenu.Item
+											>
+											<DropdownMenu.Separator />
+											<DropdownMenu.Item
+												on:click={() => {
+													goto(`/app/torrents/${torrent.id}`);
+												}}>Details</DropdownMenu.Item
+											>
+											<DropdownMenu.Item
+												on:click={() => {
+													deleteTorrent(torrent.id);
+												}}>Delete</DropdownMenu.Item
+											>
+										</DropdownMenu.Group>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							</Table.Cell>
+						</Table.Row>
+					{/each}
+				{:else}
 					<Table.Row>
-						<Table.Cell>{torrent.filename}</Table.Cell>
-						<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>
-						<Table.Cell>{capitalizeFirstLetter(torrent.status)}</Table.Cell>
-						<Table.Cell>{formatDate(torrent.added)}</Table.Cell>
 						<Table.Cell>
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger asChild let:builder>
-									<Button variant="ghost" builders={[builder]} class="w-8 h-8 p- relative">
-										<span class="sr-only">Open menu</span>
-										<DotsHorizontal class="w-4 h-4" />
-									</Button>
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Content>
-									<DropdownMenu.Group>
-										<DropdownMenu.Label>Actions</DropdownMenu.Label>
-										<DropdownMenu.Separator />
-										<DropdownMenu.Item
-											on:click={() => {
-												navigator.clipboard.writeText(torrent.id);
-												toast.success('Copied ID to clipboard');
-											}}>Copy ID</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											on:click={() => {
-												navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrent.hash}`);
-												toast.success('Copied magnet url to clipboard');
-											}}>Copy magnet url</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											on:click={() => {
-												navigator.clipboard.writeText(torrent.hash);
-												toast.success('Copied hash to clipboard');
-											}}>Copy hash</DropdownMenu.Item
-										>
-										<DropdownMenu.Separator />
-										<DropdownMenu.Item
-											on:click={() => {
-												goto(`/app/torrents/${torrent.id}`);
-											}}>Details</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											on:click={() => {
-												deleteTorrent(torrent.id);
-											}}>Delete</DropdownMenu.Item
-										>
-									</DropdownMenu.Group>
-								</DropdownMenu.Content>
-							</DropdownMenu.Root>
+							<div class="flex items-center justify-center">
+								<p class="text-gray-500">No torrents found</p>
+							</div>
 						</Table.Cell>
 					</Table.Row>
-				{/each}
+				{/if}
 			</Table.Body>
 		</Table.Root>
 	{:catch error}
