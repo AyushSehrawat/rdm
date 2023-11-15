@@ -101,7 +101,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each data.downloads as download}
+				{#each data.items as download}
 					<Table.Row>
 						<Table.Cell>{download.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
@@ -177,7 +177,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#each data.torrents as torrent}
+				{#each data.items as torrent}
 					<Table.Row>
 						<Table.Cell>{torrent.filename}</Table.Cell>
 						<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>

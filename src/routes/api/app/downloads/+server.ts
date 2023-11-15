@@ -118,7 +118,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 
 			return new Response(
 				JSON.stringify({
-					downloads: downloads,
+					items: downloads,
 					totalCount: totalCount,
 					limit: limit,
 					page: page
@@ -179,7 +179,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 
 			return new Response(
 				JSON.stringify({
-					downloads: queryData,
+					items: queryData,
 					totalCount: queryTotalCount,
 					limit: queryLimit,
 					page: queryPage,

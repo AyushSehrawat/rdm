@@ -35,10 +35,10 @@ export const load: PageLoad = async ({ fetch, url }) => {
 
 	if (query) {
 		return {
-			downloads: getQueryDownloads()
+			items: getQueryDownloads()
 		};
 	}
 	return {
-		downloads: getDownloads()
+		items: getDownloads()
 	};
 };

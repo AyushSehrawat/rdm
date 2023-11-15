@@ -35,10 +35,10 @@ export const load: PageLoad = async ({ fetch, url }) => {
 
 	if (query) {
 		return {
-			torrents: getQueryTorrents()
+			items: getQueryTorrents()
 		};
 	}
 	return {
-		torrents: getTorrents()
+		items: getTorrents()
 	};
 };
