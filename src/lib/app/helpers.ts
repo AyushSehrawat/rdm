@@ -110,3 +110,41 @@ export function debounce<F extends (...args: any[]) => Promise<void>>(
 		}, timeout);
 	};
 }
+
+// todo: add types
+// @ts-ignore
+export function buildTree(files) {
+	console.log('Building tree...');
+	const root = { children: [] };
+
+	// @ts-ignore
+	files.forEach((file) => {
+		// @ts-ignore
+		const parts = file.path.split('/').filter((part) => part !== ''); // Filter out empty parts
+		let currentNode = root;
+
+		// @ts-ignore
+		parts.forEach((part) => {
+			if (!currentNode.children) {
+				currentNode.children = [];
+			}
+
+			// @ts-ignore
+			let existingNode = currentNode.children.find((node) => node.path === part);
+			if (!existingNode) {
+				// @ts-ignore
+				existingNode = { path: part, children: [] };
+				// @ts-ignore
+				currentNode.children.push(existingNode);
+			}
+
+			// @ts-ignore
+			currentNode = existingNode;
+		});
+
+		// @ts-ignore
+		currentNode.file = file;
+	});
+
+	return root.children;
+}

@@ -38,10 +38,14 @@ export interface TorrentsType {
 	status: string;
 }
 
-
 export interface DownloadsPageDataType {
 	downloads: DownloadsType[];
 	totalCount: string;
 	limit: number;
 	page: number;
+}
+
+export interface AddMagnetType {
+	id: string;
+	uri: string;
 }
