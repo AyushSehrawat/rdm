@@ -79,6 +79,8 @@
 
 			if (reinsertRes.status === 200) {
 				toast.success(`Success! ${reinsertResp.message}. Redirecting...`);
+				totalSelectedFiles = 0;
+				selected.set([]);
 				goto(`/app/torrents/${reinsertResp.id}`, { invalidateAll: true });
 			} else {
 				toast.error(`Error! ${reinsertResp.status} ${reinsertResp.error}. Try again later.`);
