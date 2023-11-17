@@ -26,7 +26,7 @@ export const POST = async ({ request, cookies }) => {
 		cookies.set('clientId', clientId, {
 			path: '/',
 			httpOnly: true,
-			sameSite: 'strict',
+			sameSite: 'lax',
 			maxAge: 31536000
 		});
 
