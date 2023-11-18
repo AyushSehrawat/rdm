@@ -1,18 +1,29 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
+import type { APIResponse, UnrestrictResponse } from '$lib/app/types';
+interface RequestBody {
+	link: string;
+}
 
 export const POST = async ({ request, cookies, fetch }) => {
-	const body = await request.json();
-	let accessToken = cookies.get('accessToken');
-	const refreshToken = cookies.get('refreshToken');
-	const links: string[] = body.links;
-	console.log(links);
+	const body: RequestBody = await request.json();
+	let accessToken: string | undefined = cookies.get('accessToken');
+	const refreshToken: string | undefined = cookies.get('refreshToken');
+	const link: string = body.link;
+	console.log(link);
 
 	try {
 		if (!refreshToken) {
-			return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
-				status: 401,
-				headers: { 'Content-Type': 'application/json' }
-			});
+			return new Response(
+				JSON.stringify({
+					status: 401,
+					success: false,
+					error: 'No access token or refresh token'
+				} as APIResponse),
+				{
+					status: 401,
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
 		}
 
 		if (!accessToken) {
@@ -24,75 +35,66 @@ export const POST = async ({ request, cookies, fetch }) => {
 			});
 
 			const data = await res.json();
-			if ('error' in data) {
-				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
-					status: 401,
-					headers: { 'Content-Type': 'application/json' }
-				});
+			if (!data.success) {
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: 401,
+						error: 'No access token or refresh token'
+					} as APIResponse),
+					{
+						status: 401,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
 			}
 
 			accessToken = cookies.get('accessToken');
 		}
 
-		const unrestrictedIdsData: any[] = [];
-		const failures: string[] = [];
+		const res = await fetch(`${PUBLIC_BASE_URI}/unrestrict/link`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			body: `link=${link}&password=`
+		});
 
-		await Promise.all(
-			links.map(async (link: string) => {
-				console.log(`Unrestricting ${link}`);
-				const res = await fetch(`${PUBLIC_BASE_URI}/unrestrict/link`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`
-					},
-					body: `link=${link}&password=`
-				});
-				const data = await res.json();
+		const data = await res.json();
 
-				if (res.status === 200) {
-					unrestrictedIdsData.push({ id: data.id, download: data.download });
-				} else {
-					failures.push(link);
-				}
-			})
-		);
-
-		if (unrestrictedIdsData.length === 0) {
-			return new Response(JSON.stringify({ success: false, error: 'No files unrestricted' }), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		} else if (unrestrictedIdsData.length === links.length) {
+		if (!res.ok) {
 			return new Response(
 				JSON.stringify({
-					success: true,
-					data: unrestrictedIdsData,
-					message: `Unrestricted ${unrestrictedIdsData.length} / ${links.length} torrent files`
-				}),
+					status: res.status,
+					success: false,
+					error: data.error
+				} as APIResponse),
 				{
-					status: 200,
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
-		} else {
-			return new Response(
-				JSON.stringify({
-					success: 'partial',
-					data: unrestrictedIdsData,
-					message: `Unrestricted ${unrestrictedIdsData.length} / ${links.length} torrent files`,
-					failures: failures
-				}),
-				{
-					status: 200,
+					status: res.status,
 					headers: { 'Content-Type': 'application/json' }
 				}
 			);
 		}
+
+		return new Response(
+			JSON.stringify({
+				status: res.status,
+				success: true,
+				data: data
+			} as APIResponse<UnrestrictResponse>),
+			{
+				status: res.status,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		);
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
+		return new Response(
+			JSON.stringify({ status: 500, success: false, error: error } as APIResponse),
+			{
+				status: 500,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		);
 	}
 };

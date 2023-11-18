@@ -147,7 +147,7 @@
 	</div>
 	<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-4">
 		{#each listObj as list}
-			<Button class="w-full md:w-auto" href={list.ref}>{list.name}</Button>
+			<Button variant="outline" class="w-full md:w-auto" href={list.ref}>{list.name}</Button>
 		{/each}
 	</div>
 </div>

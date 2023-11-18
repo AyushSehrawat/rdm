@@ -1,9 +1,9 @@
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, url }) => {
-	const limit = Number(url.searchParams.get('limit')) || 10;
-	const page = Number(url.searchParams.get('page')) || 1;
-	const query = url.searchParams.get('query');
+	const limit: number = Number(url.searchParams.get('limit')) || 10;
+	const page: number = Number(url.searchParams.get('page')) || 1;
+	const query: string | null = url.searchParams.get('query');
 	console.log({ limit, page, query });
 
 	if (limit <= 0 || limit > 2500) {
@@ -35,10 +35,10 @@ export const load: PageLoad = async ({ fetch, url }) => {
 
 	if (query) {
 		return {
-			items: getQueryTorrents()
+			data: getQueryTorrents()
 		};
 	}
 	return {
-		items: getTorrents()
+		data: getTorrents()
 	};
 };

@@ -4,6 +4,26 @@
 	import { setMode, mode } from 'mode-watcher';
 	import { Sun, Moon, Loader2 } from 'lucide-svelte';
 	import { page, navigating } from '$app/stores';
+	import type { NavItem } from '$lib/app/types';
+
+	const navItems: NavItem[] = [
+		{
+			name: 'Home',
+			ref: '/app'
+		},
+		{
+			name: 'Torrents',
+			ref: '/app/torrents'
+		},
+		{
+			name: 'Downloads',
+			ref: '/app/downloads'
+		},
+		{
+			name: 'Scraper',
+			ref: '/app/scraper'
+		}
+	];
 </script>
 
 <header
@@ -20,30 +40,14 @@
 		</a>
 		<div class="flex items-center gap-8">
 			<nav class="hidden lg:flex items-center gap-4">
-				<a
-					class:underline={$page.url.pathname === '/app'}
-					href="/app"
-					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-					>Home</a
-				>
-				<a
-					class:underline={$page.url.pathname === '/app/torrents'}
-					href="/app/torrents"
-					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-					>Torrents</a
-				>
-				<a
-					class:underline={$page.url.pathname === '/app/downloads'}
-					href="/app/downloads"
-					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-					>Downloads</a
-				>
-				<a
-					class:underline={$page.url.pathname === '/app/scraper'}
-					href="/app/scraper"
-					class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-					>Scraper</a
-				>
+				{#each navItems as item (item.ref)}
+					<a
+						class:underline={$page.url.pathname === item.ref}
+						href={item.ref}
+						class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+						>{item.name}</a
+					>
+				{/each}
 			</nav>
 			<div class="flex items-center gap-2">
 				<Logout />
@@ -70,30 +74,14 @@
 		</div>
 	</div>
 	<nav class="flex flex-wrap lg:hidden items-center gap-4 pt-8 px-4">
-		<a
-			class:underline={$page.url.pathname === '/app'}
-			href="/app"
-			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-			>Home</a
-		>
-		<a
-			class:underline={$page.url.pathname === '/app/torrents'}
-			href="/app/torrents"
-			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-			>Torrents</a
-		>
-		<a
-			class:underline={$page.url.pathname === '/app/downloads'}
-			href="/app/downloads"
-			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-			>Downloads</a
-		>
-		<a
-			class:underline={$page.url.pathname === '/app/scraper'}
-			href="/app/scraper"
-			class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
-			>Scraper</a
-		>
+		{#each navItems as item (item.ref)}
+			<a
+				class:underline={$page.url.pathname === item.ref}
+				href={item.ref}
+				class="hover:text-gray-900 dark:hover:text-gray-100 underline-offset-8 hover:underline"
+				>{item.name}</a
+			>
+		{/each}
 	</nav>
 
 	{#if $navigating}

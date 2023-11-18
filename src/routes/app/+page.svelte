@@ -8,7 +8,7 @@
 	import { formatDate, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers';
 	import { toast } from 'svelte-sonner';
 	import { currentDownloadData } from '$lib/store';
-	import type { DownloadsType } from '$lib/app/types';
+	import type { DownloadsResponse } from '$lib/app/types';
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
@@ -67,7 +67,7 @@
 		doRecentTorrents = recentTorrents();
 	};
 
-	function setCurrentDataAndRedirect(data: DownloadsType) {
+	function setCurrentDataAndRedirect(data: DownloadsResponse) {
 		currentDownloadData.set(data);
 		goto(`/app/downloads/${data.id}`);
 	}
@@ -76,7 +76,7 @@
 <div class="p-8 md:px-24 lg:px-32 flex flex-col">
 	<div class="flex items-center justify-between mt-8">
 		<h3 class="font-semibold">Recent Downloads</h3>
-		<Button disabled={downloadRefresh} on:click={refreshRecentDownloads}>
+		<Button variant="outline" disabled={downloadRefresh} on:click={refreshRecentDownloads}>
 			{#if downloadRefresh}
 				<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 			{:else}
@@ -101,8 +101,8 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#if data.items}
-					{#each data.items as download}
+				{#if data.data}
+					{#each data.data as download}
 						<Table.Row>
 							<Table.Cell>{download.filename}</Table.Cell>
 							<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
@@ -119,6 +119,12 @@
 										<DropdownMenu.Group>
 											<DropdownMenu.Label>Actions</DropdownMenu.Label>
 											<DropdownMenu.Separator />
+											<DropdownMenu.Item
+												on:click={() => {
+													navigator.clipboard.writeText(download.id);
+													toast.success('Copied ID to clipboard');
+												}}>Copy ID</DropdownMenu.Item
+											>
 											<DropdownMenu.Item
 												on:click={() => {
 													navigator.clipboard.writeText(download.download);
@@ -161,7 +167,7 @@
 
 	<div class="flex items-center justify-between mt-8">
 		<h3 class="font-semibold">Recent Torrents</h3>
-		<Button disabled={torrentRefresh} on:click={refreshRecentTorrents}>
+		<Button variant="outline" disabled={torrentRefresh} on:click={refreshRecentTorrents}>
 			{#if torrentRefresh}
 				<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 			{:else}
@@ -187,8 +193,8 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#if data.items}
-					{#each data.items as torrent}
+				{#if data.data}
+					{#each data.data as torrent}
 						<Table.Row>
 							<Table.Cell>{torrent.filename}</Table.Cell>
 							<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>

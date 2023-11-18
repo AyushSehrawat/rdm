@@ -7,6 +7,7 @@
 	import { formatDate, convertBytes, isStreamable } from '$lib/app/helpers';
 	import { goto, afterNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
+	import type { APIResponse } from '$lib/app/types';
 
 	let previousPage: string = base;
 
@@ -24,7 +25,7 @@
 				'Content-Type': 'application/json'
 			}
 		});
-		let resp = await data.json();
+		let resp: APIResponse = await data.json();
 		if (resp.success === true) {
 			toast.success(`Success! ${resp.message}`);
 		} else if (resp.success === false) {

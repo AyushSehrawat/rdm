@@ -4,6 +4,7 @@
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
+	// TODO: add types
 	export let file: any;
 
 	let selected: Writable<string[]> = getContext('selected');

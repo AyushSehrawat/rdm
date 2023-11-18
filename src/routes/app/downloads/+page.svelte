@@ -7,7 +7,7 @@
 	const columns = ['filename', 'filesize', 'generated', 'actions'];
 
 	$: pageSize = writable(Number($page.url.searchParams.get('limit') || 10));
-	$: totalDataItems = writable(Number($page.data.items?.totalCount));
+	$: totalDataItems = writable(Number($page.data.data?.totalCount));
 	$: totalPages = writable(Math.ceil(get(totalDataItems) / get(pageSize)));
 	$: currentPage = writable(Number($page.url.searchParams.get('page') || 1));
 	$: hasPreviousPage = writable(get(currentPage) > 1);
@@ -25,7 +25,7 @@
 	});
 </script>
 
-{#if $page.data.items.items}
+{#if $page.data.data.data}
 	<DataTable
 		{dataType}
 		{columns}

@@ -13,7 +13,7 @@
 	import Trailers from './trailers.svelte';
 
 	export let data;
-	let title = data.props.id;
+	let title: string = data.props.id;
 	let currentSeason: number;
 	let videosData: any;
 	let torrentIoData: any;

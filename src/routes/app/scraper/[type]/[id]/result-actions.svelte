@@ -17,6 +17,7 @@
 	class="flex gap-2"
 >
 	<Button
+		variant="outline"
 		class={clsx({ 'w-full': type === 'series' }, { 'w-full max-w-max': type === 'movie' })}
 		disabled={$limit >= torrentIoData.streams.length}
 		on:click={() => {
@@ -24,6 +25,7 @@
 		}}>Show more</Button
 	>
 	<Button
+		variant="outline"
 		disabled={$limit <= 10}
 		class={clsx({ 'w-full': type === 'series' }, { 'w-full max-w-max': type === 'movie' })}
 		on:click={() => {
@@ -31,6 +33,7 @@
 		}}>Show less</Button
 	>
 	<Button
+		variant="outline"
 		class={clsx({ 'w-full': type === 'series' }, { 'w-full max-w-max': type === 'movie' })}
 		disabled={$limit >= torrentIoData.streams.length}
 		on:click={() => {
@@ -38,6 +41,7 @@
 		}}>Show all</Button
 	>
 	<Button
+		variant="outline"
 		class={clsx({ 'w-full': type === 'series' }, { 'w-full max-w-max': type === 'movie' })}
 		on:click={async () => {
 			await navigator.clipboard.writeText(getTitle(torrentIoData.streams));

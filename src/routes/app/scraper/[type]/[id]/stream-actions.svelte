@@ -12,7 +12,7 @@
 	<Tooltip.Root>
 		<Tooltip.Trigger asChild let:builder>
 			<Button
-				variant="secondary"
+				variant="outline"
 				builders={[builder]}
 				on:click={() => {
 					navigator.clipboard.writeText(url);
@@ -29,7 +29,7 @@
 	<Tooltip.Root>
 		<Tooltip.Trigger asChild let:builder>
 			<Button
-				variant="secondary"
+				variant="outline"
 				builders={[builder]}
 				on:click={() => {
 					addToRD(url);

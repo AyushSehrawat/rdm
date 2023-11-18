@@ -1,15 +1,20 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
+import type { APIResponse } from '$lib/app/types';
 
 export const DELETE = async ({ cookies, fetch, params }) => {
-	const id = params.id;
-	let accessToken = cookies.get('accessToken');
-	const refreshToken = cookies.get('refreshToken');
+	const id: string = params.id;
+	let accessToken: string | undefined = cookies.get('accessToken');
+	const refreshToken: string | undefined = cookies.get('refreshToken');
 	console.log(`Deleting download ${id}`);
 
 	try {
 		if (!refreshToken) {
 			return new Response(
-				JSON.stringify({ success: false, error: 'No access token or refresh token' }),
+				JSON.stringify({
+					status: 401,
+					success: false,
+					error: 'No access token or refresh token'
+				} as APIResponse),
 				{
 					status: 401,
 					headers: { 'Content-Type': 'application/json' }
@@ -25,17 +30,21 @@ export const DELETE = async ({ cookies, fetch, params }) => {
 				}
 			});
 
-			const data = await res.json();
-			if ('error' in data) {
+			const data: APIResponse = await res.json();
+
+			if (!data.success) {
 				return new Response(
-					JSON.stringify({ success: false, error: 'No access token or refresh token' }),
+					JSON.stringify({
+						status: 401,
+						success: false,
+						error: 'No access token or refresh token'
+					} as APIResponse),
 					{
 						status: 401,
 						headers: { 'Content-Type': 'application/json' }
 					}
 				);
 			}
-
 			accessToken = cookies.get('accessToken');
 		}
 
@@ -47,26 +56,77 @@ export const DELETE = async ({ cookies, fetch, params }) => {
 			}
 		});
 
-		let success;
+		switch (res.status) {
+			case 204:
+				return new Response(
+					JSON.stringify({
+						success: true,
+						status: res.status,
+						message: `Deleted download ${id}`
+					} as APIResponse),
+					{
+						status: 200,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
+			case 401:
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: res.status,
+						error: 'Bad token (expired, invalid)'
+					} as APIResponse),
+					{
+						status: 401,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
+			case 403:
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: res.status,
+						error: 'Forbidden! Account locked'
+					} as APIResponse),
+					{
+						status: 403,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
+			case 404:
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: res.status,
+						error: 'Download not found'
+					} as APIResponse),
+					{
+						status: 404,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
 
-		if (res.status === 204) {
-			success = true;
-		} else {
-			success = false;
+			default:
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: res.status,
+						error: 'Unknown error'
+					} as APIResponse),
+					{
+						status: 500,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
 		}
-
+	} catch (error) {
+		console.log(error);
 		return new Response(
-			JSON.stringify({ success: success, code: res.status, message: `Deleted download ${id}` }),
+			JSON.stringify({ status: 500, success: false, error: error } as APIResponse),
 			{
-				status: 200,
+				status: 500,
 				headers: { 'Content-Type': 'application/json' }
 			}
 		);
-	} catch (error) {
-		console.log(error);
-		return new Response(JSON.stringify({ success: false, error: error }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
 	}
 };

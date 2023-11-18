@@ -9,6 +9,14 @@
 	import { Sun } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
 	import { formatDate } from '$lib/app/helpers';
+	import type {
+		DeviceCodeResponse,
+		CredentialsResponse,
+		AccessTokenResponse,
+		UserResponse,
+		APIResponse
+	} from '$lib/app/types';
+	import { toast } from 'svelte-sonner';
 
 	export let data;
 	let userCode: string;
@@ -16,13 +24,20 @@
 	let loading = false;
 	let pollingInterval: NodeJS.Timeout;
 
-	async function startLogin() {
+	async function startLogin(): Promise<void> {
 		loading = true;
 		try {
 			const res = await fetch('/api/rd/generateClient');
-			const data = await res.json();
-			userCode = data.user_code;
-			deviceCode = data.device_code;
+			const data: APIResponse<DeviceCodeResponse> = await res.json();
+
+			if (!data.success) {
+				alert('Error getting user code from Real Debrid..');
+				return;
+			}
+
+			userCode = data.data ? data.data.user_code : '';
+			deviceCode = data.data ? data.data.device_code : '';
+
 			navigator.clipboard.writeText(userCode);
 			pollingInterval = setInterval(pollForToken, 5000);
 		} catch (e) {
@@ -30,59 +45,93 @@
 		}
 	}
 
-	async function pollForToken() {
+	async function getClientData() {
+		const res = await fetch(`/api/rd/getClientData?deviceCode=${deviceCode}`);
+		const data: APIResponse<CredentialsResponse> = await res.json();
+		return data;
+	}
+
+	async function getAccessToken(clientId: string, clientSecret: string) {
+		const res = await fetch(`/api/rd/token`, {
+			method: 'POST',
+			body: JSON.stringify({
+				clientId: clientId,
+				clientSecret: clientSecret,
+				code: deviceCode
+			})
+		});
+		const data: APIResponse<AccessTokenResponse> = await res.json();
+		return data;
+	}
+
+	async function doLogin(
+		accessToken: string,
+		refreshToken: string,
+		clientId: string,
+		clientSecret: string,
+		expiresIn: number
+	) {
+		const res = await fetch('/api/login', {
+			method: 'POST',
+			body: JSON.stringify({
+				accessToken: accessToken,
+				refreshToken: refreshToken,
+				clientId: clientId,
+				clientSecret: clientSecret,
+				expiresAt: Date.now() + expiresIn * 1000,
+				expiresIn: expiresIn
+			})
+		});
+		const data: APIResponse = await res.json();
+		return data;
+	}
+
+	async function pollForToken(): Promise<void> {
 		try {
-			const res = await fetch(`/api/rd/getClientData?deviceCode=${deviceCode}`);
-			const data = await res.json();
-			if ('client_id' in data && 'client_secret' in data) {
-				clearInterval(pollingInterval);
-				let clientId = data.client_id;
-				let clientSecret = data.client_secret;
-
-				const tokenRes = await fetch(`/api/rd/token`, {
-					method: 'POST',
-					body: JSON.stringify({
-						clientId: clientId,
-						clientSecret: clientSecret,
-						code: deviceCode
-					})
-				});
-				const tokenData = await tokenRes.json();
-				if ('access_token' in tokenData && 'refresh_token' in tokenData) {
-					const tokenDataSet = await fetch('/api/login', {
-						method: 'POST',
-						body: JSON.stringify({
-							accessToken: tokenData.access_token,
-							refreshToken: tokenData.refresh_token,
-							clientId: clientId,
-							clientSecret: clientSecret,
-							expiresAt: Date.now() + tokenData.expires_in * 1000,
-							expiresIn: tokenData.expires_in
-						})
-					});
-
-					const tokenDataRes = await tokenDataSet.json();
-					if ('success' in tokenDataRes) {
-						loading = false;
-						invalidateAll();
-					} else {
-						alert('Error logging in.. Logging out.');
-					}
-				} else {
-					alert('Error getting access token from Real Debrid.. Logging out.');
-				}
+			const clientData = await getClientData();
+			if (!clientData.success) {
+				alert('Error polling for token from Real Debrid.. Logging out.');
+				return;
 			}
+			clearInterval(pollingInterval);
+
+			const clientId: string = clientData.data ? clientData.data.client_id : '';
+			const clientSecret: string = clientData.data ? clientData.data.client_secret : '';
+
+			const tokenData = await getAccessToken(clientId, clientSecret);
+			if (!tokenData.success) {
+				alert('Error getting access token from Real Debrid.. Logging out.');
+				return;
+			}
+			const expiresIn = tokenData.data ? tokenData.data.expires_in : 0;
+			const accessTokenData = await doLogin(
+				tokenData.data ? tokenData.data.access_token : '',
+				tokenData.data ? tokenData.data.refresh_token : '',
+				clientId,
+				clientSecret,
+				expiresIn
+			);
+			if (!accessTokenData.success) {
+				alert('Error saving token from Real Debrid.. Logging out.');
+				return;
+			}
+			loading = false;
+			invalidateAll();
 		} catch (error) {
 			alert('Error polling for token from Real Debrid.. Logging out.');
 		}
 	}
 
 	let userData = async function getUserData() {
-		const data = await fetch(`/api/user`, {
-			method: 'GET'
-		});
+		const res = await fetch('/api/user');
+		const data: APIResponse<UserResponse> = await res.json();
 
-		return data.json();
+		if (!data.success) {
+			toast.error('Error getting user data..');
+			return;
+		}
+
+		return data;
 	};
 </script>
 
@@ -148,11 +197,11 @@
 			<div
 				class="flex flex-col items-center justify-center gap-4 text-gray-600 dark:text-gray-400 text-sm"
 			>
-				<img alt="avatar" class="rounded-full h-24 w-24" src={data.avatar} />
-				<p class="text-lg font-semibold text-black dark:text-white">{data.username}</p>
-				<p>{data.email}</p>
-				<p>Premium expires on {formatDate(data.expiration)}</p>
-				<p>{data.points} points</p>
+				<img alt="avatar" class="rounded-full h-24 w-24" src={data?.data?.avatar} />
+				<p class="text-lg font-semibold text-black dark:text-white">{data?.data?.username}</p>
+				<p>{data?.data?.email}</p>
+				<p>Premium expires on {formatDate(data?.data ? data.data.expiration : '')}</p>
+				<p>{data?.data?.points} points</p>
 			</div>
 		{:catch error}
 			<p class="text-red-500">Error getting user data.. {error?.message}</p>

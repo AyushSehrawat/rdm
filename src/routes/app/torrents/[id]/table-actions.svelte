@@ -6,21 +6,21 @@
 
 	export let link: string;
 
-	let unrestrictLink = async function unrestrictLinkData(links: string[]) {
+	let unrestrictLink = async function unrestrictLinkData(link: string) {
 		const data = await fetch(`/api/app/unrestrict`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ links })
+			body: JSON.stringify({ link })
 		});
 		let resp = await data.json();
 		if (resp.success === true) {
-			toast.success(`Success! ${resp.message}. Copied link to clipboard`);
+			toast.success(`Success!. Copied link to clipboard`);
 		} else if (resp.success === false) {
 			toast.error(`Error! ${resp.error}`);
 		}
-		return resp.data[0].download;
+		return resp.data.download;
 	};
 </script>
 
@@ -37,13 +37,14 @@
 			<DropdownMenu.Item
 				on:click={() => {
 					navigator.clipboard.writeText(link);
+					toast.success('Copied link to clipboard');
 				}}>Copy Restricted Link</DropdownMenu.Item
 			>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Item
 			on:click={async () => {
-				navigator.clipboard.writeText(await unrestrictLink([link]));
+				navigator.clipboard.writeText(await unrestrictLink(link));
 			}}>Unrestrict & Copy Link</DropdownMenu.Item
 		>
 	</DropdownMenu.Content>

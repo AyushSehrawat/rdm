@@ -1,10 +1,15 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
-import type { AddMagnetType } from '$lib/app/types.js';
+import type { AddMagnetResponse, APIResponse } from '$lib/app/types';
+
+interface RequestBody {
+	hash: string;
+	selectedFilesId: number[];
+}
 
 export const POST = async ({ fetch, cookies, request }) => {
-	let accessToken = cookies.get('accessToken');
-	const refreshToken = cookies.get('refreshToken');
-	const body = await request.json();
+	let accessToken: string | undefined = cookies.get('accessToken');
+	const refreshToken: string | undefined = cookies.get('refreshToken');
+	const body: RequestBody = await request.json();
 	const hash = body?.hash;
 	const selectedFilesId = body?.selectedFilesId;
 
@@ -13,9 +18,9 @@ export const POST = async ({ fetch, cookies, request }) => {
 			return new Response(
 				JSON.stringify({
 					status: 401,
-					error: 'Unauthorized',
-					message: 'No access token or refresh token'
-				}),
+					success: false,
+					error: 'Unauthorized. No access token or refresh token.'
+				} as APIResponse),
 				{
 					status: 401,
 					headers: {
@@ -29,9 +34,9 @@ export const POST = async ({ fetch, cookies, request }) => {
 			return new Response(
 				JSON.stringify({
 					status: 400,
-					error: 'Bad Request',
-					message: 'No hash provided'
-				}),
+					success: false,
+					error: 'Bad Request. No hash provided'
+				} as APIResponse),
 				{
 					status: 400,
 					headers: {
@@ -45,9 +50,9 @@ export const POST = async ({ fetch, cookies, request }) => {
 			return new Response(
 				JSON.stringify({
 					status: 400,
-					error: 'Bad Request',
-					message: 'No selectedFilesId provided'
-				}),
+					success: false,
+					error: 'Bad Request. No selectedFilesId provided'
+				} as APIResponse),
 				{
 					status: 400,
 					headers: {
@@ -65,19 +70,17 @@ export const POST = async ({ fetch, cookies, request }) => {
 				}
 			});
 
-			const data = await res.json();
-			if ('error' in data) {
+			const data: APIResponse = await res.json();
+			if (!data.success) {
 				return new Response(
 					JSON.stringify({
+						success: false,
 						status: 401,
-						error: 'Unauthorized',
-						message: 'No access token or refresh token'
-					}),
+						error: 'No access token or refresh token'
+					} as APIResponse),
 					{
 						status: 401,
-						headers: {
-							'content-type': 'application/json'
-						}
+						headers: { 'Content-Type': 'application/json' }
 					}
 				);
 			}
@@ -99,10 +102,10 @@ export const POST = async ({ fetch, cookies, request }) => {
 		if (magnetRes.status !== 201) {
 			return new Response(
 				JSON.stringify({
-					status: 400,
-					error: 'Bad Request',
-					message: 'Could not add magnet'
-				}),
+					success: false,
+					status: magnetRes.status,
+					error: 'Bad Request. Could not add magnet'
+				} as APIResponse),
 				{
 					status: 400,
 					headers: {
@@ -112,7 +115,7 @@ export const POST = async ({ fetch, cookies, request }) => {
 			);
 		}
 
-		const magnetData: AddMagnetType = await magnetRes.json();
+		const magnetData: AddMagnetResponse = await magnetRes.json();
 
 		const torrentRes = await fetch(`${PUBLIC_BASE_URI}/torrents/selectFiles/${magnetData.id}`, {
 			method: 'POST',
@@ -128,9 +131,10 @@ export const POST = async ({ fetch, cookies, request }) => {
 				return new Response(
 					JSON.stringify({
 						status: 204,
+						success: true,
 						message: 'Torrent reinserted',
 						id: magnetData.id
-					}),
+					} as APIResponse),
 					{
 						status: 200,
 						headers: {
@@ -143,9 +147,10 @@ export const POST = async ({ fetch, cookies, request }) => {
 				return new Response(
 					JSON.stringify({
 						status: 202,
+						success: true,
 						message: 'Torrent already added',
 						id: magnetData.id
-					}),
+					} as APIResponse),
 					{
 						status: 200,
 						headers: {
@@ -158,8 +163,9 @@ export const POST = async ({ fetch, cookies, request }) => {
 				return new Response(
 					JSON.stringify({
 						status: torrentRes.status,
+						success: false,
 						error: 'Bad request. Could not add torrent'
-					}),
+					} as APIResponse),
 					{
 						status: 400,
 						headers: {
@@ -169,9 +175,12 @@ export const POST = async ({ fetch, cookies, request }) => {
 				);
 		}
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
+		return new Response(
+			JSON.stringify({ status: 500, success: false, error: error } as APIResponse),
+			{
+				status: 500,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		);
 	}
 };

@@ -1,15 +1,16 @@
+import type { APIResponse } from '$lib/app/types';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	let accessToken = cookies.get('accessToken') ?? '';
-	const refreshToken = cookies.get('refreshToken') ?? '';
+	let accessToken: string | undefined = cookies.get('accessToken');
+	const refreshToken: string | undefined = cookies.get('refreshToken');
 
 	try {
-		if (refreshToken === '') {
+		if (!refreshToken) {
 			return {};
 		}
 
-		if (accessToken === '') {
+		if (!accessToken) {
 			const res = await fetch('/api/refresh', {
 				method: 'POST',
 				headers: {
@@ -17,12 +18,19 @@ export const load: PageServerLoad = async ({ cookies }) => {
 				}
 			});
 
-			const data = await res.json();
-			if ('error' in data) {
-				return new Response(JSON.stringify({ error: 'No access token or refresh token' }), {
-					status: 401,
-					headers: { 'Content-Type': 'application/json' }
-				});
+			const data: APIResponse = await res.json();
+			if (!data.success) {
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: 401,
+						error: 'No access token or refresh token'
+					} as APIResponse),
+					{
+						status: 401,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
 			}
 
 			accessToken = cookies.get('accessToken') ?? '';

@@ -20,9 +20,10 @@
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { formatDate, debounce, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers.js';
-	import type { TorrentsType, DownloadsType } from '$lib/app/types';
+	import type { TorrentsResponse, DownloadsResponse } from '$lib/app/types';
 	import Actions from './table-actions.svelte';
 	import { currentDownloadData } from '$lib/store';
+	import clsx from 'clsx';
 
 	export let dataType: string;
 	export let columns: string[];
@@ -33,16 +34,16 @@
 		hasPreviousPage: Writable<boolean>,
 		hasNextPage: Writable<boolean>;
 
-	let loading = false;
-	let query = $page.url.searchParams.get('query') || '';
-	const selectedIds = writable<string[]>([]);
+	let loading: boolean = false;
+	let query: string = $page.url.searchParams.get('query') || '';
+	const selectedIds: Writable<string[]> = writable<string[]>([]);
 
 	let deletionProgress: number | null | undefined;
-	$: maxDeletionProgress = $selectedIds.length;
+	$: maxDeletionProgress = $selectedIds.length as number;
 	let deletedOneStatus: string;
 	let failedOnes: string[] = [];
 
-	$: generatePageNumbers = () => {
+	$: generatePageNumbers = (): (number | string)[] => {
 		if ($totalPages < 1) {
 			return [];
 		}
@@ -88,20 +89,20 @@
 		loading = false;
 	});
 
-	function resetQuery() {
+	function resetQuery(): void {
 		loading = true;
 		query = '';
 		goto(`?limit=${get(pageSize)}&page=${get(currentPage)}`, { invalidateAll: true });
 		loading = false;
 	}
 
-	async function refreshCurrentPage() {
+	async function refreshCurrentPage(): Promise<void> {
 		loading = true;
 		await goto(`?limit=${get(pageSize)}&page=${get(currentPage)}`, { invalidateAll: true });
 		loading = false;
 	}
 
-	let deleteDataItem = async function deleteDataTypeItem(id: string) {
+	let deleteDataItem = async function deleteDataTypeItem(id: string): Promise<void> {
 		let url: string;
 		if (dataType === 'torrents') {
 			url = `/api/app/torrents/${id}`;
@@ -128,7 +129,7 @@
 		await invalidateAll();
 	};
 
-	let bulkDelete = async function bulkDeleteDataItems(ids: string[]) {
+	let bulkDelete = async function bulkDeleteDataItems(ids: string[]): Promise<void> {
 		let url: string;
 		if (dataType === 'torrents') {
 			url = `/api/app/torrents`;
@@ -172,23 +173,23 @@
 		await invalidateAll();
 	};
 
-	$: resetselectedTorrentIdsOnPageChange = () => {
-		if ($selectedIds.length === $page.data.items?.items.length) {
+	$: resetselectedTorrentIdsOnPageChange = (): void => {
+		if ($selectedIds.length === $page.data.data?.data.length) {
 			selectedIds.set([]);
 			toast.info('Select all reset on page change. You can change rows per page to avoid this');
 		}
 	};
 
-	$: selectAllCheck = () => {
-		if ($selectedIds.length === $page.data.items?.items.length) {
+	$: selectAllCheck = (): void => {
+		if ($selectedIds.length === $page.data.data?.data.length) {
 			selectedIds.set([]);
 		} else {
 			// @ts-ignore
-			selectedIds.set($page.data.items?.items.map((item) => item.id));
+			selectedIds.set($page.data.data?.data.map((item) => item.id));
 		}
 	};
 
-	$: fileCheckedCheck = (item: TorrentsType | DownloadsType) => {
+	$: fileCheckedCheck = (item: TorrentsResponse | DownloadsResponse): void => {
 		if ($selectedIds.includes(item.id)) {
 			$selectedIds = $selectedIds.filter((id) => id !== item.id);
 		} else {
@@ -196,7 +197,7 @@
 		}
 	};
 
-	function setCurrentDataAndRedirect(item: DownloadsType) {
+	function setCurrentDataAndRedirect(item: DownloadsResponse): void {
 		currentDownloadData.set(item);
 		goto(`/app/downloads/${item.id}`);
 	}
@@ -207,6 +208,7 @@
 		<h2 class="text-2xl font-semibold">{capitalizeFirstLetter(dataType)}</h2>
 		<Button
 			disabled={loading}
+			variant="outline"
 			on:click={async () => {
 				await refreshCurrentPage();
 			}}
@@ -232,7 +234,7 @@
 		<Input
 			type="text"
 			id="query"
-			placeholder="search for filename or hash"
+			placeholder="search id, filename or hash"
 			bind:value={query}
 			on:input={fetchedResults}
 		/>
@@ -254,7 +256,11 @@
 			>
 		{/if}
 		<Table.Header>
-			<Table.Row>
+			<Table.Row
+				class={clsx(
+					$selectedIds.length === $page.data.data?.data.length && 'bg-primary-foreground'
+				)}
+			>
 				{#each columns as column}
 					{#if column === 'filename'}
 						<Table.Head class="flex items-center gap-2">
@@ -262,7 +268,7 @@
 								on:click={() => {
 									selectAllCheck();
 								}}
-								checked={$selectedIds.length === $page.data.items?.items.length}
+								checked={$selectedIds.length === $page.data.data?.data.length}
 								id="select-all"
 								aria-labelledby="select-all-label"
 							/>
@@ -277,8 +283,8 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each $page.data.items?.items as item (item.id)}
-				<Table.Row>
+			{#each $page.data.data?.data as item (item.id)}
+				<Table.Row class={clsx($selectedIds.includes(item.id) && 'bg-primary-foreground')}>
 					{#each columns as column}
 						{#if column === 'filename'}
 							<Table.Cell class="flex items-center gap-2">
@@ -324,7 +330,7 @@
 	{#if $selectedIds.length > 0}
 		<div class="flex items-center gap-2">
 			<Button
-				variant="secondary"
+				variant="outline"
 				on:click={() => {
 					selectedIds.set([]);
 				}}
@@ -358,7 +364,7 @@
 
 	{#if query.length === 0}
 		<p class="text-sm text-muted-foreground mt-4">
-			Showing {$page.data.items?.items.length} of {$totalDataItems}
+			Showing {$page.data.data?.data.length} of {$totalDataItems}
 			{dataType}
 		</p>
 		<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -419,7 +425,7 @@
 						disabled={!$hasNextPage}
 						on:click={() => {
 							resetselectedTorrentIdsOnPageChange();
-							goto(`?limit=${$pageSize}&page=${totalPages}`);
+							goto(`?limit=${$pageSize}&page=${$totalPages}`);
 						}}
 					>
 						<DoubleArrowRight />

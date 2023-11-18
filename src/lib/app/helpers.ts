@@ -1,23 +1,12 @@
-interface VideoType {
-	name: string;
-	season: number | string;
-	number: number;
-	firstAired: string;
-	tvdb_id: number;
-	rating: number;
-	overview: string;
-	thumbnail: string;
-	id: number;
-	released: string;
-	episode: number;
-	description: string;
-}
+import type {
+	VideoResponse,
+	SeasonDictType,
+	TorrentInfoFiles,
+	BuildTreeNode,
+	DateTimeFormatOptions
+} from '$lib/app/types';
 
-interface SeasonDictType {
-	[key: string]: VideoType[];
-}
-
-export function convertBytes(byteSize: number) {
+export function convertBytes(byteSize: number): string {
 	if (byteSize < 1024) {
 		return byteSize + ' bytes';
 	} else if (byteSize < 1024 * 1024) {
@@ -29,8 +18,8 @@ export function convertBytes(byteSize: number) {
 	}
 }
 
-export function formatDate(inputDate: string, format: string = 'long') {
-	let options;
+export function formatDate(inputDate: string, format: string = 'long'): string {
+	let options: DateTimeFormatOptions;
 	const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 	if (format === 'short') {
@@ -51,10 +40,9 @@ export function formatDate(inputDate: string, format: string = 'long') {
 		};
 	}
 
-	// @ts-ignore
 	const formattedDate = new Date(inputDate).toLocaleString('en-US', options);
 	if (formattedDate.includes('Invalid Date')) {
-		const fallbackOptions = {
+		const fallbackOptions: DateTimeFormatOptions = {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric',
@@ -63,25 +51,24 @@ export function formatDate(inputDate: string, format: string = 'long') {
 			second: 'numeric',
 			timeZone: 'UTC'
 		};
-		// @ts-ignore
 		return new Date(inputDate).toLocaleString('en-US', fallbackOptions);
 	}
 	return formattedDate;
 }
 
-export function capitalizeFirstLetter(string: string) {
+export function capitalizeFirstLetter(string: string): string {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function removeFirstChar(str: string) {
+export function removeFirstChar(str: string): string {
 	return str.slice(1);
 }
 
-export function isStreamable(num: number | null) {
+export function isStreamable(num: number | null): string {
 	return num === 1 ? 'Streamable' : 'Not Streamable';
 }
 
-export function organizeVideosBySeason(videos: VideoType[]) {
+export function organizeVideosBySeason(videos: VideoResponse[]) {
 	console.log(`Organizing ${videos.length} videos by season...`);
 	const seasonsDict: SeasonDictType = {};
 
@@ -111,38 +98,28 @@ export function debounce<F extends (...args: any[]) => Promise<void>>(
 	};
 }
 
-// todo: add types
-// @ts-ignore
-export function buildTree(files) {
+export function buildTree(files: TorrentInfoFiles[]): BuildTreeNode[] {
 	console.log('Building tree...');
-	const root = { children: [] };
+	const root: BuildTreeNode = { children: [] };
 
-	// @ts-ignore
 	files.forEach((file) => {
-		// @ts-ignore
-		const parts = file.path.split('/').filter((part) => part !== ''); // Filter out empty parts
+		const parts = file.path.split('/').filter((part) => part !== '');
 		let currentNode = root;
 
-		// @ts-ignore
 		parts.forEach((part) => {
 			if (!currentNode.children) {
 				currentNode.children = [];
 			}
 
-			// @ts-ignore
 			let existingNode = currentNode.children.find((node) => node.path === part);
 			if (!existingNode) {
-				// @ts-ignore
 				existingNode = { path: part, children: [] };
-				// @ts-ignore
 				currentNode.children.push(existingNode);
 			}
 
-			// @ts-ignore
 			currentNode = existingNode;
 		});
 
-		// @ts-ignore
 		currentNode.file = file;
 	});
 

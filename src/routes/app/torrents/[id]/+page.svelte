@@ -102,13 +102,13 @@
 		<div class="flex flex-col w-full">
 			<Card.Root>
 				<Card.Header>
-					<Card.Title class="text-start break-words">{torrentInfo.filename}</Card.Title>
+					<Card.Title class="text-start break-words">{torrentInfo.data.filename}</Card.Title>
 					<Card.Description class="flex flex-col md:flex-row items-center gap-2">
-						<p>Added on {formatDate(torrentInfo.added)}</p>
+						<p>Added on {formatDate(torrentInfo.data.added)}</p>
 						<span class="font-bold text-2xl hidden md:block">&middot;</span>
-						<p>{convertBytes(torrentInfo.bytes)}</p>
+						<p>{convertBytes(torrentInfo.data.bytes)}</p>
 						<span class="font-bold text-2xl hidden md:block">&middot;</span>
-						<p>{capitalizeFirstLetter(torrentInfo.status)}</p>
+						<p>{capitalizeFirstLetter(torrentInfo.data.status)}</p>
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="flex flex-col gap-4">
@@ -124,7 +124,7 @@
 						</Button>
 						<Button
 							on:click={() => {
-								navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentInfo.hash}`);
+								navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentInfo.data.hash}`);
 								toast.success('Copied magnet link to clipboard!');
 							}}
 						>
@@ -153,19 +153,19 @@
 										>Reinserting {data.props.id}</AlertDialog.Title
 									>
 									<AlertDialog.Description class="flex flex-col gap-2">
-										<p class="text-sm break-words border-b">{torrentInfo.filename}</p>
-										<p class="text-sm break-words border-b">{torrentInfo.hash}</p>
+										<p class="text-sm break-words border-b">{torrentInfo.data.filename}</p>
+										<p class="text-sm break-words border-b">{torrentInfo.data.hash}</p>
 										<p class="text-sm break-words">
-											Selected size {convertBytes(torrentInfo.bytes)}
+											Selected size {convertBytes(torrentInfo.data.bytes)}
 										</p>
 										<p class="text-sm break-words border-b">
-											Original size {convertBytes(torrentInfo.original_bytes)}
+											Original size {convertBytes(torrentInfo.data.original_bytes)}
 										</p>
 										<p class="text-sm break-words border-b">
-											{$selected.length} / {torrentInfo.files.length} files selected
+											{$selected.length} / {torrentInfo.data.files.length} files selected
 										</p>
 										<div class="flex flex-col max-h-96 overflow-scroll">
-											{#each buildTree(torrentInfo.files) as file}
+											{#each buildTree(torrentInfo.data.files) as file}
 												<TreeView {file} />
 											{/each}
 										</div>
@@ -175,7 +175,7 @@
 									<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
 									<AlertDialog.Action
 										on:click={() => {
-											reinsertTorrent(torrentInfo.hash);
+											reinsertTorrent(torrentInfo.data.hash);
 										}}>Continue</AlertDialog.Action
 									>
 								</AlertDialog.Footer>
@@ -201,13 +201,13 @@
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{#each filterSelected(torrentInfo.files) as torrentFile, i}
+								{#each filterSelected(torrentInfo.data.files) as torrentFile, i}
 									<Table.Row>
 										<Table.Cell class="font-medium">{torrentFile.id}</Table.Cell>
 										<Table.Cell>{removeFirstChar(torrentFile.path)}</Table.Cell>
 										<Table.Cell class="text-right">{convertBytes(torrentFile.bytes)}</Table.Cell>
 										<Table.Cell class="text-right">
-											<TableActions link={torrentInfo.links[i]} />
+											<TableActions link={torrentInfo.data.links[i]} />
 										</Table.Cell>
 									</Table.Row>
 									{incrementSelectedFiles(torrentFile.id)}

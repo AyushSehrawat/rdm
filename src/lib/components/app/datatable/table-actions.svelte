@@ -4,12 +4,12 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { DotsHorizontal } from 'radix-icons-svelte';
-	import type { TorrentsType, DownloadsType } from '$lib/app/types';
+	import type { TorrentsResponse, DownloadsResponse } from '$lib/app/types';
 
 	export let dataType: string;
 	export let item: any;
 	export let deleteDataItem: (id: string) => void;
-	export let setCurrentDataAndRedirect: (item: DownloadsType) => void;
+	export let setCurrentDataAndRedirect: (item: DownloadsResponse) => void;
 </script>
 
 <DropdownMenu.Root>
@@ -22,6 +22,14 @@
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
 			<DropdownMenu.Label>Actions</DropdownMenu.Label>
+			<DropdownMenu.Item
+				on:click={() => {
+					navigator.clipboard.writeText(item.id);
+					toast.success('Copied ID to clipboard');
+				}}
+			>
+				Copy ID
+			</DropdownMenu.Item>
 			{#if dataType === 'downloads'}
 				<DropdownMenu.Item
 					on:click={() => {
@@ -32,14 +40,6 @@
 					Copy Download Link
 				</DropdownMenu.Item>
 			{:else}
-				<DropdownMenu.Item
-					on:click={() => {
-						navigator.clipboard.writeText(item.id);
-						toast.success('Copied ID to clipboard');
-					}}
-				>
-					Copy ID
-				</DropdownMenu.Item>
 				<DropdownMenu.Item
 					on:click={() => {
 						navigator.clipboard.writeText(`magnet:?xt=urn:btih:${item.hash}`);

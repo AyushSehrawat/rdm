@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import type { APIResponse } from '$lib/app/types';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { LogOut } from 'lucide-svelte';
 
-	async function logout() {
+	async function logout(): Promise<void> {
 		const res = await fetch('/api/logout');
-		const data = await res.json();
+		const data: APIResponse = await res.json();
 
-		if ('success' in data) {
+		if (data.success) {
 			goto('/', { invalidateAll: true });
 		} else {
 			alert('Error logging out..');

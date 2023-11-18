@@ -1,5 +1,5 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
-import type { TorrentsType } from '$lib/app/types';
+import type { TorrentsResponse, APIResponse } from '$lib/app/types';
 import Fuse from 'fuse.js';
 
 const fuseOptions = {
@@ -16,24 +16,24 @@ const fuseOptions = {
 	// ignoreFieldNorm: false,
 	// fieldNormWeight: 1,
 	// threshold: 0.6,
-	keys: ['filename', 'hash']
+	keys: ['id', 'filename', 'hash']
 };
 
 export const GET = async ({ url, fetch, cookies }) => {
-	let accessToken = cookies.get('accessToken');
-	const refreshToken = cookies.get('refreshToken');
-	const limit = Number(url.searchParams.get('limit')) || 10;
-	const page = Number(url.searchParams.get('page')) || 1;
-	const query = url.searchParams.get('query');
+	let accessToken: string | undefined = cookies.get('accessToken');
+	const refreshToken: string | undefined = cookies.get('refreshToken');
+	const limit: number = Number(url.searchParams.get('limit')) || 10;
+	const page: number = Number(url.searchParams.get('page')) || 1;
+	const query: string | null = url.searchParams.get('query');
 
 	try {
 		if (!refreshToken) {
 			return new Response(
 				JSON.stringify({
 					status: 401,
-					error: 'Unauthorized',
-					message: 'No access token or refresh token'
-				}),
+					success: false,
+					error: 'Unauthorized. No access token or refresh token.'
+				} as APIResponse),
 				{
 					status: 401,
 					headers: {
@@ -52,18 +52,16 @@ export const GET = async ({ url, fetch, cookies }) => {
 			});
 
 			const data = await res.json();
-			if ('error' in data) {
+			if (!data.success) {
 				return new Response(
 					JSON.stringify({
+						success: false,
 						status: 401,
-						error: 'Unauthorized',
-						message: 'No access token or refresh token'
-					}),
+						error: 'No access token or refresh token'
+					} as APIResponse),
 					{
 						status: 401,
-						headers: {
-							'content-type': 'application/json'
-						}
+						headers: { 'Content-Type': 'application/json' }
 					}
 				);
 			}
@@ -74,10 +72,10 @@ export const GET = async ({ url, fetch, cookies }) => {
 		if (limit <= 0 || limit > 2500) {
 			return new Response(
 				JSON.stringify({
+					success: false,
 					status: 400,
-					error: 'Bad Request',
-					message: 'Limit must be between 1 and 2500'
-				}),
+					error: 'Bad Request. Invalid limit. Limit must be between 1 and 2500'
+				} as APIResponse),
 				{
 					status: 400,
 					headers: {
@@ -91,9 +89,9 @@ export const GET = async ({ url, fetch, cookies }) => {
 			return new Response(
 				JSON.stringify({
 					status: 400,
-					error: 'Bad Request',
-					message: 'Page must be greater than 0'
-				}),
+					success: false,
+					error: 'Bad Request. Invalid page. Page must be greater than 0'
+				} as APIResponse),
 				{
 					status: 400,
 					headers: {
@@ -111,18 +109,29 @@ export const GET = async ({ url, fetch, cookies }) => {
 					'Content-Type': 'application/json'
 				}
 			});
-			if (!res.ok) return new Response(res.statusText, { status: res.status });
 
-			const totalCount = res.headers.get('X-Total-Count');
-			const torrents: TorrentsType[] = await res.json();
+			if (!res.ok)
+				return new Response(
+					JSON.stringify({
+						success: false,
+						status: res.status,
+						error: res.statusText
+					} as APIResponse),
+					{ status: res.status, headers: { 'Content-Type': 'application/json' } }
+				);
+
+			const totalCount: string | null = res.headers.get('X-Total-Count');
+			const torrents = await res.json();
 
 			return new Response(
 				JSON.stringify({
-					items: torrents,
+					status: 200,
+					success: true,
+					data: torrents,
 					totalCount: totalCount,
 					limit: limit,
 					page: page
-				}),
+				} as APIResponse<TorrentsResponse[]>),
 				{
 					status: 200,
 					headers: {
@@ -131,10 +140,10 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 			);
 		} else {
-			const queryLimit = 2500;
-			let queryPage = 1;
+			const queryLimit: number = 2500;
+			let queryPage: number = 1;
 			let queryData: any[] = [];
-			let queryTotalCount;
+			let queryTotalCount: string | null = null;
 
 			while (true) {
 				console.log(`Querying page ${queryPage}...`);
@@ -150,7 +159,15 @@ export const GET = async ({ url, fetch, cookies }) => {
 					}
 				);
 
-				if (!tempData.ok) return new Response(tempData.statusText, { status: tempData.status });
+				if (!tempData.ok)
+					return new Response(
+						JSON.stringify({
+							success: false,
+							status: tempData.status,
+							error: tempData.statusText
+						} as APIResponse),
+						{ status: tempData.status, headers: { 'Content-Type': 'application/json' } }
+					);
 
 				if (tempData.status === 204) {
 					console.log('No more data to query.');
@@ -158,7 +175,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 
 				try {
-					const tempJsonData = await tempData.json();
+					const tempJsonData: TorrentsResponse[] = await tempData.json();
 					if (tempJsonData.length === 0) {
 						console.log('No more data to query.');
 						break;
@@ -179,11 +196,13 @@ export const GET = async ({ url, fetch, cookies }) => {
 
 			return new Response(
 				JSON.stringify({
-					items: queryData,
+					status: 200,
+					success: true,
+					data: queryData,
 					totalCount: queryTotalCount,
 					limit: queryLimit,
 					page: queryPage
-				}),
+				} as APIResponse<TorrentsResponse[]>),
 				{
 					status: 200,
 					headers: {
@@ -193,9 +212,12 @@ export const GET = async ({ url, fetch, cookies }) => {
 			);
 		}
 	} catch (error) {
-		return new Response(JSON.stringify({ error: error }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
+		return new Response(
+			JSON.stringify({ status: 500, success: false, error: error } as APIResponse),
+			{
+				status: 500,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		);
 	}
 };
