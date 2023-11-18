@@ -36,6 +36,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>{$currentDownloadData?.id} Info | RDM</title>
+</svelte:head>
+
 <div class="flex flex-col p-8 md:px-24 lg:px-32 gap-4 w-full">
 	{#if $currentDownloadData === undefined}
 		<h2 class="text-xl font-semibold">Error!</h2>

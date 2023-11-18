@@ -25,6 +25,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Downloads | RDM</title>
+</svelte:head>
+
 {#if $page.data.data.data}
 	<DataTable
 		{dataType}

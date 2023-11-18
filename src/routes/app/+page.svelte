@@ -73,6 +73,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Home | RDM</title>
+</svelte:head>
+
 <div class="p-8 md:px-24 lg:px-32 flex flex-col">
 	<div class="flex items-center justify-between mt-8">
 		<h3 class="font-semibold">Recent Downloads</h3>

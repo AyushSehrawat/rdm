@@ -91,6 +91,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>{data.props.id} Info | RDM</title>
+</svelte:head>
+
 <div class="flex flex-col p-8 md:px-24 lg:px-32 gap-4 w-full">
 	<h2 class="text-xl font-semibold">Torrent info for {data.props.id}</h2>
 

@@ -137,8 +137,6 @@
 
 <svelte:head>
 	<title>Real Debrid Manager</title>
-	<meta name="description" content="Real Debrid Manager" />
-	<meta name="keywords" content="Real Debrid Manager" />
 </svelte:head>
 
 {#if data.clientId === undefined}
