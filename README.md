@@ -20,8 +20,9 @@ https://github.com/AyushSehrawat/rdm/assets/69469790/e1317cfd-ffe2-4af5-b052-0e0
 ## Features
 
 - View and search through all your downloads and torrents
+- Reinsert torrents with option to select files
 - Copy download links, delete, stream and get info on your downloads and torrents
-- Bulk delete downloads and torrents
+- Bulk delete downloads and torrents & bulk unrestrict torrents
 - Scraper to search for torrents and download links and add them to your Real Debrid.
 - Add torrents through magnet links and torrent files (Not yet implemented)
 - Look for dead download links and torrents and refresh them (Not yet implemented)
