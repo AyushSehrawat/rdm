@@ -136,7 +136,7 @@
 </script>
 
 <svelte:head>
-	<title>Real Debrid Manager | Easily manage your Real Debrid account</title>
+	<title>Real Debrid Manager | Easily manage your torrents and downloads</title>
 </svelte:head>
 
 {#if data.clientId === undefined}
