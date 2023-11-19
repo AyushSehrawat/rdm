@@ -193,16 +193,6 @@
 							<Copy class="mr-2 h-4 w-4" />
 							Copy magnet link
 						</Button>
-						<Button
-							variant="destructive"
-							on:click={() => {
-								deleteTorrent(data.props.id);
-								toast.success('Deleted torrent!');
-							}}
-						>
-							<Trash class="mr-2 h-4 w-4" />
-							Delete
-						</Button>
 						<AlertDialog.Root>
 							<AlertDialog.Trigger asChild let:builder>
 								<Button variant="secondary" builders={[builder]}>
@@ -254,6 +244,16 @@
 						>
 							<Unlock class="mr-2 h-4 w-4" />
 							Unrestrict All
+						</Button>
+						<Button
+							variant="destructive"
+							on:click={() => {
+								deleteTorrent(data.props.id);
+								toast.success('Deleted torrent!');
+							}}
+						>
+							<Trash class="mr-2 h-4 w-4" />
+							Delete
 						</Button>
 					</div>
 					<p class="break-words">

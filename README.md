@@ -6,12 +6,14 @@ Aim of this project is to provide a simple interface to manage and search throug
 
 > These screenshots may not be up to date with the current version of the app.
 
-<img src="./assets/homepage.jpeg" width="30%"></img>
-<img src="./assets/torrents.jpeg" width="30%"></img>
-<img src="./assets/downloads.jpeg" width="30%"></img>
-<img src="./assets/scraper.jpeg" width="30%"></img>
-<img src="./assets/scraper-movie.jpeg" width="30%"></img>
-<img src="./assets/scraper-series.jpeg" width="30%"></img>
+<img src="./assets/homepage.jpeg" width="23%"></img>
+<img src="./assets/torrents.jpeg" width="23%"></img>
+<img src="./assets/downloads.jpeg" width="23%"></img>
+<img src="./assets/scraper.jpeg" width="23%"></img>
+<img src="./assets/scraper-movie.jpeg" width="23%"></img>
+<img src="./assets/scraper-series.jpeg" width="23%"></img>
+<img src="./assets/scraper-series-torrent.jpeg" width="23%"></img>
+<img src="./assets/scraper-list.jpeg" width="23%"></img>
 
 https://github.com/AyushSehrawat/rdm/assets/69469790/315f615c-e567-4c51-a3e8-229830596f3c
 
