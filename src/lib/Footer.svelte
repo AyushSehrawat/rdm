@@ -3,14 +3,14 @@
 >
 	<p>
 		Made with &hearts; by <a
-			href="https://github.com/ayushsehrawat"
+			href="https://github.com/ayushsehrawat/"
 			target="_blank"
 			class="underline decoration-blue-500 text-black dark:text-white">Ayush Sehrawat</a
 		>
 	</p>
 	<p>
 		View the source code on <a
-			href="https://github.com/ayushsehrawat/rdm"
+			href="https://github.com/ayushsehrawat/rdm/"
 			target="_blank"
 			class="underline decoration-blue-500 text-black dark:text-white">GitHub</a
 		>
