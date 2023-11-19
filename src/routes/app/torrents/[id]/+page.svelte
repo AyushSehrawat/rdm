@@ -6,6 +6,7 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import TreeView from '$lib/components/app/treeview/treeview.svelte';
 	import { Loader2, Trash, PlusCircle, Copy, Unlock } from 'lucide-svelte';
+	import { Progress } from '$lib/components/ui/progress';
 	import { toast } from 'svelte-sonner';
 	import {
 		formatDate,
@@ -14,9 +15,10 @@
 		removeFirstChar,
 		buildTree
 	} from '$lib/app/helpers';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { get, writable, type Writable } from 'svelte/store';
 	import { setContext } from 'svelte';
+	import type { APIResponse, UnrestrictResponse } from '$lib/app/types';
 
 	export let data;
 
@@ -89,6 +91,49 @@
 			toast.error(`Error! ${deletedResp.error}`);
 		}
 	};
+
+	let unrestrictedOneStatus: string;
+	let unrestrictProgress: number | null;
+	let failedOnes: string[] = [];
+	let maxUnrestrictProgress: number;
+
+	let bulkUnrestrict = async function bulkUnrestrictDataItems(links: string[]): Promise<void> {
+		unrestrictedOneStatus = '';
+		unrestrictProgress = 0;
+
+		for (const link of links) {
+			const data = await fetch(`/api/app/unrestrict`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					link: link
+				})
+			});
+
+			let resp: APIResponse<UnrestrictResponse> = await data.json();
+			if (resp.success === true) {
+				unrestrictedOneStatus = `Unrestricted ${resp.data?.filename}`;
+			} else if (resp.success === false) {
+				failedOnes.push(link);
+			}
+
+			unrestrictProgress++;
+			await new Promise((resolve) => setTimeout(resolve, 200));
+		}
+
+		if (failedOnes.length > 0) {
+			toast.error(`Failed to unrestrict ${failedOnes.length} / ${links.length} links`);
+		} else {
+			toast.success(`Unrestricted ${links.length} links`);
+		}
+
+		unrestrictProgress = null;
+		failedOnes = [];
+
+		await invalidateAll();
+	};
 </script>
 
 <svelte:head>
@@ -103,6 +148,17 @@
 			<Loader2 class="w-8 h-8 animate-spin" />
 		</div>
 	{:then torrentInfo}
+		{#if unrestrictProgress}
+			<div class="flex flex-col my-4 gap-2">
+				<p class="text-sm text-muted-foreground">
+					{unrestrictedOneStatus}
+				</p>
+				<Progress value={unrestrictProgress} max={maxUnrestrictProgress} />
+				<p class="text-sm text-muted-foreground">
+					Unrestricting {unrestrictProgress} / {maxUnrestrictProgress}
+				</p>
+			</div>
+		{/if}
 		<div class="flex flex-col w-full">
 			<Card.Root>
 				<Card.Header>
@@ -118,6 +174,7 @@
 				<Card.Content class="flex flex-col gap-4">
 					<div class="flex flex-col md:flex-row md:flex-wrap w-full md:max-w-max gap-4">
 						<Button
+							variant="outline"
 							on:click={() => {
 								navigator.clipboard.writeText(data.props.id);
 								toast.success('Copied torrent ID to clipboard!');
@@ -127,6 +184,7 @@
 							Copy ID
 						</Button>
 						<Button
+							variant="outline"
 							on:click={() => {
 								navigator.clipboard.writeText(`magnet:?xt=urn:btih:${torrentInfo.data.hash}`);
 								toast.success('Copied magnet link to clipboard!');
@@ -136,6 +194,7 @@
 							Copy magnet link
 						</Button>
 						<Button
+							variant="destructive"
 							on:click={() => {
 								deleteTorrent(data.props.id);
 								toast.success('Deleted torrent!');
@@ -146,7 +205,7 @@
 						</Button>
 						<AlertDialog.Root>
 							<AlertDialog.Trigger asChild let:builder>
-								<Button builders={[builder]}>
+								<Button variant="secondary" builders={[builder]}>
 									<PlusCircle class="mr-2 h-4 w-4" />
 									Reinsert
 								</Button>
@@ -186,12 +245,20 @@
 							</AlertDialog.Content>
 						</AlertDialog.Root>
 
-						<Button disabled>
+						<Button
+							on:click={() => {
+								maxUnrestrictProgress = torrentInfo.data.links.length;
+								bulkUnrestrict(torrentInfo.data.links);
+							}}
+							variant="secondary"
+						>
 							<Unlock class="mr-2 h-4 w-4" />
-							Unrestrict All (Soon)
+							Unrestrict All
 						</Button>
 					</div>
-					<p class="break-words"><span class="font-semibold">Hash: </span>{torrentInfo.hash}</p>
+					<p class="break-words">
+						<span class="font-semibold">Hash: </span>{torrentInfo.data.hash}
+					</p>
 					<div class="flex flex-col w-full">
 						<p class="font-semibold">Selected Files</p>
 						<Table.Root>
