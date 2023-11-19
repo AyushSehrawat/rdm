@@ -15,9 +15,6 @@
 		previousPage = from?.url.pathname || previousPage;
 	});
 
-	let isIDCopied = false;
-	let isDownloadLinkCopied = false;
-
 	let deleteDownload = async function deleteDownloadData(id: string) {
 		const data = await fetch(`/api/app/downloads/${id}`, {
 			method: 'DELETE',
@@ -65,40 +62,27 @@
 				<Card.Content class="flex flex-col gap-4">
 					<div class="flex flex-col md:flex-row md:flex-wrap w-full md:max-w-max gap-4">
 						<Button
+							variant="outline"
 							on:click={() => {
 								navigator.clipboard.writeText($currentDownloadData.id);
-								isIDCopied = true;
-								setTimeout(() => {
-									isIDCopied = false;
-								}, 3000);
+								toast.success('Copied download ID to clipboard!');
 							}}
 						>
-							{#if isIDCopied}
-								<ClipboardCheck class="mr-2 h-4 w-4" />
-								Copied!
-							{:else}
-								<Copy class="mr-2 h-4 w-4" />
-								Copy ID
-							{/if}
+							<Copy class="mr-2 h-4 w-4" />
+							Copy ID
 						</Button>
 						<Button
+							variant="outline"
 							on:click={() => {
 								navigator.clipboard.writeText($currentDownloadData.download);
-								isDownloadLinkCopied = true;
-								setTimeout(() => {
-									isDownloadLinkCopied = false;
-								}, 3000);
+								toast.success('Copied download link to clipboard!');
 							}}
 						>
-							{#if isDownloadLinkCopied}
-								<ClipboardCheck class="mr-2 h-4 w-4" />
-								Copied!
-							{:else}
-								<Copy class="mr-2 h-4 w-4" />
-								Copy Download Link
-							{/if}
+							<Copy class="mr-2 h-4 w-4" />
+							Copy Download Link
 						</Button>
 						<Button
+							variant="outline"
 							on:click={() => {
 								window.open(
 									`https://real-debrid.com/streaming-${$currentDownloadData.id}`,
@@ -110,6 +94,7 @@
 							Play On RD
 						</Button>
 						<Button
+							variant="destructive"
 							on:click={() => {
 								deleteDownload($currentDownloadData.id);
 							}}
