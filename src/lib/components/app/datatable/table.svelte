@@ -9,6 +9,7 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Select from '$lib/components/ui/select';
 	import { Progress } from '$lib/components/ui/progress';
+	import { Badge } from '$lib/components/ui/badge';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -19,9 +20,21 @@
 	} from 'radix-icons-svelte';
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import { formatDate, debounce, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers.js';
-	import type { TorrentsResponse, DownloadsResponse } from '$lib/app/types';
-	import Actions from './table-actions.svelte';
+	import {
+		formatDate,
+		debounce,
+		convertBytes,
+		capitalizeFirstLetter,
+		getFilenameMetadata
+	} from '$lib/app/helpers.js';
+	import type {
+		TorrentsResponse,
+		DownloadsResponse,
+		ParsedDownloadsResponse,
+		ParsedTorrentsResponse
+	} from '$lib/app/types';
+	import Actions from '$lib/components/app/datatable/table-actions.svelte';
+	import Filename from '$lib/components/app/datatable/filename.svelte';
 	import { currentDownloadData } from '$lib/store';
 	import clsx from 'clsx';
 
@@ -189,7 +202,7 @@
 		}
 	};
 
-	$: fileCheckedCheck = (item: TorrentsResponse | DownloadsResponse): void => {
+	$: fileCheckedCheck = (item: ParsedDownloadsResponse | ParsedTorrentsResponse): void => {
 		if ($selectedIds.includes(item.id)) {
 			$selectedIds = $selectedIds.filter((id) => id !== item.id);
 		} else {
@@ -197,7 +210,7 @@
 		}
 	};
 
-	function setCurrentDataAndRedirect(item: DownloadsResponse): void {
+	function setCurrentDataAndRedirect(item: ParsedDownloadsResponse): void {
 		currentDownloadData.set(item);
 		goto(`/app/downloads/${item.id}`);
 	}
@@ -287,7 +300,7 @@
 				<Table.Row class={clsx($selectedIds.includes(item.id) && 'bg-primary-foreground')}>
 					{#each columns as column}
 						{#if column === 'filename'}
-							<Table.Cell class="flex items-center gap-2">
+							<Table.Cell class="flex items-start gap-2">
 								<Checkbox
 									on:click={() => {
 										fileCheckedCheck(item);
@@ -296,8 +309,8 @@
 									id={item.id}
 									aria-labelledby="{item.id}-label"
 								/>
-								<Label id="{item.id}-label" for={item.id}>
-									{item.filename}
+								<Label class="flex flex-col gap-1" id="{item.id}-label" for={item.id}>
+									<Filename filedata={item} />
 								</Label>
 							</Table.Cell>
 						{:else if column === 'bytes'}

@@ -1,5 +1,6 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
-import type { DownloadsResponse, APIResponse } from '$lib/app/types';
+import type { DownloadsResponse, APIResponse, ParsedDownloadsResponse } from '$lib/app/types';
+import { getFilenameMetadata } from '$lib/app/helpers.js';
 import Fuse from 'fuse.js';
 
 const fuseOptions = {
@@ -123,7 +124,9 @@ export const GET = async ({ url, fetch, cookies }) => {
 
 			const totalCount: string | null = res.headers.get('X-Total-Count');
 			const downloads = await res.json();
-
+			downloads.forEach((download: DownloadsResponse, index: number) => {
+				downloads[index].metadata = getFilenameMetadata(download.filename);
+			});
 			return new Response(
 				JSON.stringify({
 					success: true,
@@ -132,7 +135,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 					totalCount: totalCount,
 					limit: limit,
 					page: page
-				} as APIResponse<DownloadsResponse[]>),
+				} as APIResponse<ParsedDownloadsResponse[]>),
 				{
 					status: 200,
 					headers: {
@@ -195,6 +198,9 @@ export const GET = async ({ url, fetch, cookies }) => {
 			const fuse = new Fuse(queryData, fuseOptions);
 			queryData = fuse.search(query);
 			queryData = queryData.map((result) => result.item);
+			queryData.forEach((download: DownloadsResponse, index: number) => {
+				queryData[index].metadata = getFilenameMetadata(download.filename);
+			});
 
 			return new Response(
 				JSON.stringify({
@@ -205,7 +211,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 					limit: queryLimit,
 					page: queryPage,
 					query: query
-				} as APIResponse<DownloadsResponse[]>),
+				} as APIResponse<ParsedDownloadsResponse[]>),
 				{
 					status: 200,
 					headers: {

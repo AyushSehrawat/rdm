@@ -1,3 +1,5 @@
+import type { ParsedMovie, ParsedShow } from '@ctrl/video-filename-parser';
+
 export interface DeviceCodeResponse {
 	device_code: string;
 	user_code: string;
@@ -43,6 +45,21 @@ export interface DownloadsResponse {
 	download: string;
 	streamable: number;
 	generated: string;
+}
+
+// TODO: making parsedData: ParsedMovie | ParsedShow; to any for now
+export interface ParsedDownloadsResponse extends DownloadsResponse {
+	metadata: {
+		mediaType: 'movie' | 'tv';
+		parsedData: any;
+	};
+}
+
+export interface ParsedTorrentsResponse extends TorrentsResponse {
+	metadata: {
+		mediaType: 'movie' | 'tv';
+		parsedData: any;
+	};
 }
 
 export interface TorrentsResponse {

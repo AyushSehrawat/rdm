@@ -1,5 +1,6 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
-import type { TorrentsResponse, APIResponse } from '$lib/app/types';
+import type { TorrentsResponse, APIResponse, ParsedTorrentsResponse } from '$lib/app/types';
+import { getFilenameMetadata } from '$lib/app/helpers.js';
 import Fuse from 'fuse.js';
 
 const fuseOptions = {
@@ -122,6 +123,9 @@ export const GET = async ({ url, fetch, cookies }) => {
 
 			const totalCount: string | null = res.headers.get('X-Total-Count');
 			const torrents = await res.json();
+			torrents.forEach((torrent: TorrentsResponse, index: number) => {
+				torrents[index].metadata = getFilenameMetadata(torrent.filename);
+			});
 
 			return new Response(
 				JSON.stringify({
@@ -131,7 +135,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 					totalCount: totalCount,
 					limit: limit,
 					page: page
-				} as APIResponse<TorrentsResponse[]>),
+				} as APIResponse<ParsedTorrentsResponse[]>),
 				{
 					status: 200,
 					headers: {
@@ -193,6 +197,9 @@ export const GET = async ({ url, fetch, cookies }) => {
 			const fuse = new Fuse(queryData, fuseOptions);
 			queryData = fuse.search(query);
 			queryData = queryData.map((result) => result.item);
+			queryData.forEach((torrent: TorrentsResponse, index: number) => {
+				queryData[index].metadata = getFilenameMetadata(torrent.filename);
+			});
 
 			return new Response(
 				JSON.stringify({
@@ -202,7 +209,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 					totalCount: queryTotalCount,
 					limit: queryLimit,
 					page: queryPage
-				} as APIResponse<TorrentsResponse[]>),
+				} as APIResponse<ParsedTorrentsResponse[]>),
 				{
 					status: 200,
 					headers: {

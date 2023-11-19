@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { RotateCw, Loader2 } from 'lucide-svelte';
@@ -9,6 +10,7 @@
 	import { toast } from 'svelte-sonner';
 	import { currentDownloadData } from '$lib/store';
 	import type { DownloadsResponse } from '$lib/app/types';
+	import Filename from '$lib/components/app/datatable/filename.svelte';
 
 	let downloadRefresh = false;
 	let torrentRefresh = false;
@@ -108,7 +110,9 @@
 				{#if data.data}
 					{#each data.data as download}
 						<Table.Row>
-							<Table.Cell>{download.filename}</Table.Cell>
+							<Table.Cell class="flex flex-col gap-1 items-start">
+								<Filename filedata={download} />
+							</Table.Cell>
 							<Table.Cell>{convertBytes(download.filesize)}</Table.Cell>
 							<Table.Cell>{formatDate(download.generated)}</Table.Cell>
 							<Table.Cell>
@@ -200,7 +204,9 @@
 				{#if data.data}
 					{#each data.data as torrent}
 						<Table.Row>
-							<Table.Cell>{torrent.filename}</Table.Cell>
+							<Table.Cell class="flex flex-col gap-1 items-start">
+								<Filename filedata={torrent} />
+							</Table.Cell>
 							<Table.Cell>{convertBytes(torrent.bytes)}</Table.Cell>
 							<Table.Cell>{capitalizeFirstLetter(torrent.status)}</Table.Cell>
 							<Table.Cell>{formatDate(torrent.added)}</Table.Cell>

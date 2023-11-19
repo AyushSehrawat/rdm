@@ -5,6 +5,7 @@ import type {
 	BuildTreeNode,
 	DateTimeFormatOptions
 } from '$lib/app/types';
+import { filenameParse, type ParsedMovie, type ParsedShow } from '@ctrl/video-filename-parser';
 
 export function convertBytes(byteSize: number): string {
 	if (byteSize < 1024) {
@@ -125,3 +126,27 @@ export function buildTree(files: TorrentInfoFiles[]): BuildTreeNode[] {
 
 	return root.children;
 }
+
+export const getMediaType = (filename: string): 'tv' | 'movie' => {
+	return /seasons?.\d/i.test(filename) ||
+		/s\d\d/i.test(filename) ||
+		/\b(tv|complete)/i.test(filename) ||
+		/\b(saison|stage)[\s\.]?\d/i.test(filename)
+		? 'tv'
+		: 'movie';
+};
+
+export const getFilenameMetadata = (filename: string) => {
+	switch (getMediaType(filename)) {
+		case 'tv':
+			return {
+				mediaType: 'tv',
+				parsedData: filenameParse(filename, true) as ParsedShow
+			};
+		case 'movie':
+			return {
+				mediaType: 'movie',
+				parsedData: filenameParse(filename) as ParsedMovie
+			};
+	}
+};
