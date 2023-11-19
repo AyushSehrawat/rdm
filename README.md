@@ -15,7 +15,7 @@ Aim of this project is to provide a simple interface to manage and search throug
 <img src="./assets/scraper-series-torrent.jpeg" width="23%"></img>
 <img src="./assets/scraper-list.jpeg" width="23%"></img>
 
-https://github.com/AyushSehrawat/rdm/assets/69469790/315f615c-e567-4c51-a3e8-229830596f3c
+https://github.com/AyushSehrawat/rdm/assets/69469790/e1317cfd-ffe2-4af5-b052-0e0ed73d2fe8
 
 ## Features
 
