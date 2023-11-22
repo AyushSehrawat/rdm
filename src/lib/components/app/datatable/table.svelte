@@ -9,7 +9,6 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Select from '$lib/components/ui/select';
 	import { Progress } from '$lib/components/ui/progress';
-	import { Badge } from '$lib/components/ui/badge';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -20,19 +19,8 @@
 	} from 'radix-icons-svelte';
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import {
-		formatDate,
-		debounce,
-		convertBytes,
-		capitalizeFirstLetter,
-		getFilenameMetadata
-	} from '$lib/app/helpers.js';
-	import type {
-		TorrentsResponse,
-		DownloadsResponse,
-		ParsedDownloadsResponse,
-		ParsedTorrentsResponse
-	} from '$lib/app/types';
+	import { formatDate, debounce, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers.js';
+	import type { ParsedDownloadsResponse, ParsedTorrentsResponse } from '$lib/app/types';
 	import Actions from '$lib/components/app/datatable/table-actions.svelte';
 	import Filename from '$lib/components/app/datatable/filename.svelte';
 	import { currentDownloadData } from '$lib/store';
@@ -46,6 +34,26 @@
 		currentPage: Writable<number>,
 		hasPreviousPage: Writable<boolean>,
 		hasNextPage: Writable<boolean>;
+
+	$: dataItems = $page.data.data?.data;
+
+	$: uniqueResolutionsArray = $page.data.data?.data
+		.filter((item: any) => item.metadata.parsedData.resolution)
+		.reduce((unique: string[], item: any) => {
+			if (!unique.includes(item.metadata.parsedData.resolution)) {
+				unique.push(item.metadata.parsedData.resolution);
+			}
+			return unique;
+		}, []) as string[];
+
+	let selectedResolution = '';
+
+	$: filteredDataItems = dataItems.filter(
+		(item: any) =>
+			selectedResolution === '' || item.metadata.parsedData.resolution === selectedResolution
+	);
+
+	$: console.log('selectedResolution =>', selectedResolution);
 
 	let loading: boolean = false;
 	let query: string = $page.url.searchParams.get('query') || '';
@@ -234,11 +242,41 @@
 			Refresh
 		</Button>
 	</div>
+	<div class="flex flex-wrap items-center justify-between w-full gap-2">
+		<div class="flex flex-row flex-wrap items-center gap-1">
+			{#if uniqueResolutionsArray && uniqueResolutionsArray.length > 0}
+				<Select.Root
+					onSelectedChange={(selected) => {
+						selectedResolution = String(selected?.value ?? '');
+					}}
+				>
+					<Select.Trigger class="w-[180px]">
+						<Select.Value placeholder="Filter Quality" />
+					</Select.Trigger>
+					<Select.Content>
+						{#each uniqueResolutionsArray as resolution}
+							<Select.Item value={resolution} label={resolution}>{resolution}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			{/if}
+		</div>
+		<div class="flex flex-row flex-wrap items-center gap-1">
+			<Button
+				on:click={() => {
+					selectedResolution = '';
+				}}
+				variant="destructive"
+			>
+				Reset Filters
+			</Button>
+		</div>
+	</div>
 	<div class="flex flex-col w-full gap-1.5">
 		<div class="flex items-center w-full justify-between">
 			<Label for="query">Search</Label>
 			{#if query.length > 0}
-				<Button variant="secondary" on:click={resetQuery}>
+				<Button variant="outline" on:click={resetQuery}>
 					<Reset class="mr-2 h-4 w-4" />
 					Reset
 				</Button>
@@ -296,7 +334,7 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each $page.data.data?.data as item (item.id)}
+			{#each filteredDataItems as item (item.id)}
 				<Table.Row class={clsx($selectedIds.includes(item.id) && 'bg-primary-foreground')}>
 					{#each columns as column}
 						{#if column === 'filename'}

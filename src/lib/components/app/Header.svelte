@@ -35,8 +35,7 @@
 			class="flex title-font font-medium items-center gap-2 text-gray-900 dark:text-gray-100"
 		>
 			<img alt="logo" src="/icon.svg" class="w-10 h-10 dark:invert" />
-			<span class="text-xl hidden lg:block">Real Debrid Manager</span>
-			<span class="text-xl block lg:hidden">RDM</span>
+			<span class="text-xl">RDM</span>
 		</a>
 		<div class="flex items-center gap-8">
 			<nav class="hidden lg:flex items-center gap-4">
