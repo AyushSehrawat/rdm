@@ -218,7 +218,7 @@
 
 <div class="p-8 md:px-24 lg:px-32 flex flex-col w-full gap-4">
 	<div class="flex items-center w-full justify-between">
-		<h2 class="text-2xl font-semibold">{capitalizeFirstLetter(dataType)}</h2>
+		<h2 class="text-2xl font-semibold">{capitalizeFirstLetter(dataType)} <span class="text-muted-foreground text-base">({$totalDataItems})</span></h2>
 		<Button
 			disabled={loading}
 			variant="outline"
