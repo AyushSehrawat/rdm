@@ -8,6 +8,9 @@ dependencies:
   '@ctrl/video-filename-parser':
     specifier: ^5.1.0
     version: 5.1.0
+  '@types/web-app-manifest':
+    specifier: ^1.0.7
+    version: 1.0.7
   bits-ui:
     specifier: ^0.6.3
     version: 0.6.3(svelte@4.2.2)
@@ -605,6 +608,10 @@ packages:
   /@types/semver@7.5.4:
     resolution: {integrity: sha512-MMzuxN3GdFwskAnb6fz0orFvhfqi752yjaXylr0Rp4oDg5H0Zn1IuyRhDVvYOwAXoJirx2xuS16I3WjxnAIHiQ==}
     dev: true
+
+  /@types/web-app-manifest@1.0.7:
+    resolution: {integrity: sha512-IRgwSzFEy2Er1C2fKAHWmeWN2DTif4Uqrn0FXyLyCNRODKQWzxiCc1FlQe3yVn3qLl/XmYXsPIYQCT1mfpONDg==}
+    dev: false
 
   /@typescript-eslint/eslint-plugin@6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.53.0)(typescript@5.2.2):
     resolution: {integrity: sha512-w0tiiRc9I4S5XSXXrMHOWgHgxbrBn1Ro+PmiYhSg2ZVdxrAJtQgzU5o2m1BfP6UOn7Vxcc6152vFjQfmZR4xEg==}
