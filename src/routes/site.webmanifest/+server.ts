@@ -21,7 +21,21 @@ const manifest: CustomWebAppManifest = {
 	description:
 		'Effortlessly organize and control your Real Debrid torrents and downloads. Simplifying the process of scraping and downloading.',
 	orientation: 'portrait',
-	categories: ['entertainment', 'utilities'], // https://github.com/w3c/manifest/wiki/Categories
+	categories: ['entertainment', 'utilities'], // https://github.com/w3c/manifest/wiki/Categories,
+	screenshots: [
+		{
+			src: '/screenshots/homepage.jpeg',
+			sizes: '1613x1469',
+			type: 'image/jpeg',
+			// @ts-ignore
+			form_factor: 'wide'
+		},
+		{
+			src: '/screenshots/homepage-mobile.jpeg',
+			sizes: '428x590',
+			type: 'image/jpeg'
+		}
+	],
 	shortcuts: [
 		{
 			name: 'Torrents',
