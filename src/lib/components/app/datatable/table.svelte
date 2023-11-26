@@ -9,7 +9,6 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Select from '$lib/components/ui/select';
 	import { Progress } from '$lib/components/ui/progress';
-	import { Badge } from '$lib/components/ui/badge';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -20,19 +19,8 @@
 	} from 'radix-icons-svelte';
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import {
-		formatDate,
-		debounce,
-		convertBytes,
-		capitalizeFirstLetter,
-		getFilenameMetadata
-	} from '$lib/app/helpers.js';
-	import type {
-		TorrentsResponse,
-		DownloadsResponse,
-		ParsedDownloadsResponse,
-		ParsedTorrentsResponse
-	} from '$lib/app/types';
+	import { formatDate, debounce, convertBytes, capitalizeFirstLetter } from '$lib/app/helpers.js';
+	import type { ParsedDownloadsResponse, ParsedTorrentsResponse } from '$lib/app/types';
 	import Actions from '$lib/components/app/datatable/table-actions.svelte';
 	import Filename from '$lib/components/app/datatable/filename.svelte';
 	import { currentDownloadData } from '$lib/store';
@@ -218,7 +206,10 @@
 
 <div class="p-8 md:px-24 lg:px-32 flex flex-col w-full gap-4">
 	<div class="flex items-center w-full justify-between">
-		<h2 class="text-2xl font-semibold">{capitalizeFirstLetter(dataType)} <span class="text-muted-foreground text-base">({$totalDataItems})</span></h2>
+		<h2 class="text-2xl font-semibold">
+			{capitalizeFirstLetter(dataType)}
+			<span class="text-muted-foreground text-base">({$totalDataItems})</span>
+		</h2>
 		<Button
 			disabled={loading}
 			variant="outline"
@@ -318,7 +309,26 @@
 						{:else if column === 'added'}
 							<Table.Cell>{formatDate(item.added)}</Table.Cell>
 						{:else if column === 'status'}
-							<Table.Cell>{capitalizeFirstLetter(item.status)}</Table.Cell>
+							{#if ['downloading', 'compressing', 'uploading', 'magnet_conversion'].includes(item.status)}
+								<Table.Cell class="flex flex-col gap-1">
+									<p class="text-sm text-muted-foreground">
+										{capitalizeFirstLetter(item.status)}
+									</p>
+									<Progress value={item.progress} max={100} />
+									{#if 'speed' in item}
+										<p class="text-sm text-muted-foreground">
+											Speed {item.speed}
+										</p>
+									{/if}
+									{#if 'seeders' in item}
+										<p class="text-sm text-muted-foreground">
+											Seeders {item.seeders}
+										</p>
+									{/if}
+								</Table.Cell>
+							{:else}
+								<Table.Cell>{capitalizeFirstLetter(item.status)}</Table.Cell>
+							{/if}
 						{:else if column === 'filesize'}
 							<Table.Cell>{convertBytes(item.filesize)}</Table.Cell>
 						{:else if column === 'generated'}
