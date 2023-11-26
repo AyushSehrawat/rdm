@@ -1,31 +1,34 @@
 import { PUBLIC_BASE_URI } from '$env/static/public';
-import type { DownloadsResponse, APIResponse, ParsedDownloadsResponse } from '$lib/app/types';
+import type {
+	APIResponse,
+	TorrentsResponse,
+	DownloadsResponse,
+	ParsedTorrentsResponse,
+	ParsedDownloadsResponse
+} from '$lib/app/types';
 import { getFilenameMetadata } from '$lib/app/helpers.js';
 import Fuse from 'fuse.js';
 
-const fuseOptions = {
-	// isCaseSensitive: false,
-	// includeScore: true,
+const downloadsFuseOptions = {
 	shouldSort: true,
-	// includeMatches: true,
-	// findAllMatches: false,
-	// minMatchCharLength: 1,
-	// location: 0,
-	// distance: 100,
-	// useExtendedSearch: false,
-	// ignoreLocation: false,
-	// ignoreFieldNorm: false,
-	// fieldNormWeight: 1,
-	// threshold: 0.6,
 	keys: ['id', 'filename']
 };
 
-export const GET = async ({ url, fetch, cookies }) => {
+const torrentsFuseOptions = {
+	shouldSort: true,
+	keys: ['id', 'filename', 'hash']
+};
+
+export const GET = async ({ url, fetch, cookies, params }) => {
+	const datatype: string = params.type;
 	let accessToken: string | undefined = cookies.get('accessToken');
 	const refreshToken: string | undefined = cookies.get('refreshToken');
+
 	const limit: number = Number(url.searchParams.get('limit')) || 10;
 	const page: number = Number(url.searchParams.get('page')) || 1;
 	const query: string | null = url.searchParams.get('query');
+
+	console.log(datatype);
 
 	try {
 		if (!refreshToken) {
@@ -105,7 +108,14 @@ export const GET = async ({ url, fetch, cookies }) => {
 		}
 
 		if (!query) {
-			const res = await fetch(`${PUBLIC_BASE_URI}/downloads?limit=${limit}&page=${page}`, {
+			let url = '';
+			if (datatype === 'downloads') {
+				url = `${PUBLIC_BASE_URI}/downloads?limit=${limit}&page=${page}`;
+			} else if (datatype === 'torrents') {
+				url = `${PUBLIC_BASE_URI}/torrents?limit=${limit}&page=${page}`;
+			}
+
+			const res = await fetch(url, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
@@ -123,19 +133,20 @@ export const GET = async ({ url, fetch, cookies }) => {
 				);
 
 			const totalCount: string | null = res.headers.get('X-Total-Count');
-			const downloads = await res.json();
-			downloads.forEach((download: DownloadsResponse, index: number) => {
-				downloads[index].metadata = getFilenameMetadata(download.filename);
+			const dataTypeItems = await res.json();
+			const updatedItems = dataTypeItems.map((item: DownloadsResponse | TorrentsResponse) => {
+				return { ...item, metadata: getFilenameMetadata(item.filename) };
 			});
+
 			return new Response(
 				JSON.stringify({
 					success: true,
 					status: 200,
-					data: downloads,
+					data: updatedItems,
 					totalCount: totalCount,
 					limit: limit,
 					page: page
-				} as APIResponse<ParsedDownloadsResponse[]>),
+				} as APIResponse<ParsedDownloadsResponse[] | ParsedTorrentsResponse[]>),
 				{
 					status: 200,
 					headers: {
@@ -150,19 +161,23 @@ export const GET = async ({ url, fetch, cookies }) => {
 			let queryData: any[] = [];
 			let queryTotalCount: string | null = null;
 
+			let url = '';
+			if (datatype === 'downloads') {
+				url = `${PUBLIC_BASE_URI}/downloads`;
+			} else if (datatype === 'torrents') {
+				url = `${PUBLIC_BASE_URI}/torrents`;
+			}
+
 			while (true) {
 				console.log(`Querying page ${queryPage}...`);
 
-				const tempData = await fetch(
-					`${PUBLIC_BASE_URI}/downloads?limit=${queryLimit}&page=${queryPage}`,
-					{
-						method: 'GET',
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-							'Content-Type': 'application/json'
-						}
+				const tempData = await fetch(`${url}?limit=${queryLimit}&page=${queryPage}`, {
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json'
 					}
-				);
+				});
 
 				if (!tempData.ok)
 					return new Response(
@@ -180,7 +195,7 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 
 				try {
-					const tempJsonData: DownloadsResponse[] = await tempData.json();
+					const tempJsonData: DownloadsResponse[] | TorrentsResponse[] = await tempData.json();
 					if (tempJsonData.length === 0) {
 						console.log('No more data to query.');
 						break;
@@ -195,23 +210,30 @@ export const GET = async ({ url, fetch, cookies }) => {
 				}
 			}
 
+			let fuseOptions = {};
+			if (datatype === 'downloads') {
+				fuseOptions = downloadsFuseOptions;
+			} else if (datatype === 'torrents') {
+				fuseOptions = torrentsFuseOptions;
+			}
+
 			const fuse = new Fuse(queryData, fuseOptions);
 			queryData = fuse.search(query);
 			queryData = queryData.map((result) => result.item);
-			queryData.forEach((download: DownloadsResponse, index: number) => {
-				queryData[index].metadata = getFilenameMetadata(download.filename);
+			const updatedItems = queryData.map((item: DownloadsResponse | TorrentsResponse) => {
+				return { ...item, metadata: getFilenameMetadata(item.filename) };
 			});
 
 			return new Response(
 				JSON.stringify({
 					status: 200,
 					success: true,
-					data: queryData,
+					data: updatedItems,
 					totalCount: queryTotalCount,
 					limit: queryLimit,
 					page: queryPage,
 					query: query
-				} as APIResponse<ParsedDownloadsResponse[]>),
+				} as APIResponse<ParsedDownloadsResponse[]> | APIResponse<ParsedTorrentsResponse[]>),
 				{
 					status: 200,
 					headers: {
