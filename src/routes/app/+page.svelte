@@ -18,7 +18,13 @@
 	let recentDownloads = async function recentDownloadsData() {
 		const data = await fetch(`/api/app/downloads?limit=5&page=1`);
 		downloadRefresh = false;
-		return data.json();
+		let res = data.json();
+		if (!data.ok) {
+			toast.error(`Error! ${data.status} ${data.statusText}`);
+			return [];
+		} else {
+			return res;
+		}
 	};
 	let doRecentDownloads = recentDownloads();
 	function refreshRecentDownloads() {
@@ -29,7 +35,13 @@
 	let recentTorrents = async function recentTorrentsData() {
 		const data = await fetch(`/api/app/torrents?limit=5&page=1`);
 		torrentRefresh = false;
-		return data.json();
+		let res = data.json();
+		if (!data.ok) {
+			toast.error(`Error! ${data.status} ${data.statusText}`);
+			return [];
+		} else {
+			return res;
+		}
 	};
 	let doRecentTorrents = recentTorrents();
 	function refreshRecentTorrents() {

@@ -9,6 +9,7 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Select from '$lib/components/ui/select';
 	import { Progress } from '$lib/components/ui/progress';
+	import { Badge } from '$lib/components/ui/badge';
 	import {
 		ArrowLeft,
 		ArrowRight,
@@ -312,17 +313,17 @@
 							{#if ['downloading', 'compressing', 'uploading', 'magnet_conversion'].includes(item.status)}
 								<Table.Cell class="flex flex-col gap-1">
 									<p class="text-sm text-muted-foreground">
-										{capitalizeFirstLetter(item.status)}
+										{capitalizeFirstLetter(item.status)} {item.progress}%
 									</p>
 									<Progress value={item.progress} max={100} />
 									{#if 'speed' in item}
 										<p class="text-sm text-muted-foreground">
-											Speed {item.speed}
+											Speed {convertBytes(item.speed)}/s
 										</p>
 									{/if}
 									{#if 'seeders' in item}
 										<p class="text-sm text-muted-foreground">
-											Seeders {item.seeders}
+											{item.seeders} seeders
 										</p>
 									{/if}
 								</Table.Cell>

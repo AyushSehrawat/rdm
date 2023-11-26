@@ -17,6 +17,7 @@
 		APIResponse
 	} from '$lib/app/types';
 	import { toast } from 'svelte-sonner';
+	import { error } from '@sveltejs/kit';
 
 	export let data;
 	let userCode: string;
@@ -89,46 +90,46 @@
 	async function pollForToken(): Promise<void> {
 		try {
 			const clientData = await getClientData();
-			if (!clientData.success) {
-				alert('Error polling for token from Real Debrid.. Logging out.');
-				return;
-			}
-			clearInterval(pollingInterval);
+			if (clientData.data && 'client_id' in clientData.data) {
+				clearInterval(pollingInterval);
 
-			const clientId: string = clientData.data ? clientData.data.client_id : '';
-			const clientSecret: string = clientData.data ? clientData.data.client_secret : '';
+				const clientId: string = clientData.data ? clientData.data.client_id : '';
+				const clientSecret: string = clientData.data ? clientData.data.client_secret : '';
 
-			const tokenData = await getAccessToken(clientId, clientSecret);
-			if (!tokenData.success) {
-				alert('Error getting access token from Real Debrid.. Logging out.');
-				return;
+				const tokenData = await getAccessToken(clientId, clientSecret);
+				if (!tokenData.success) {
+					alert('Error getting access token from Real Debrid.. Logging out.');
+					return;
+				}
+				const expiresIn = tokenData.data ? tokenData.data.expires_in : 0;
+				const accessTokenData = await doLogin(
+					tokenData.data ? tokenData.data.access_token : '',
+					tokenData.data ? tokenData.data.refresh_token : '',
+					clientId,
+					clientSecret,
+					expiresIn
+				);
+				if (!accessTokenData.success) {
+					alert('Error saving token from Real Debrid.. Logging out.');
+					return;
+				}
+				loading = false;
+				invalidateAll();
 			}
-			const expiresIn = tokenData.data ? tokenData.data.expires_in : 0;
-			const accessTokenData = await doLogin(
-				tokenData.data ? tokenData.data.access_token : '',
-				tokenData.data ? tokenData.data.refresh_token : '',
-				clientId,
-				clientSecret,
-				expiresIn
-			);
-			if (!accessTokenData.success) {
-				alert('Error saving token from Real Debrid.. Logging out.');
-				return;
-			}
-			loading = false;
-			invalidateAll();
 		} catch (error) {
-			alert('Error polling for token from Real Debrid.. Logging out.');
+			clearInterval(pollingInterval);
+			alert('Error polling! Terminating polling..');
 		}
 	}
 
 	let userData = async function getUserData() {
 		const res = await fetch('/api/user');
-		const data: APIResponse<UserResponse> = await res.json();
+		const data = await res.json();
 
-		if (!data.success) {
-			toast.error('Error getting user data..');
-			return;
+		if (!data.success || data.data?.error !== undefined) {
+			toast.error('Error getting user data.. Logging out. ' + data.data?.error);
+			const res = await fetch('/api/logout');
+			invalidateAll();
 		}
 
 		return data;
@@ -202,7 +203,7 @@
 				<p>{data?.data?.points} points</p>
 			</div>
 		{:catch error}
-			<p class="text-red-500">Error getting user data.. {error?.message}</p>
+			<p class="text-red-500">Error getting user data..</p>
 		{/await}
 		<div class="flex flex-col md:flex-row items-center gap-2">
 			<Button href="/app">

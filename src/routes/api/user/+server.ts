@@ -11,7 +11,7 @@ export const GET = async ({ cookies, fetch }) => {
 				JSON.stringify({
 					success: false,
 					status: 401,
-					error: 'No access token or refresh token'
+					error: 'No access token or refresh token.'
 				} as APIResponse),
 				{
 					status: 401,
@@ -35,7 +35,7 @@ export const GET = async ({ cookies, fetch }) => {
 					JSON.stringify({
 						status: 401,
 						success: false,
-						error: 'No access token or refresh token'
+						error: `Unauthorized. ${data.error}`
 					} as APIResponse),
 					{
 						status: 401,

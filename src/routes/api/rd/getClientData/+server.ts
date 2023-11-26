@@ -24,20 +24,6 @@ export const GET = async ({ url, fetch }) => {
 		);
 		const data = await res.json();
 
-		if (!res.ok) {
-			return new Response(
-				JSON.stringify({
-					status: res.status,
-					success: false,
-					error: data.error_description
-				} as APIResponse),
-				{
-					status: res.status,
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
-		}
-
 		return new Response(
 			JSON.stringify({
 				status: 200,
