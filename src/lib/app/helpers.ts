@@ -2,10 +2,12 @@ import type {
 	VideoResponse,
 	SeasonDictType,
 	TorrentInfoFiles,
-	BuildTreeNode,
-	DateTimeFormatOptions
+	BuildTreeNode
 } from '$lib/app/types';
 import { filenameParse, type ParsedMovie, type ParsedShow } from '@ctrl/video-filename-parser';
+import { DateTime, Settings } from 'luxon';
+
+Settings.defaultZone = 'utc'; // Set default timezone to UTC
 
 export function convertBytes(byteSize: number): string {
 	if (byteSize < 1024) {
@@ -20,40 +22,23 @@ export function convertBytes(byteSize: number): string {
 }
 
 export function formatDate(inputDate: string, format: string = 'long'): string {
-	let options: DateTimeFormatOptions;
-	const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	let cetDate = DateTime.fromISO(inputDate, { zone: 'Europe/Paris' }); // Parse date as CET
+	cetDate = cetDate.setZone('utc'); // Convert to UTC
 
+	const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's timezone
+	cetDate = cetDate.setZone(userTimeZone); // Convert to user's timezone
+
+	let formattedDate;
 	if (format === 'short') {
-		options = {
+		formattedDate = cetDate.toLocaleString({
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric'
-		};
+		});
 	} else {
-		options = {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			second: 'numeric',
-			timeZone: userTimeZone
-		};
+		formattedDate = cetDate.toLocaleString(DateTime.DATETIME_FULL);
 	}
 
-	const formattedDate = new Date(inputDate).toLocaleString('en-US', options);
-	if (formattedDate.includes('Invalid Date')) {
-		const fallbackOptions: DateTimeFormatOptions = {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			second: 'numeric',
-			timeZone: 'UTC'
-		};
-		return new Date(inputDate).toLocaleString('en-US', fallbackOptions);
-	}
 	return formattedDate;
 }
 
