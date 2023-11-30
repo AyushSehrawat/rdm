@@ -261,9 +261,25 @@
 													{#if !torrentIoData}
 														<p class="text-sm text-muted-foreground">Loading streams...</p>
 													{:else}
+														<Button
+															disabled={getHashesLoading}
+															variant="outline"
+															class="max-w-max"
+															on:click={async () => {
+																getHashesLoading = true;
+																await getHashesAlreadyInRD(torrentIoData);
+																getHashesLoading = false;
+															}}
+														>
+															{#if getHashesLoading}
+																<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+															{/if}
+															Show torrents already in RD
+														</Button>
 														{#each torrentIoData.streams as stream, i}
 															{#if i <= $limit}
 																<div
+																	class:border-green-500={foundHashes.includes(getHash(stream.url))}
 																	class="w-full flex flex-col break-words gap-2 border rounded-md p-4 justify-between"
 																>
 																	<div class="flex flex-col gap-2">
