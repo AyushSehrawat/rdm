@@ -26,6 +26,7 @@ https://github.com/AyushSehrawat/rdm/assets/69469790/e1317cfd-ffe2-4af5-b052-0e0
 - Scraper to search for torrents and download links and add them to your Real Debrid.
 - Add torrents through magnet links and torrent files (Not yet implemented)
 - Look for dead download links and torrents and refresh them (Not yet implemented)
+- And much more...
 
 ## Environment Variables
 
