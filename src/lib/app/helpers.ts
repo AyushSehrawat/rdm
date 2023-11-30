@@ -2,7 +2,8 @@ import type {
 	VideoResponse,
 	SeasonDictType,
 	TorrentInfoFiles,
-	BuildTreeNode
+	BuildTreeNode,
+	TorrentIOResponse
 } from '$lib/app/types';
 import { filenameParse, type ParsedMovie, type ParsedShow } from '@ctrl/video-filename-parser';
 import { DateTime, Settings } from 'luxon';
@@ -135,3 +136,22 @@ export const getFilenameMetadata = (filename: string) => {
 			};
 	}
 };
+
+const regex = /\/([a-fA-F0-9]{40})\//;
+
+export function getHash(url: string | null): string | null {
+	if (!url) {
+		return null;
+	}
+	const match = url.match(regex);
+	return match ? match[1] : null;
+}
+
+export function getHashes(data: TorrentIOResponse) {
+	const urls = data.streams.map((stream) => stream.url);
+	const hashes = urls.map((url) => {
+		return getHash(url);
+	});
+
+	return hashes.filter((hash) => hash !== null);
+}

@@ -155,12 +155,6 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 				}
 			);
 		} else {
-			const queryLimit: number = 2500;
-			let queryPage: number = 1;
-			// TODO: add type
-			let queryData: any[] = [];
-			let queryTotalCount: string | null = null;
-
 			let url = '';
 			if (datatype === 'downloads') {
 				url = `${PUBLIC_BASE_URI}/downloads`;
@@ -168,47 +162,52 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 				url = `${PUBLIC_BASE_URI}/torrents`;
 			}
 
-			while (true) {
-				console.log(`Querying page ${queryPage}...`);
+			const queryTotalCountRes = await fetch(`${url}?limit=1&page=1`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`
+				}
+			});
 
-				const tempData = await fetch(`${url}?limit=${queryLimit}&page=${queryPage}`, {
+			const queryTotalCount = parseInt(queryTotalCountRes.headers.get('X-Total-Count') || '0');
+			const queryLimit = 2500;
+			const queryTotalPages = Math.ceil(queryTotalCount / queryLimit);
+
+			const queryPageNumbers = Array.from({ length: queryTotalPages }, (_, i) => i + 1);
+			const queryChunkSize = 10;
+			const queryDelay = 500;
+
+			const allData = [];
+
+			for (let i = 0; i < queryPageNumbers.length; i += queryChunkSize) {
+				const chunk = queryPageNumbers.slice(i, i + queryChunkSize);
+				const promises = chunk.map(fetchPage);
+				const data = await Promise.all(promises);
+				allData.push(...data);
+				if (i + queryChunkSize < queryPageNumbers.length) {
+					await new Promise((resolve) => setTimeout(resolve, queryDelay));
+				}
+			}
+
+			async function fetchPage(queryPage: number) {
+				console.log(`Fetching page ${queryPage}`);
+				const response = await fetch(`${url}?limit=${queryLimit}&page=${queryPage}`, {
 					method: 'GET',
 					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`
 					}
 				});
 
-				if (!tempData.ok)
-					return new Response(
-						JSON.stringify({
-							success: false,
-							status: tempData.status,
-							error: tempData.statusText
-						} as APIResponse),
-						{ status: tempData.status, headers: { 'Content-Type': 'application/json' } }
-					);
-
-				if (tempData.status === 204) {
-					console.log('No more data to query.');
-					break;
+				if (!response.ok) {
+					throw new Error(`Error fetching page ${queryPage}. Status: ${response.status}`);
 				}
 
-				try {
-					const tempJsonData: DownloadsResponse[] | TorrentsResponse[] = await tempData.json();
-					if (tempJsonData.length === 0) {
-						console.log('No more data to query.');
-						break;
-					}
-
-					queryData = queryData.concat(tempJsonData);
-					queryTotalCount = tempData.headers.get('X-Total-Count');
-					queryPage++;
-				} catch (e) {
-					console.log(e);
-					break;
-				}
+				return (await response.json()) as TorrentsResponse[];
 			}
+
+			const data = allData.flat();
 
 			let fuseOptions = {};
 			if (datatype === 'downloads') {
@@ -217,10 +216,9 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 				fuseOptions = torrentsFuseOptions;
 			}
 
-			const fuse = new Fuse(queryData, fuseOptions);
-			queryData = fuse.search(query);
-			queryData = queryData.map((result) => result.item);
-			const updatedItems = queryData.map((item: DownloadsResponse | TorrentsResponse) => {
+			const fuse = new Fuse(data, fuseOptions);
+			let searchResults = fuse.search(query).map((result) => result.item);
+			const updatedItems = searchResults.map((item: DownloadsResponse | TorrentsResponse) => {
 				return { ...item, metadata: getFilenameMetadata(item.filename) };
 			});
 
@@ -231,7 +229,7 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 					data: updatedItems,
 					totalCount: queryTotalCount,
 					limit: queryLimit,
-					page: queryPage,
+					page: queryTotalPages,
 					query: query
 				} as APIResponse<ParsedDownloadsResponse[]> | APIResponse<ParsedTorrentsResponse[]>),
 				{

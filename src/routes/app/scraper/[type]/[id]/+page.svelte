@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Loader2 } from 'lucide-svelte';
-	import { organizeVideosBySeason } from '$lib/app/helpers';
+	import { Button } from '$lib/components/ui/button';
+	import { organizeVideosBySeason, getHashes, getHash } from '$lib/app/helpers';
 	import * as Select from '$lib/components/ui/select';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
@@ -11,6 +12,8 @@
 	import Filters from './filters.svelte';
 	import { writable, get, type Writable } from 'svelte/store';
 	import Trailers from './trailers.svelte';
+	import type { TorrentIOResponse } from '$lib/app/types';
+	import { toast } from 'svelte-sonner';
 
 	export let data;
 	let title: string = data.props.id;
@@ -90,6 +93,30 @@
 	function getTitle(streams: any[]) {
 		return streams.map((stream) => stream.title).join('\n');
 	}
+
+	let getHashesLoading = false;
+	let foundHashes: string[] = [];
+
+	$: if (foundHashes.length > 0) {
+		toast.success(`Found ${foundHashes.length} torrents already in RD`);
+	}
+
+	let getHashesAlreadyInRD = async function getHashesAlreadyInRDData(info: TorrentIOResponse) {
+		const hashes = getHashes(info);
+
+		const res = await fetch(`/api/app/torrents/searchHashes`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				hashes: hashes
+			})
+		});
+
+		const data = await res.json();
+		foundHashes = data.data.hashes;
+	};
 </script>
 
 <svelte:head>
@@ -116,10 +143,26 @@
 						<p class="text-sm text-muted-foreground">Loading streams...</p>
 					</div>
 				{:then streams}
+					<Button
+						disabled={getHashesLoading}
+						variant="outline"
+						class="max-w-max"
+						on:click={async () => {
+							getHashesLoading = true;
+							await getHashesAlreadyInRD(streams);
+							getHashesLoading = false;
+						}}
+					>
+						{#if getHashesLoading}
+							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						{/if}
+						Show torrents already in RD
+					</Button>
 					<div class="flex flex-col md:flex-row md:flex-wrap gap-4 w-full">
 						{#each streams.streams as stream, i}
 							{#if i <= $limit}
 								<div
+									class:border-green-500={foundHashes.includes(getHash(stream.url))}
 									class="w-full md:w-64 flex flex-col break-words gap-2 border rounded-md p-4 justify-between"
 								>
 									<div class="flex flex-col gap-2">

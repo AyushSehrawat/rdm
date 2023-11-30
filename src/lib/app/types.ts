@@ -193,3 +193,17 @@ export interface BeforeInstallPromptEvent extends Event {
 		platform: string;
 	}>;
 }
+
+export interface StreamResponse {
+	name: string;
+	title: string;
+	url: string;
+	behaviorHints?: {
+		[key: string]: any;
+	};
+}
+
+export interface TorrentIOResponse {
+	streams: StreamResponse[];
+	[key: string]: any;
+}

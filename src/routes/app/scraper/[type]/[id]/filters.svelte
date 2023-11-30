@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll, invalidate } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
@@ -7,7 +7,6 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Rocket, Trash2 } from 'lucide-svelte';
 	import type { Writable } from 'svelte/store';
-	import { PUBLIC_TORRENTIO_BASE_URI } from '$env/static/public';
 
 	export let data: any;
 	export let filtersObj: any;
