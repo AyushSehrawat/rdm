@@ -141,9 +141,7 @@
 	{/if}
 	<div class="flex flex-col gap-2">
 		<h2 class="text-xl font-semibold mt-8">Checkout these lists</h2>
-		<p class="text-sm text-muted-foreground">
-			Some of these list may not work
-		</p>
+		<p class="text-sm text-muted-foreground">Some of these list may not work</p>
 	</div>
 	<div class="flex flex-col md:flex-row md:flex-wrap w-full gap-4">
 		{#each listObj as list}

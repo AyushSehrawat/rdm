@@ -313,7 +313,8 @@
 							{#if ['downloading', 'compressing', 'uploading', 'magnet_conversion'].includes(item.status)}
 								<Table.Cell class="flex flex-col gap-1">
 									<p class="text-sm text-muted-foreground">
-										{capitalizeFirstLetter(item.status)} {item.progress}%
+										{capitalizeFirstLetter(item.status)}
+										{item.progress}%
 									</p>
 									<Progress value={item.progress} max={100} />
 									{#if 'speed' in item}

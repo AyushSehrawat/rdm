@@ -7,17 +7,15 @@
 
 <svelte:head>
 	<title>
-		{capitalizeFirstLetter(data.provider)} &bull; {capitalizeFirstLetter(data.category)} {capitalizeFirstLetter(
-			data.type
-		)} &bull; RDM
+		{capitalizeFirstLetter(data.provider)} &bull; {capitalizeFirstLetter(data.category)}
+		{capitalizeFirstLetter(data.type)} &bull; RDM
 	</title>
 </svelte:head>
 
 <div class="flex flex-col gap-4 p-8 md:px-24 lg:px-32 w-full">
 	<h1 class="text-2xl font-semibold underline">
-		{capitalizeFirstLetter(data.provider)} &bull; {capitalizeFirstLetter(data.category)} {capitalizeFirstLetter(
-			data.type
-		)}
+		{capitalizeFirstLetter(data.provider)} &bull; {capitalizeFirstLetter(data.category)}
+		{capitalizeFirstLetter(data.type)}
 	</h1>
 	<div class="flex flex-row flex-wrap w-full gap-4">
 		{#each data.items.metas as item}

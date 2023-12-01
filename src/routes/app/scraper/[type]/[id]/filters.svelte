@@ -74,7 +74,7 @@
 	{/if}
 	<Button
 		class="w-full md:max-w-max"
-        variant="destructive"
+		variant="destructive"
 		on:click={() => {
 			filters.set(['480p', 'other', 'scr', 'cam', 'unknown']);
 			maxResultsPerQuality.set(undefined);
