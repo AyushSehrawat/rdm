@@ -34,6 +34,12 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Changelog | Latest v{data.data.changelog[0].version}</title>
+	<meta name="description" content="Changelog for the latest version of the website." />
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
 <div class="flex flex-col p-8 md:px-24 lg:px-32 gap-4 font-poppins overflow-x-hidden">
 	<h1 class="text-4xl font-semibold">Changelog</h1>
     <Badge class="rounded-md max-w-max">Latest v{data.data.changelog[0].version}</Badge>
