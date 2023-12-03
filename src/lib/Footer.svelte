@@ -15,4 +15,10 @@
 			class="underline decoration-blue-500 text-black dark:text-white">GitHub</a
 		>
 	</p>
+	<p>
+		<a
+			href="/changelog"
+			class="underline decoration-blue-500 text-black dark:text-white">Changelog</a
+		>
+	</p>
 </div>

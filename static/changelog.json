@@ -1,0 +1,14 @@
+{
+	"changelog": [
+		{
+			"date": "3 December 2023",
+			"version": "1.0.0",
+			"changes": [
+				{
+					"type": "new",
+					"description": "Added changelog! :D"
+				}
+			]
+		}
+	]
+}
