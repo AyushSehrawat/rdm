@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { Loader2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { organizeVideosBySeason, getHashes, getHash } from '$lib/app/helpers';
+	import {
+		organizeVideosBySeason,
+		getHashes,
+		getHash,
+		getFilenameMetadata
+	} from '$lib/app/helpers';
 	import * as Select from '$lib/components/ui/select';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { formatDate } from '$lib/app/helpers';
@@ -14,6 +19,7 @@
 	import Trailers from './trailers.svelte';
 	import type { TorrentIOResponse } from '$lib/app/types';
 	import { toast } from 'svelte-sonner';
+	import { Badge } from '$lib/components/ui/badge';
 
 	export let data;
 	let title: string = data.props.id;
@@ -287,8 +293,20 @@
 																			{stream.name}
 																		</p>
 																		<div class="flex flex-col gap-1">
-																			{#each stream.title.split('\n') as info}
-																				<p class="text-sm">{info}</p>
+																			{#each stream.title.split('\n') as info, i}
+																				{#if i === 0}
+																					{@const metadata = getFilenameMetadata(info)}
+																					<div class="flex items-center gap-1 flex-wrap">
+																						<p class="text-sm">
+																							{info}
+																						</p>
+																						{#if metadata.parsedData.fullSeason}
+																							<Badge variant="outline">Full Season</Badge>
+																						{/if}
+																					</div>
+																				{:else}
+																					<p class="text-sm">{info}</p>
+																				{/if}
 																			{/each}
 																		</div>
 																	</div>

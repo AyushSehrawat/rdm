@@ -5,6 +5,10 @@
 			"version": "1.0.0",
 			"changes": [
 				{
+					"type": "update",
+					"description": "Cached torrents of series now marks full season torrents."
+				},
+				{
 					"type": "new",
 					"description": "Added changelog! :D"
 				}
