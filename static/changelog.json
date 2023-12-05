@@ -1,6 +1,20 @@
 {
 	"changelog": [
 		{
+			"date": "5 December 2023",
+			"version": "1.0.0",
+			"changes": [
+				{
+					"type": "new",
+					"description": "Added settings page!"
+				},
+				{
+					"type": "other",
+					"description": "Refactored some code"
+				}
+			]
+		},
+		{
 			"date": "3 December 2023",
 			"version": "1.0.0",
 			"changes": [

@@ -6,7 +6,7 @@ import type {
 	ParsedTorrentsResponse,
 	ParsedDownloadsResponse
 } from '$lib/app/types';
-import { getFilenameMetadata } from '$lib/app/helpers.js';
+import { getFilenameMetadata, getAllData } from '$lib/app/helpers.js';
 import Fuse from 'fuse.js';
 
 const downloadsFuseOptions = {
@@ -155,59 +155,7 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 				}
 			);
 		} else {
-			let url = '';
-			if (datatype === 'downloads') {
-				url = `${PUBLIC_BASE_URI}/downloads`;
-			} else if (datatype === 'torrents') {
-				url = `${PUBLIC_BASE_URI}/torrents`;
-			}
-
-			const queryTotalCountRes = await fetch(`${url}?limit=1&page=1`, {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${accessToken}`
-				}
-			});
-
-			const queryTotalCount = parseInt(queryTotalCountRes.headers.get('X-Total-Count') || '0');
-			const queryLimit = 2500;
-			const queryTotalPages = Math.ceil(queryTotalCount / queryLimit);
-
-			const queryPageNumbers = Array.from({ length: queryTotalPages }, (_, i) => i + 1);
-			const queryChunkSize = 10;
-			const queryDelay = 500;
-
-			const allData = [];
-
-			for (let i = 0; i < queryPageNumbers.length; i += queryChunkSize) {
-				const chunk = queryPageNumbers.slice(i, i + queryChunkSize);
-				const promises = chunk.map(fetchPage);
-				const data = await Promise.all(promises);
-				allData.push(...data);
-				if (i + queryChunkSize < queryPageNumbers.length) {
-					await new Promise((resolve) => setTimeout(resolve, queryDelay));
-				}
-			}
-
-			async function fetchPage(queryPage: number) {
-				console.log(`Fetching page ${queryPage}`);
-				const response = await fetch(`${url}?limit=${queryLimit}&page=${queryPage}`, {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`
-					}
-				});
-
-				if (!response.ok) {
-					throw new Error(`Error fetching page ${queryPage}. Status: ${response.status}`);
-				}
-
-				return (await response.json()) as TorrentsResponse[];
-			}
-
-			const data = allData.flat();
+			const res = await getAllData(fetch, datatype, accessToken, 500, 2500, 10);
 
 			let fuseOptions = {};
 			if (datatype === 'downloads') {
@@ -216,7 +164,7 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 				fuseOptions = torrentsFuseOptions;
 			}
 
-			const fuse = new Fuse(data, fuseOptions);
+			const fuse = new Fuse(res.data, fuseOptions);
 			let searchResults = fuse.search(query).map((result) => result.item);
 			const updatedItems = searchResults.map((item: DownloadsResponse | TorrentsResponse) => {
 				return { ...item, metadata: getFilenameMetadata(item.filename) };
@@ -227,9 +175,9 @@ export const GET = async ({ url, fetch, cookies, params }) => {
 					status: 200,
 					success: true,
 					data: updatedItems,
-					totalCount: queryTotalCount,
-					limit: queryLimit,
-					page: queryTotalPages,
+					totalCount: res.totalCount,
+					limit: res.limit,
+					page: res.page,
 					query: query
 				} as APIResponse<ParsedDownloadsResponse[]> | APIResponse<ParsedTorrentsResponse[]>),
 				{

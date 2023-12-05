@@ -22,6 +22,10 @@
 		{
 			name: 'Scraper',
 			ref: '/app/scraper'
+		},
+		{
+			name: 'Settings',
+			ref: '/app/settings'
 		}
 	];
 </script>

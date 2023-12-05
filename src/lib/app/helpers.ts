@@ -7,6 +7,7 @@ import type {
 } from '$lib/app/types';
 import { filenameParse, type ParsedMovie, type ParsedShow } from '@ctrl/video-filename-parser';
 import { DateTime, Settings } from 'luxon';
+import { PUBLIC_BASE_URI } from '$env/static/public';
 
 Settings.defaultZone = 'utc'; // Set default timezone to UTC
 
@@ -17,8 +18,10 @@ export function convertBytes(byteSize: number): string {
 		return (byteSize / 1024).toFixed(2) + ' KB';
 	} else if (byteSize < 1024 * 1024 * 1024) {
 		return (byteSize / (1024 * 1024)).toFixed(2) + ' MB';
-	} else {
+	} else if (byteSize < 1024 * 1024 * 1024 * 1024) {
 		return (byteSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+	} else {
+		return (byteSize / (1024 * 1024 * 1024 * 1024)).toFixed(2) + ' TB';
 	}
 }
 
@@ -154,4 +157,72 @@ export function getHashes(data: TorrentIOResponse) {
 	});
 
 	return hashes.filter((hash) => hash !== null);
+}
+
+export async function fetchPage(
+	fetch: any,
+	page: number,
+	url: string,
+	limit: number,
+	accessToken: string
+) {
+	console.log(`Fetching page ${page}`);
+	const response = await fetch(`${url}?limit=${limit}&page=${page}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`
+		}
+	});
+
+	if (!response.ok) {
+		throw new Error(`Error fetching page ${page}. Status: ${response.status}`);
+	}
+
+	return await response.json();
+}
+
+export async function getAllData(
+	fetch: any,
+	datatype: 'downloads' | 'torrents' | string,
+	accessToken: string | undefined,
+	delay: number = 1000,
+	limit: number = 2500,
+	chunkSize: number = 10
+) {
+	if (!accessToken) {
+		throw new Error('No access token provided.');
+	}
+
+	let url = `${PUBLIC_BASE_URI}/${datatype}`;
+	const totalCountRes = await fetch(`${url}?limit=1&page=1`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`
+		}
+	});
+
+	const totalCount = parseInt(totalCountRes.headers.get('X-Total-Count') || '0');
+	const totalPages = Math.ceil(totalCount / limit);
+	const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+	const allData = [];
+
+	for (let i = 0; i < pageNumbers.length; i += chunkSize) {
+		const chunk = pageNumbers.slice(i, i + chunkSize);
+		const promises = chunk.map((page) => fetchPage(fetch, page, url, limit, accessToken));
+		const data = await Promise.all(promises);
+		allData.push(...data);
+		if (i + chunkSize < pageNumbers.length) {
+			await new Promise((resolve) => setTimeout(resolve, delay));
+		}
+	}
+
+	return {
+		totalCount,
+		limit,
+		page: 1,
+		data: allData.flat()
+	};
 }
