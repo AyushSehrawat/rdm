@@ -5,12 +5,20 @@
 			"version": "1.0.0",
 			"changes": [
 				{
+					"type": "other",
+					"description": "Adding feature to directly add magnet url to real debrid via rdm."
+				},
+				{
 					"type": "fix",
 					"description": "Fixed overflow on cached torrents for show episodes."
 				},
 				{
 					"type": "fix",
 					"description": "Fixed the width of trailer on smaller screens"
+				},
+				{
+					"type": "update",
+					"description": "Rewrote the code for sitemap generation"
 				}
 			]
 		},
