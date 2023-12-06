@@ -296,14 +296,12 @@
 																			{#each stream.title.split('\n') as info, i}
 																				{#if i === 0}
 																					{@const metadata = getFilenameMetadata(info)}
-																					<div class="flex items-center gap-1 flex-wrap">
-																						<p class="text-sm">
-																							{info}
-																						</p>
-																						{#if metadata.parsedData.fullSeason}
-																							<Badge variant="outline">Full Season</Badge>
-																						{/if}
-																					</div>
+																					<p class="text-sm break-words">
+																						{info}
+																					</p>
+																					{#if metadata.parsedData.fullSeason}
+																						<Badge class="max-w-max" variant="outline">Full Season</Badge>
+																					{/if}
 																				{:else}
 																					<p class="text-sm">{info}</p>
 																				{/if}

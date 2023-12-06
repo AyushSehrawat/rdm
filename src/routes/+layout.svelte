@@ -4,6 +4,6 @@
 	import '../app.postcss';
 </script>
 
-<ModeWatcher />
+<ModeWatcher track={true} />
 <Toaster richColors closeButton />
 <slot />

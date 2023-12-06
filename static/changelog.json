@@ -1,6 +1,20 @@
 {
 	"changelog": [
 		{
+			"date": "6 December 2023",
+			"version": "1.0.0",
+			"changes": [
+				{
+					"type": "fix",
+					"description": "Fixed overflow on cached torrents for show episodes."
+				},
+				{
+					"type": "fix",
+					"description": "Fixed the width of trailer on smaller screens"
+				}
+			]
+		},
+		{
 			"date": "5 December 2023",
 			"version": "1.0.0",
 			"changes": [

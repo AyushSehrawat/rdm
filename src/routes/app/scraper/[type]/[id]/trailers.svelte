@@ -17,7 +17,7 @@
 					frameborder="0"
 					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
 					allowfullscreen
-					class="aspect-video w-96 h-[13.5rem] rounded-md"
+					class="aspect-video w-80 md:w-96 h-[13.5rem] rounded-md"
 				/>
 			{/each}
 		</div>
