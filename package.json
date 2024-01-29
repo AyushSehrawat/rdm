@@ -43,7 +43,7 @@
 	"dependencies": {
 		"@ctrl/video-filename-parser": "^5.1.0",
 		"@types/web-app-manifest": "^1.0.7",
-		"bits-ui": "^0.6.3",
+		"bits-ui": "^0.16.0",
 		"clsx": "^2.0.0",
 		"fuse.js": "^7.0.0",
 		"lucide-svelte": "^0.294.0",
