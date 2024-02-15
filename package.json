@@ -16,7 +16,6 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.40.0",
-		"@sveltejs/adapter-auto": "^2.1.1",
 		"@sveltejs/adapter-cloudflare": "^2.3.3",
 		"@sveltejs/kit": "^1.27.6",
 		"@types/luxon": "^3.3.6",
@@ -43,16 +42,14 @@
 	"dependencies": {
 		"@ctrl/video-filename-parser": "^5.1.0",
 		"@types/web-app-manifest": "^1.0.7",
-		"bits-ui": "^0.18.0",
-		"clsx": "^2.0.0",
+		"bits-ui": "^0.18.1",
+		"clsx": "^2.1.0",
 		"fuse.js": "^7.0.0",
-		"lucide-svelte": "^0.294.0",
+		"lucide-svelte": "^0.331.0",
 		"luxon": "^3.4.4",
-		"mode-watcher": "^0.1.2",
-		"radix-icons-svelte": "^1.2.1",
-		"svelte-persisted-store": "^0.7.0",
-		"svelte-sonner": "^0.3.6",
+		"mode-watcher": "^0.2.1",
+		"svelte-sonner": "^0.3.17",
 		"tailwind-merge": "^2.2.1",
-		"tailwind-variants": "^0.1.18"
+		"tailwind-variants": "^0.2.0"
 	}
 }
