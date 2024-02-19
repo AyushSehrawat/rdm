@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.40.0",
 		"@sveltejs/adapter-cloudflare": "^2.3.3",
-		"@sveltejs/kit": "^1.27.6",
+		"@sveltejs/kit": "^1.30.4",
 		"@types/luxon": "^3.3.6",
 		"@typescript-eslint/eslint-plugin": "^6.12.0",
 		"@typescript-eslint/parser": "^6.21.0",

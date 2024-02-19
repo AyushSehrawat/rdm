@@ -45,10 +45,10 @@ devDependencies:
     version: 1.41.2
   '@sveltejs/adapter-cloudflare':
     specifier: ^2.3.3
-    version: 2.3.4(@sveltejs/kit@1.30.3)
+    version: 2.3.4(@sveltejs/kit@1.30.4)
   '@sveltejs/kit':
-    specifier: ^1.27.6
-    version: 1.30.3(svelte@4.2.11)(vite@4.5.2)
+    specifier: ^1.30.4
+    version: 1.30.4(svelte@4.2.11)(vite@4.5.2)
   '@types/luxon':
     specifier: ^3.3.6
     version: 3.4.2
@@ -521,19 +521,19 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@sveltejs/adapter-cloudflare@2.3.4(@sveltejs/kit@1.30.3):
+  /@sveltejs/adapter-cloudflare@2.3.4(@sveltejs/kit@1.30.4):
     resolution: {integrity: sha512-+5Msbm7svrZjaBt0KapNh2zEaMRfrhbTRBWRXrFa+w+KFRQnHjFIPvWz/NQ11XKVu7dRe7mkzqvqieL2b0hpJw==}
     peerDependencies:
       '@sveltejs/kit': ^1.0.0
     dependencies:
       '@cloudflare/workers-types': 4.20240208.0
-      '@sveltejs/kit': 1.30.3(svelte@4.2.11)(vite@4.5.2)
+      '@sveltejs/kit': 1.30.4(svelte@4.2.11)(vite@4.5.2)
       esbuild: 0.18.20
       worktop: 0.8.0-next.15
     dev: true
 
-  /@sveltejs/kit@1.30.3(svelte@4.2.11)(vite@4.5.2):
-    resolution: {integrity: sha512-0DzVXfU4h+tChFvoc8C61IqErCyskD4ydSIDjpKS2lYlEzIYrtYrY7juSqACFxqcvZAnOEXvSY+zZ8br0+ZMMg==}
+  /@sveltejs/kit@1.30.4(svelte@4.2.11)(vite@4.5.2):
+    resolution: {integrity: sha512-JSQIQT6XvdchCRQEm7BABxPC56WP5RYVONAi+09S8tmzeP43fBsRlr95bFmsTQM2RHBldfgQk+jgdnsKI75daA==}
     engines: {node: ^16.14 || >=18}
     hasBin: true
     requiresBuild: true
@@ -554,7 +554,7 @@ packages:
       sirv: 2.0.4
       svelte: 4.2.11
       tiny-glob: 0.2.9
-      undici: 5.26.5
+      undici: 5.28.3
       vite: 4.5.2(@types/node@20.11.19)
     transitivePeerDependencies:
       - supports-color
@@ -2769,8 +2769,8 @@ packages:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
 
-  /undici@5.26.5:
-    resolution: {integrity: sha512-cSb4bPFd5qgR7qr2jYAi0hlX9n5YKK2ONKkLFkxl+v/9BvC0sOpZjBHDBSXc5lWAf5ty9oZdRXytBIHzgUcerw==}
+  /undici@5.28.3:
+    resolution: {integrity: sha512-3ItfzbrhDlINjaP0duwnNsKpDQk3acHI3gVJ1z4fmwMK31k5G9OVIAMLSIaP6w4FaGkaAkN6zaQO9LUvZ1t7VA==}
     engines: {node: '>=14.0'}
     dependencies:
       '@fastify/busboy': 2.1.0
