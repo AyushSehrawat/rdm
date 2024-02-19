@@ -48,7 +48,7 @@
 		"lucide-svelte": "^0.331.0",
 		"luxon": "^3.4.4",
 		"mode-watcher": "^0.2.1",
-		"svelte-sonner": "^0.3.17",
+		"svelte-sonner": "^0.3.18",
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.2.0"
 	}
