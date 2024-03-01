@@ -6,7 +6,6 @@ node_modules
 .env
 .env.*
 !.env.example
-/src/lib/components/ui/*
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml

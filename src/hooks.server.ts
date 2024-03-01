@@ -4,10 +4,14 @@ import { redirect } from '@sveltejs/kit';
 
 const protectRoutes: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/app') || event.url.pathname.startsWith('/api/app')) {
-		const refreshToken = event.cookies.get('refreshToken') ?? '';
-		if (refreshToken === '') {
+		const clientId = event.cookies.get('client_id');
+        const accessToken = event.cookies.get('access_token');
+        
+		if (!clientId) {
 			throw redirect(303, '/');
-		}
+		} else if (!accessToken) {
+            const data = await event.fetch('/api/refresh');
+        }
 	}
 
 	return resolve(event);
