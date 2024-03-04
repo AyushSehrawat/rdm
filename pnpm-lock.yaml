@@ -27,8 +27,8 @@ dependencies:
     specifier: ^3.4.4
     version: 3.4.4
   mode-watcher:
-    specifier: ^0.2.1
-    version: 0.2.1(svelte@4.2.11)
+    specifier: ^0.2.2
+    version: 0.2.2(svelte@4.2.11)
   svelte-sonner:
     specifier: ^0.3.17
     version: 0.3.17(svelte@4.2.11)
@@ -1896,8 +1896,8 @@ packages:
       ufo: 1.4.0
     dev: true
 
-  /mode-watcher@0.2.1(svelte@4.2.11):
-    resolution: {integrity: sha512-HLmJgG5kmJCFR/+rcG2te54HjIxqk7BTAsFnsygZR5hcOYlhLEJQ0V8rh1axv2JQIbOAZs1yPlUBSpVATRFtUw==}
+  /mode-watcher@0.2.2(svelte@4.2.11):
+    resolution: {integrity: sha512-QjkHQL9pXrr7Vb0P3WbOWAF8mv1Q6jEwUZ5GUyCnI9eEoXH234zuaOGChUF7ZQtjxwtmXDzKFSW/36TvLDg1/A==}
     peerDependencies:
       svelte: ^4.0.0
     dependencies:
