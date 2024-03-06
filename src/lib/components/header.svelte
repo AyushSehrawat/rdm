@@ -2,6 +2,7 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { Button } from '$lib/components/ui/button';
 	import ThemeMode from '$lib/components/theme-mode.svelte';
+	import Logout from '$lib/components/logout.svelte';
 	import type { NavItem } from '$lib/types';
 	import { Menu } from 'lucide-svelte';
 	import { getContext } from 'svelte';
@@ -47,9 +48,13 @@
 
 	<div class="flex items-center gap-4">
 		<ThemeMode />
+		<Logout />
 		<Drawer.Root onClose={() => openNavbar.set(false)} open={$openNavbar}>
-			<Drawer.Trigger class="block lg:hidden">
-				<Menu size="24" />
+			<Drawer.Trigger class="block lg:hidden" asChild let:builder>
+				<Button builders={[builder]} variant="outline" size="icon">
+					<Menu class="h-[1.5rem] w-[1.5rem]" />
+					<span class="sr-only">Toggle theme</span>
+				</Button>
 			</Drawer.Trigger>
 			<Drawer.Content>
 				<nav class="my-4 flex w-full flex-col items-center justify-center gap-2">
