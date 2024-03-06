@@ -1,42 +1,17 @@
-# Real Debrid Manager
+# create-svelte
 
-Manage your Real Debrid downloads and torrents with ease.
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-Aim of this project is to provide a simple interface to manage and search through your Real Debrid downloads and torrents.
+## Creating a project
 
-> These screenshots may not be up to date with the current version of the app.
+If you're seeing this, you've probably already done this step. Congrats!
 
-<img src="./assets/homepage.jpeg" width="23%"></img>
-<img src="./assets/torrents.jpeg" width="23%"></img>
-<img src="./assets/downloads.jpeg" width="23%"></img>
-<img src="./assets/scraper.jpeg" width="23%"></img>
-<img src="./assets/scraper-movie.jpeg" width="23%"></img>
-<img src="./assets/scraper-series.jpeg" width="23%"></img>
-<img src="./assets/scraper-series-torrent.jpeg" width="23%"></img>
-<img src="./assets/scraper-list.jpeg" width="23%"></img>
+```bash
+# create a new project in the current directory
+npm create svelte@latest
 
-https://github.com/AyushSehrawat/rdm/assets/69469790/e1317cfd-ffe2-4af5-b052-0e0ed73d2fe8
-
-## Features
-
-- View and search through all your downloads and torrents
-- Reinsert torrents with option to select files
-- Copy download links, delete, stream and get info on your downloads and torrents
-- Bulk delete downloads and torrents & bulk unrestrict torrents
-- Scraper to search for torrents and download links and add them to your Real Debrid.
-- Add torrents through magnet links and torrent files (Not yet implemented)
-- Look for dead download links and torrents and refresh them (Not yet implemented)
-- And much more...
-
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env file. Just rename the .env.example file to .env.
-
-```
-PUBLIC_BASE_URI="https://api.real-debrid.com/rest/1.0"
-PUBLIC_BASE_AUTH_URI="https://api.real-debrid.com"
-PUBLIC_CLIENT_ID="X245A4XAIBGVM"
-PUBLIC_TORRENTIO_BASE_URI="https://torrentio.strem.fun"
+# create a new project in my-app
+npm create svelte@latest my-app
 ```
 
 ## Developing
@@ -49,3 +24,17 @@ npm run dev
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
 ```
+
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+![img](./assets/auth.excalidraw.png)

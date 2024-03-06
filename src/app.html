@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -8,12 +8,29 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
 		<link
-			href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-			rel="stylesheet"
+			rel="preload"
+			href="/fonts/Satoshi-Regular.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
 		/>
+		<link
+			rel="preload"
+			href="/fonts/Satoshi-Medium.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link
+			rel="preload"
+			href="/fonts/Satoshi-Bold.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta
 			name="description"
@@ -81,18 +98,9 @@
 				}
 			}
 		</script>
-
 		%sveltekit.head%
 	</head>
-	<body class="light" data-sveltekit-preload-data="hover">
+	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
-
-		<!-- Cloudflare Web Analytics -->
-		<script
-			defer
-			src="https://static.cloudflareinsights.com/beacon.min.js"
-			data-cf-beacon='{"token": "f1c4a4dd32f04e18a9d262f3d180197e"}'
-		></script>
-		<!-- End Cloudflare Web Analytics -->
 	</body>
 </html>
