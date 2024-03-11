@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@ctrl/video-filename-parser':
-    specifier: ^5.1.0
-    version: 5.1.0
+    specifier: ^5.2.0
+    version: 5.2.0
   '@types/web-app-manifest':
     specifier: ^1.0.7
     version: 1.0.7
@@ -136,8 +136,8 @@ packages:
     resolution: {integrity: sha512-MVGTTjZpJu4kJONvai5SdJzWIhOJbuweVZ3goI7FNyG+JdoQH41OoB+nMhLsX626vPLZVWGPIWsiSo/WZHzgQw==}
     dev: true
 
-  /@ctrl/video-filename-parser@5.1.0:
-    resolution: {integrity: sha512-hKW0ReDDl7HYfnz6I2e6ZSRyUMkeIaU1wuVjlbgkFxfV7LX0Epat5VVGgJ9cwhz8tX4NzfioVxpYj2RbummXbw==}
+  /@ctrl/video-filename-parser@5.2.0:
+    resolution: {integrity: sha512-6F9inbv+wXc82tG4jGcZX9j0YgpHyyF9dP+6M0GbWbQwLLwpgVcKs70DvmK7unE8cb6FFGlD/n1QDKk86mEJ7A==}
     engines: {node: '>=18'}
     dev: false
 
