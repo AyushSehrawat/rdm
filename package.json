@@ -15,7 +15,7 @@
 		"test:unit": "vitest"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.40.0",
+		"@playwright/test": "^1.42.1",
 		"@sveltejs/adapter-cloudflare": "^2.3.3",
 		"@sveltejs/kit": "^1.27.6",
 		"@types/luxon": "^3.3.6",
